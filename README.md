@@ -30,12 +30,12 @@ uv pip install .
 
    Mode stdio (par défaut) :
 ```bash
-uv run python server.py --mode stdio
+uv run python main.py --mode stdio
 ```
    
    Mode SSE :
 ```bash
-uv run python server.py --mode sse --host 127.0.0.1 --port 8080
+uv run python main.py --mode sse --host 127.0.0.1 --port 8080
 ```
 
 ## Outils disponibles
