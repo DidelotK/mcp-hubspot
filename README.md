@@ -4,31 +4,38 @@ Ce serveur MCP permet d'interagir avec l'API HubSpot pour lister les contacts et
 
 ## Installation
 
-1. Installez les dépendances :
+1. Installez [uv](https://docs.astral.sh/uv/getting-started/installation/) si ce n'est pas déjà fait :
 ```bash
-  # Si vous utilisez conda
-  # conda activate <nom_de_votre_environnement> # Exemple : conda activate ai
-
-  pip install -r requirements.txt
+curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-2. Configurez le serveur :
+2. Installez les dépendances :
+```bash
+uv sync
+```
+
+   Ou pour installer uniquement les dépendances de production :
+```bash
+uv pip install .
+```
+
+3. Configurez le serveur :
 
    Définissez votre clé API HubSpot dans les variables d'environnement :
 ```bash
    export HUBSPOT_API_KEY=votre_cle_api_hubspot
 ```
 
-3. Démarrez le serveur :
+4. Démarrez le serveur :
 
    Mode stdio (par défaut) :
 ```bash
-   python server.py --mode stdio
+uv run python server.py --mode stdio
 ```
    
    Mode SSE :
 ```bash
-   python server.py --mode sse --host 127.0.0.1 --port 8080
+uv run python server.py --mode sse --host 127.0.0.1 --port 8080
 ```
 
 ## Outils disponibles
@@ -107,8 +114,14 @@ Appel de l'outil list_hubspot_companies avec filters: {"search": "technology"}
 
 ## Tests
 
-Pour exécuter les tests unitaires, installez les dépendances de test et lancez :
+Pour exécuter les tests unitaires :
 
 ```bash
+# Installation (une seule fois)
+uv venv --python 3.13
+source .venv/bin/activate
+uv pip install -e '.[dev]'
+
+# Lancer les tests
 pytest
 ```
