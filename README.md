@@ -101,3 +101,11 @@ Appel de l'outil list_hubspot_companies sans paramètres
 
 Rechercher des entreprises par secteur :
 Appel de l'outil list_hubspot_companies avec filters: {"search": "technology"}
+
+## Tests
+
+Pour exécuter les tests unitaires, installez les dépendances de test et lancez :
+
+```bash
+pytest
+```
