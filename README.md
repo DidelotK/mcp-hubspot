@@ -6,7 +6,10 @@ Ce serveur MCP permet d'interagir avec l'API HubSpot pour lister les contacts et
 
 1. Installez les dépendances :
 ```bash
-   pip install -r requirements.txt
+  # Si vous utilisez conda
+  # conda activate <nom_de_votre_environnement> # Exemple : conda activate ai
+
+  pip install -r requirements.txt
 ```
 
 2. Configurez le serveur :
