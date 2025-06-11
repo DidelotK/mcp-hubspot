@@ -21,6 +21,8 @@ asyncio_mode = "auto"
 pythonpath = ["."]
 
 [tool.setuptools.packages.find]
-where = ["."]
-include = ["*"]
-exclude = ["tests*"]
+where = ["src"]
+include = ["hubspot_mcp*"]
+
+[project.scripts]
+hubspot-mcp-server = "main:main"
