@@ -5,12 +5,13 @@ import asyncio
 
 from mcp.types import TextContent, Tool
 
-import server
-from server import parse_arguments, HubSpotClient, handle_list_tools, handle_call_tool
+from main import parse_arguments
+from src.hubspot_mcp.client import HubSpotClient
+from src.hubspot_mcp.server import MCPHandlers
 
 
 def test_parse_arguments_defaults(monkeypatch):
-    monkeypatch.setattr(sys, 'argv', ['server.py'])
+    monkeypatch.setattr(sys, 'argv', ['main.py'])
     args = parse_arguments()
     assert args.mode == 'stdio'
     assert args.host == '127.0.0.1'
@@ -21,7 +22,7 @@ def test_parse_arguments_sse(monkeypatch):
     monkeypatch.setattr(
         sys,
         'argv',
-        ['server.py', '--mode', 'sse', '--host', '0.0.0.0', '--port', '9090'],
+        ['main.py', '--mode', 'sse', '--host', '0.0.0.0', '--port', '9090'],
     )
     args = parse_arguments()
     assert args.mode == 'sse'
@@ -30,16 +31,18 @@ def test_parse_arguments_sse(monkeypatch):
 
 
 def test_handle_list_tools():
-    tools = asyncio.run(handle_list_tools())
+    client = HubSpotClient('test-key')
+    handlers = MCPHandlers(client)
+    tools = asyncio.run(handlers.handle_list_tools())
     names = [tool.name for tool in tools]
     assert 'list_hubspot_contacts' in names
     assert 'list_hubspot_companies' in names
 
 
 def test_handle_call_tool_no_client():
-    # Ensure hubspot_client is None
-    server.hubspot_client = None
-    result = asyncio.run(handle_call_tool('list_hubspot_contacts', {}))
+    # Test avec un client None
+    handlers = MCPHandlers(None)
+    result = asyncio.run(handlers.handle_call_tool('list_hubspot_contacts', {}))
     assert isinstance(result, list)
     assert isinstance(result[0], TextContent)
     assert 'Erreur: Client HubSpot non initialisé' in result[0].text
