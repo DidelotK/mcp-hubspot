@@ -1,0 +1,68 @@
+name: 'Comment PR with Code Quality Report'
+description: 'Post or update a comment on PR with code quality analysis results'
+author: 'HubSpot MCP Server Team'
+
+inputs:
+  report-path:
+    description: 'Path to the code quality report file (markdown format)'
+    required: true
+    default: 'lint_report.md'
+  
+  github-token:
+    description: 'GitHub token for API access'
+    required: true
+    default: ${{ github.token }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Read quality report
+      id: read-report
+      shell: bash
+      run: |
+        if [ -f "${{ inputs.report-path }}" ]; then
+          # Lire le rapport et l'encoder pour éviter les problèmes avec les caractères spéciaux
+          REPORT_CONTENT=$(cat "${{ inputs.report-path }}")
+          echo "report-exists=true" >> $GITHUB_OUTPUT
+          # Échapper les caractères spéciaux pour GitHub Actions
+          {
+            echo 'report-content<<EOF'
+            echo "$REPORT_CONTENT"
+            echo 'EOF'
+          } >> $GITHUB_OUTPUT
+        else
+          echo "report-exists=false" >> $GITHUB_OUTPUT
+          echo 'report-content=## ❌ Erreur lors de la vérification de la qualité du code\n\nImpossible de générer le rapport de qualité.' >> $GITHUB_OUTPUT
+        fi
+
+    - name: Find existing quality comment
+      id: find-comment
+      uses: peter-evans/find-comment@v3
+      with:
+        issue-number: ${{ github.event.pull_request.number }}
+        comment-author: 'github-actions[bot]'
+        body-includes: 'Vérification de la qualité du code'
+        token: ${{ inputs.github-token }}
+
+    - name: Create or update PR comment
+      uses: peter-evans/create-or-update-comment@v4
+      with:
+        comment-id: ${{ steps.find-comment.outputs.comment-id }}
+        issue-number: ${{ github.event.pull_request.number }}
+        body: |
+          ${{ steps.read-report.outputs.report-content }}
+          
+          ---
+          *🤖 Ce commentaire est généré automatiquement par la CI. Il sera mis à jour à chaque push.*
+        edit-mode: replace
+        token: ${{ inputs.github-token }}
+
+    - name: Report action status
+      shell: bash
+      run: |
+        if [ "${{ steps.read-report.outputs.report-exists }}" = "true" ]; then
+          echo "✅ Rapport de qualité posté/mis à jour sur la PR"
+        else
+          echo "❌ Impossible de lire le rapport de qualité"
+          exit 1
+        fi
