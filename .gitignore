@@ -3,6 +3,9 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Lint reports
+lint_report.md
+
 # C extensions
 *.so
 

@@ -155,6 +155,13 @@ Ce projet suit des standards stricts pour maintenir la qualité du code et la co
    ```bash
    # Lancer les tests en continu
    uv run pytest --cov=src --cov-report=term-missing
+   
+   # Vérifier la qualité du code
+   uv run python scripts/lint_check.py
+   
+   # Ou corriger automatiquement le formatage
+   uv run black src/ main.py tests/
+   uv run isort src/ main.py tests/
    ```
 
 4. **Commit avec format semantic** :
@@ -163,9 +170,10 @@ Ce projet suit des standards stricts pour maintenir la qualité du code et la co
    ```
 
 5. **Push et créer une PR** - Le CI vérifiera automatiquement :
-   - Tests sur Python 3.12 et 3.13
-   - Couverture de code (minimum 80%)
-   - Respect des standards Python
+   - **Qualité du code** : Black, isort, flake8, mypy
+   - **Tests** sur Python 3.12 et 3.13
+   - **Couverture** minimum 80%
+   - **Commentaire automatique** sur la PR en cas de problème
 
 ### ⚡ Règles Essentielles
 
