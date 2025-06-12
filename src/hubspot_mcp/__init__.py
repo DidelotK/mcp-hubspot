@@ -1,5 +1,5 @@
 """
-Serveur MCP HubSpot pour lister les contacts et entreprises avec filtrage.
+HubSpot MCP Server for listing contacts and companies with filtering.
 """
 
 __version__ = "1.0.0"

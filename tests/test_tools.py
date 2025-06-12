@@ -265,19 +265,19 @@ async def test_contact_properties_tool_execute():
         "results": [
             {
                 "name": "firstname",
-                "label": "Prénom",
+                "label": "First Name",
                 "type": "string",
                 "fieldType": "text",
                 "groupName": "contactinformation",
-                "description": "Le prénom du contact",
+                "description": "The contact's first name",
             },
             {
                 "name": "email",
-                "label": "Adresse e-mail",
+                "label": "Email Address",
                 "type": "string",
                 "fieldType": "text",
                 "groupName": "contactinformation",
-                "description": "L'adresse e-mail du contact",
+                "description": "The contact's email address",
             },
         ]
     }
@@ -295,8 +295,8 @@ async def test_contact_properties_tool_execute():
         assert len(result) == 1
         assert isinstance(result[0], TextContent)
         assert "HubSpot Contact Properties" in result[0].text
-        assert "Prénom" in result[0].text
-        assert "Adresse e-mail" in result[0].text
+        assert "First Name" in result[0].text
+        assert "Email Address" in result[0].text
         assert "contactinformation" in result[0].text
 
 
@@ -541,19 +541,19 @@ async def test_company_properties_tool_execute():
         "results": [
             {
                 "name": "name",
-                "label": "Nom de l'entreprise",
+                "label": "Company Name",
                 "type": "string",
                 "fieldType": "text",
                 "groupName": "companyinformation",
-                "description": "Le nom de l'entreprise",
+                "description": "The company name",
             },
             {
                 "name": "domain",
-                "label": "Domaine web",
+                "label": "Website Domain",
                 "type": "string",
                 "fieldType": "text",
                 "groupName": "companyinformation",
-                "description": "Le domaine web de l'entreprise",
+                "description": "The company website domain",
             },
         ]
     }
@@ -571,8 +571,8 @@ async def test_company_properties_tool_execute():
         assert len(result) == 1
         assert isinstance(result[0], TextContent)
         assert "HubSpot Company Properties" in result[0].text
-        assert "Nom de l'entreprise" in result[0].text
-        assert "Domaine web" in result[0].text
+        assert "Company Name" in result[0].text
+        assert "Website Domain" in result[0].text
         assert "companyinformation" in result[0].text
 
 

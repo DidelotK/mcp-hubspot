@@ -1,4 +1,4 @@
-"""Outil MCP pour gérer les entreprises HubSpot."""
+"""MCP tool to manage HubSpot companies."""
 
 from typing import Any, Dict, List
 
@@ -9,30 +9,30 @@ from .base import BaseTool
 
 
 class CompaniesTool(BaseTool):
-    """Outil pour lister les entreprises HubSpot."""
+    """Tool to list HubSpot companies."""
 
     def get_tool_definition(self) -> types.Tool:
-        """Retourne la définition de l'outil entreprises."""
+        """Return the companies tool definition."""
         return types.Tool(
             name="list_hubspot_companies",
-            description="Liste les entreprises HubSpot avec possibilité de filtrage",
+            description="Lists HubSpot companies with optional filtering",
             inputSchema={
                 "type": "object",
                 "properties": {
                     "limit": {
                         "type": "integer",
-                        "description": "Nombre maximum d'entreprises à retourner (défaut: 100)",
+                        "description": "Maximum number of companies to return (default: 100)",
                         "default": 100,
                         "minimum": 1,
                         "maximum": 1000,
                     },
                     "filters": {
                         "type": "object",
-                        "description": "Filtres optionnels pour la recherche",
+                        "description": "Optional filters for search",
                         "properties": {
                             "search": {
                                 "type": "string",
-                                "description": "Terme de recherche pour filtrer les entreprises",
+                                "description": "Search term to filter companies",
                             }
                         },
                         "additionalProperties": False,
@@ -43,7 +43,7 @@ class CompaniesTool(BaseTool):
         )
 
     async def execute(self, arguments: Dict[str, Any]) -> List[types.TextContent]:
-        """Exécute la récupération des entreprises."""
+        """Execute companies retrieval."""
         try:
             limit = arguments.get("limit", 100)
             filters = arguments.get("filters", {})

@@ -1,4 +1,4 @@
-"""Outil MCP pour récupérer les propriétés des entreprises HubSpot."""
+"""MCP tool to retrieve HubSpot company properties."""
 
 from typing import Any, Dict, List
 
@@ -9,13 +9,13 @@ from .base import BaseTool
 
 
 class CompanyPropertiesTool(BaseTool):
-    """Outil pour récupérer les propriétés des entreprises HubSpot."""
+    """Tool to retrieve HubSpot company properties."""
 
     def get_tool_definition(self) -> types.Tool:
-        """Retourne la définition de l'outil propriétés d'entreprises."""
+        """Return the company properties tool definition."""
         return types.Tool(
             name="get_hubspot_company_properties",
-            description="Récupère la liste des propriétés disponibles pour les entreprises HubSpot avec leurs types et descriptions",
+            description="Retrieves the list of available properties for HubSpot companies with their types and descriptions",
             inputSchema={
                 "type": "object",
                 "properties": {},
@@ -24,7 +24,7 @@ class CompanyPropertiesTool(BaseTool):
         )
 
     async def execute(self, arguments: Dict[str, Any]) -> List[types.TextContent]:
-        """Exécute la récupération des propriétés des entreprises."""
+        """Execute company properties retrieval."""
         try:
             properties = await self.client.get_company_properties()
             formatted_result = HubSpotFormatter.format_company_properties(properties)

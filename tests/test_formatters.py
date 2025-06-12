@@ -181,37 +181,37 @@ def test_format_contact_properties():
     properties_data = [
         {
             "name": "firstname",
-            "label": "Prénom",
+            "label": "First Name",
             "type": "string",
             "fieldType": "text",
             "groupName": "contactinformation",
-            "description": "Le prénom du contact",
+            "description": "The contact's first name",
         },
         {
             "name": "email",
-            "label": "Adresse e-mail",
+            "label": "Email Address",
             "type": "string",
             "fieldType": "text",
             "groupName": "contactinformation",
-            "description": "L'adresse e-mail du contact",
+            "description": "The contact's email address",
         },
         {
             "name": "birthdate",
-            "label": "Date de naissance",
+            "label": "Birth Date",
             "type": "date",
             "fieldType": "date",
             "groupName": "demographic_information",
         },
         {
             "name": "industry",
-            "label": "Secteur d'activité",
+            "label": "Industry",
             "type": "enumeration",
             "fieldType": "select",
             "groupName": "company_information",
             "options": [
-                {"label": "Technologie", "value": "TECHNOLOGY"},
+                {"label": "Technology", "value": "TECHNOLOGY"},
                 {"label": "Finance", "value": "FINANCE"},
-                {"label": "Santé", "value": "HEALTHCARE"},
+                {"label": "Healthcare", "value": "HEALTHCARE"},
             ],
         },
     ]
@@ -220,15 +220,15 @@ def test_format_contact_properties():
 
     assert "🔧 **HubSpot Contact Properties** (4 properties)" in result
     assert "## 📁 contactinformation" in result
-    assert "**📝 Prénom**" in result
+    assert "**📝 First Name**" in result
     assert "`firstname`" in result
-    assert "**📧 Adresse e-mail**" in result
+    assert "**📧 Email Address**" in result
     assert "`email`" in result
     assert "## 📁 demographic_information" in result
-    assert "**📅 Date de naissance**" in result
+    assert "**📅 Birth Date**" in result
     assert "## 📁 company_information" in result
-    assert "**📋 Secteur d'activité**" in result
-    assert "Technologie, Finance, Santé" in result
+    assert "**📋 Industry**" in result
+    assert "Technology, Finance, Healthcare" in result
 
 
 def test_format_contact_properties_empty():
@@ -244,7 +244,7 @@ def test_format_contact_properties_minimal():
     properties_data = [
         {
             "name": "custom_field",
-            "label": "Champ personnalisé",
+            "label": "Custom Field",
             "type": "string",
             "fieldType": "text",
         }
@@ -254,7 +254,7 @@ def test_format_contact_properties_minimal():
 
     assert "🔧 **HubSpot Contact Properties** (1 properties)" in result
     assert "## 📁 Other" in result
-    assert "**📝 Champ personnalisé**" in result
+    assert "**📝 Custom Field**" in result
     assert "`custom_field`" in result
 
 
@@ -304,31 +304,31 @@ def test_format_company_properties():
     assert "## 📁 companyinformation" in result
     assert "## 📁 business_information" in result
     assert "## 📁 financial_information" in result
-    assert "**🏢 Nom de l'entreprise**" in result
-    assert "**🌐 Domaine web**" in result
-    assert "**📋 Secteur d'activité**" in result
-    assert "**🔢 Chiffre d'affaires annuel**" in result
+    assert "**🏢 Company Name**" in result
+    assert "**🌐 Website Domain**" in result
+    assert "**📋 Industry**" in result
+    assert "**🔢 Annual Revenue**" in result
     assert "`name`" in result
     assert "`domain`" in result
-    assert "Le nom de l'entreprise" in result
-    assert "Le domaine web de l'entreprise" in result
-    assert "Technologie, Finance, Santé" in result
+    assert "The company name" in result
+    assert "The company website domain" in result
+    assert "Technology, Finance, Healthcare" in result
 
 
 def test_format_company_properties_empty():
-    """Test du formatage des propriétés d'entreprises avec liste vide."""
+    """Test company properties formatting with empty list."""
     result = HubSpotFormatter.format_company_properties([])
 
-    assert "❌ **Aucune propriété trouvée**" in result
-    assert "Impossible de récupérer les propriétés des entreprises" in result
+    assert "❌ **No properties found**" in result
+    assert "Unable to retrieve company properties" in result
 
 
 def test_format_company_properties_minimal():
-    """Test du formatage des propriétés d'entreprises avec données minimales."""
+    """Test company properties formatting with minimal data."""
     properties_data = [
         {
-            "name": "custom_company_field",
-            "label": "Champ personnalisé entreprise",
+            "name": "custom_field",
+            "label": "Custom Company Field",
             "type": "string",
             "fieldType": "text",
         }
@@ -336,7 +336,7 @@ def test_format_company_properties_minimal():
 
     result = HubSpotFormatter.format_company_properties(properties_data)
 
-    assert "🏢 **Propriétés des Entreprises HubSpot** (1 propriétés)" in result
-    assert "## 📁 Autres" in result  # Groupe par défaut
-    assert "**📝 Champ personnalisé entreprise**" in result
-    assert "`custom_company_field`" in result
+    assert "🏢 **HubSpot Company Properties** (1 properties)" in result
+    assert "## 📁 Other" in result
+    assert "**📝 Custom Company Field**" in result
+    assert "`custom_field`" in result
