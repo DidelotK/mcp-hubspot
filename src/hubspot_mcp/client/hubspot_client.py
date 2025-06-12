@@ -142,3 +142,15 @@ class HubSpotClient:
             response.raise_for_status()
             data = response.json()
             return data.get("results", [])
+
+    async def create_deal(self, deal_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Crée une nouvelle transaction (deal) dans HubSpot."""
+        url = f"{self.base_url}/crm/v3/objects/deals"
+
+        # Structure des données pour HubSpot
+        payload = {"properties": deal_data}
+
+        async with httpx.AsyncClient() as client:
+            response = await client.post(url, headers=self.headers, json=payload)
+            response.raise_for_status()
+            return response.json()

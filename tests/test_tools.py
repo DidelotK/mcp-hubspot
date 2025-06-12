@@ -408,7 +408,7 @@ async def test_create_deal_tool_execute():
         assert isinstance(result, list)
         assert len(result) == 1
         assert isinstance(result[0], TextContent)
-        assert "✅ Transaction créée avec succès" in result[0].text
+        assert "✅ **Transaction créée avec succès" in result[0].text
         assert "New Test Deal" in result[0].text
 
 
@@ -434,7 +434,7 @@ async def test_create_deal_tool_minimal():
 
         assert isinstance(result, list)
         assert len(result) == 1
-        assert "✅ Transaction créée avec succès" in result[0].text
+        assert "✅ **Transaction créée avec succès" in result[0].text
         assert "Minimal Deal" in result[0].text
 
 
