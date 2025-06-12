@@ -48,3 +48,33 @@ class HubSpotFormatter:
             result += f"  🆔 ID: {company.get('id')}\n\n"
 
         return result
+
+    @staticmethod
+    def format_deals(deals: List[Dict[str, Any]]) -> str:
+        """Formate la liste des transactions pour l'affichage."""
+        result = f"💰 **Transactions HubSpot** ({len(deals)} trouvées)\n\n"
+
+        for deal in deals:
+            props = deal.get("properties", {})
+            amount = props.get("amount", "0")
+            
+            # Formatage du montant si disponible
+            if amount and amount != "0":
+                try:
+                    amount_float = float(amount)
+                    amount_formatted = f"{amount_float:,.2f} €"
+                except (ValueError, TypeError):
+                    amount_formatted = f"{amount} €"
+            else:
+                amount_formatted = "N/A"
+
+            result += f"**{props.get('dealname', 'Transaction sans nom')}**\n"
+            result += f"  💰 Montant: {amount_formatted}\n"
+            result += f"  📊 Étape: {props.get('dealstage', 'N/A')}\n"
+            result += f"  🔄 Pipeline: {props.get('pipeline', 'N/A')}\n"
+            result += f"  📅 Date de clôture: {props.get('closedate', 'N/A')}\n"
+            result += f"  📅 Créée: {props.get('createdate', 'N/A')}\n"
+            result += f"  👤 Propriétaire: {props.get('hubspot_owner_id', 'N/A')}\n"
+            result += f"  🆔 ID: {deal.get('id')}\n\n"
+
+        return result

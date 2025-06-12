@@ -63,3 +63,25 @@ class HubSpotClient:
             response.raise_for_status()
             data = response.json()
             return data.get("results", [])
+
+    async def get_deals(
+        self, limit: int = 100, filters: Optional[Dict] = None
+    ) -> List[Dict]:
+        """Récupère la liste des transactions (deals) avec filtrage optionnel."""
+        url = f"{self.base_url}/crm/v3/objects/deals"
+
+        params = {
+            "limit": limit,
+            "properties": "dealname,amount,dealstage,pipeline,closedate,createdate,lastmodifieddate,hubspot_owner_id",
+        }
+
+        # Ajouter des filtres si fournis
+        if filters:
+            if "search" in filters:
+                params["search"] = filters["search"]
+
+        async with httpx.AsyncClient() as client:
+            response = await client.get(url, headers=self.headers, params=params)
+            response.raise_for_status()
+            data = response.json()
+            return data.get("results", [])
