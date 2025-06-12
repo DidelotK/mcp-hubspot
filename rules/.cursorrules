@@ -1,0 +1,43 @@
+# Règles de développement pour Cursor
+
+## Conventions de Commit
+TOUJOURS utiliser le format Semantic Versioning pour les commits :
+
+Format : `<type>: <description>`
+
+Types autorisés :
+- feat: nouvelle fonctionnalité
+- fix: correction de bug  
+- docs: documentation seulement
+- style: formatage, pas de changement logique
+- refactor: refactoring sans ajout/suppression de fonctionnalité
+- test: ajout/modification de tests
+- chore: maintenance, dépendances
+- ci: configuration CI/CD
+- perf: amélioration performance
+- build: système de build
+- revert: annulation commit
+
+## Règles Python
+- Respecter PEP 8
+- Utiliser type hints
+- Tests unitaires obligataires pour nouvelles fonctionnalités
+- Utiliser pytest pour les tests
+- Coverage minimum 80%
+
+## Structure du projet
+- Code source dans `src/`
+- Tests dans `tests/`
+- Configuration dans `pyproject.toml`
+- Dépendances gérées avec `uv`
+
+## Workflow
+1. Créer une branche feature
+2. Développer avec tests
+3. Exécuter les tests localement
+4. Commit avec message semantic
+5. Push et créer PR
+6. CI doit passer avant merge
+
+## Réponses en français
+Toujours répondre en français selon les règles utilisateur. 
