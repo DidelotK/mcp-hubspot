@@ -1,38 +1,39 @@
 #!/usr/bin/env python3
 """
-Point d'entrée principal du serveur MCP HubSpot.
+HubSpot MCP Server
+
+This server provides Model Context Protocol (MCP) tools to interact with HubSpot CRM.
+It allows accessing contacts, companies, and deals through conversational tools.
 """
 
 import argparse
 import asyncio
 import logging
+from pathlib import Path
 
 import mcp.server.sse
 import mcp.server.stdio
+import mcp.types as types
 from mcp.server import NotificationOptions, Server
 from mcp.server.models import InitializationOptions
 
 from src.hubspot_mcp.client import HubSpotClient
-from src.hubspot_mcp.config import Settings
 from src.hubspot_mcp.server import MCPHandlers
 
-# Configuration du logging
+# Configure logging
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger("hubspot-mcp-server")
+logger = logging.getLogger(__name__)
 
 
 def parse_arguments():
-    """Parse les arguments de ligne de commande."""
+    """Parse command line arguments."""
     parser = argparse.ArgumentParser(
-        description="Serveur MCP HubSpot",
+        description="HubSpot MCP Server",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
-Exemples d'utilisation:
-  # Mode stdio (défaut)
-  python main.py --mode stdio
-  
-  # Mode SSE
-  python main.py --mode sse --host 127.0.0.1 --port 8080
+Examples:
+  %(prog)s --mode stdio                    # For Claude Desktop
+  %(prog)s --mode sse --port 8080         # For web clients
         """,
     )
 
@@ -40,81 +41,67 @@ Exemples d'utilisation:
         "--mode",
         choices=["stdio", "sse"],
         default="stdio",
-        help="Mode de transport du serveur (défaut: stdio)",
+        help="Server communication mode (default: stdio)",
     )
 
     parser.add_argument(
         "--host",
-        default="127.0.0.1",
-        help="Adresse d'écoute pour le mode SSE (défaut: 127.0.0.1)",
+        default="localhost",
+        help="Host to bind SSE server (default: localhost)",
     )
 
     parser.add_argument(
         "--port",
         type=int,
         default=8080,
-        help="Port d'écoute pour le mode SSE (défaut: 8080)",
+        help="Port for SSE server (default: 8080)",
     )
 
     return parser.parse_args()
 
 
 async def main():
-    """Point d'entrée principal du serveur."""
-    # Parse des arguments
+    """Main entry point for the HubSpot MCP server."""
     args = parse_arguments()
 
-    # Chargement de la configuration
-    settings = Settings()
+    # Create server
+    server = Server("hubspot-mcp-server")
 
-    # Validation de la configuration
-    if not settings.validate():
-        missing = settings.get_missing_config()
-        logger.error(f"Configuration manquante: {', '.join(missing)}")
-        return
+    # Create HubSpot client
+    hubspot_client = HubSpotClient()
 
-    # Initialisation du client HubSpot
-    hubspot_client = HubSpotClient(settings.hubspot_api_key)
-    logger.info("Client HubSpot initialisé")
+    # Create MCP handlers
+    handlers = MCPHandlers(server, hubspot_client)
 
-    # Initialisation des handlers
-    handlers = MCPHandlers(hubspot_client)
+    # Register handlers
+    handlers.register_handlers()
 
-    # Initialisation du serveur MCP
-    server = Server(settings.server_name)
-
-    # Enregistrement des handlers
-    @server.list_tools()
-    async def handle_list_tools():
-        return await handlers.handle_list_tools()
-
-    @server.call_tool()
-    async def handle_call_tool(name: str, arguments: dict):
-        return await handlers.handle_call_tool(name, arguments)
-
-    # Options d'initialisation
-    init_options = InitializationOptions(
-        server_name=settings.server_name,
-        server_version=settings.server_version,
+    # Initialize server options
+    server_options = InitializationOptions(
+        server_name="hubspot-mcp-server",
+        server_version="1.0.0",
         capabilities=server.get_capabilities(
             notification_options=NotificationOptions(),
             experimental_capabilities={},
         ),
     )
 
-    # Démarrage du serveur selon le mode choisi
+    # Start server based on selected mode
     if args.mode == "stdio":
-        logger.info("Démarrage du serveur en mode stdio")
+        logger.info("Starting server in stdio mode")
         async with mcp.server.stdio.stdio_server() as (read_stream, write_stream):
-            await server.run(read_stream, write_stream, init_options)
-
-    elif args.mode == "sse":
-        logger.info(f"Démarrage du serveur en mode SSE sur {args.host}:{args.port}")
-        async with mcp.server.sse.sse_server(
-            host=args.host, port=args.port
-        ) as sse_server:
-            await server.run_sse(sse_server, init_options)
+            await server.run(read_stream, write_stream, server_options)
+    else:  # SSE mode
+        logger.info(f"Starting server in SSE mode on {args.host}:{args.port}")
+        async with mcp.server.sse.sse_server(args.host, args.port) as server_sse:
+            await server.run_sse(server_sse, server_options)
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        logger.info("Server stopped by user")
+    except Exception as e:
+        logger.error(f"Server error: {e}")
+        raise

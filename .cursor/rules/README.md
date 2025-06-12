@@ -1,50 +1,50 @@
-# Organisation des Règles Cursor
+# Cursor Rules Organization
 
-Ce dossier contient les règles de développement organisées par thématique pour une meilleure maintenabilité.
+This folder contains development rules organized by topic for better maintainability.
 
-## 📁 Structure des règles
+## 📁 Rules Structure
 
 ### 🔧 [commit-conventions.md](./commit-conventions.md)
-Conventions strictes pour les messages de commit semantic versioning
-- Types de commits autorisés
-- Format obligatoire
-- Exemples et contre-exemples
+Strict conventions for semantic versioning commit messages
+- Allowed commit types
+- Required format
+- Examples and counter-examples
 
 ### 🐍 [python-standards.md](./python-standards.md)
-Standards et bonnes pratiques Python
-- Règles de codage (PEP 8, type hints)
-- Configuration des tests (pytest)
-- Outils recommandés
+Python standards and best practices
+- Coding rules (PEP 8, type hints)
+- Test configuration (pytest)
+- Recommended tools
 
 ### 🏗️ [project-structure.md](./project-structure.md)
-Organisation et structure du projet
-- Arborescence des dossiers
-- Conventions de nommage
-- Fichiers de configuration
+Project organization and structure
+- Folder hierarchy
+- Naming conventions
+- Configuration files
 
 ### 🔄 [development-workflow.md](./development-workflow.md)
-Processus de développement et workflow Git
-- Étapes de développement
-- Règles de branching
-- Processus CI/CD
+Development process and Git workflow
+- Development steps
+- Branching rules
+- CI/CD process
 
 ### 🤖 [cursor-behavior.md](./cursor-behavior.md)
-Comportement spécifique de l'assistant Cursor
-- Règles de communication
-- Priorités d'action
-- Interdictions strictes
+Specific behavior for Cursor assistant
+- Communication rules
+- Action priorities
+- Strict prohibitions
 
 ### 🛠️ [mcp-tools-conventions.md](./mcp-tools-conventions.md)
-Conventions spécifiques aux tools MCP HubSpot
-- Structure de fichiers obligatoire
-- Standards techniques et nommage
-- Process de développement et tests
-- Checklist qualité complète
+Conventions specific to HubSpot MCP tools
+- Required file structure
+- Technical standards and naming
+- Development and testing process
+- Complete quality checklist
 
-## 🎯 Utilisation
-Cursor lira automatiquement tous ces fichiers pour appliquer les règles correspondantes lors du développement. Cette organisation modulaire permet :
+## 🎯 Usage
+Cursor will automatically read all these files to apply corresponding rules during development. This modular organization allows:
 
-- ✅ **Maintenance facile** : Modification d'une règle dans un seul fichier
-- ✅ **Lisibilité** : Règles organisées par thématique
-- ✅ **Évolutivité** : Ajout facile de nouvelles catégories
-- ✅ **Cohérence** : Standards appliqués de façon systématique 
+- ✅ **Easy maintenance**: Modify a rule in a single file
+- ✅ **Readability**: Rules organized by topic
+- ✅ **Scalability**: Easy addition of new categories
+- ✅ **Consistency**: Standards applied systematically 

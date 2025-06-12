@@ -1,14 +1,14 @@
-# Conventions de Développement des Tools MCP HubSpot
+# HubSpot MCP Tools Development Conventions
 
-## Règles obligatoires pour chaque nouveau tool
+## Mandatory Rules for Each New Tool
 
-### 📋 Structure de fichiers requise
+### 📋 Required File Structure
 
-Pour chaque nouveau tool `{entity}` (ex: contacts, companies, deals) :
+For each new tool `{entity}` (e.g., contacts, companies, deals):
 
-#### 1. **Fichier Tool** : `src/hubspot_mcp/tools/{entity}.py`
+#### 1. **Tool File**: `src/hubspot_mcp/tools/{entity}.py`
 ```python
-"""Outil MCP pour gérer les {entity} HubSpot."""
+"""MCP tool for managing HubSpot {entity}."""
 
 from typing import Any, Dict, List
 import mcp.types as types
@@ -16,101 +16,101 @@ from ..formatters import HubSpotFormatter
 from .base import BaseTool
 
 class {Entity}Tool(BaseTool):
-    """Outil pour lister les {entity} HubSpot."""
+    """Tool for listing HubSpot {entity}."""
     
     def get_tool_definition(self) -> types.Tool:
-        # OBLIGATOIRE: Définition avec schema JSON complet
+        # MANDATORY: Definition with complete JSON schema
         
     async def execute(self, arguments: Dict[str, Any]) -> List[types.TextContent]:
-        # OBLIGATOIRE: Implémentation avec gestion d'erreurs
+        # MANDATORY: Implementation with error handling
 ```
 
-#### 2. **Méthode Client** : `src/hubspot_mcp/client/hubspot_client.py`
+#### 2. **Client Method**: `src/hubspot_mcp/client/hubspot_client.py`
 ```python
 async def get_{entity}(self, limit: int = 100, filters: Optional[Dict] = None) -> List[Dict]:
-    """Récupère la liste des {entity} avec filtrage optionnel."""
-    # OBLIGATOIRE: URL API, propriétés, gestion filtres
+    """Retrieves the list of {entity} with optional filtering."""
+    # MANDATORY: API URL, properties, filter handling
 ```
 
-#### 3. **Formatter** : `src/hubspot_mcp/formatters/hubspot_formatter.py`
+#### 3. **Formatter**: `src/hubspot_mcp/formatters/hubspot_formatter.py`
 ```python
 @staticmethod
 def format_{entity}({entity}: List[Dict[str, Any]]) -> str:
-    """Formate la liste des {entity} pour l'affichage."""
-    # OBLIGATOIRE: Formatage avec emojis, titre, propriétés structurées
+    """Formats the list of {entity} for display."""
+    # MANDATORY: Formatting with emojis, title, structured properties
 ```
 
-### 🧪 Tests obligatoires
+### 🧪 Mandatory Tests
 
-#### 1. **Tests unitaires** : `tests/test_tools.py`
-- Test d'exécution basique
-- Test avec filtres
-- Test de gestion d'erreur
-- Test de définition du tool
+#### 1. **Unit tests**: `tests/test_tools.py`
+- Basic execution test
+- Test with filters
+- Error handling test
+- Tool definition test
 
-#### 2. **Tests de formatage** : `tests/test_formatters.py`
-- Test avec données complètes
-- Test avec données partielles
-- Test avec liste vide
-- Test avec données invalides
+#### 2. **Formatting tests**: `tests/test_formatters.py`
+- Test with complete data
+- Test with partial data
+- Test with empty list
+- Test with invalid data
 
-### 📚 Documentation obligatoire
+### 📚 Mandatory Documentation
 
-#### 1. **README.md - Section "Outils disponibles"**
+#### 1. **README.md - "Available Tools" Section**
 ```markdown
 ### list_hubspot_{entity}
 
-Liste les {entity} HubSpot avec possibilité de filtrage.
+Lists HubSpot {entity} with filtering capability.
 
-Paramètres :
-- limit (optionnel) : Nombre maximum de {entity} à retourner (défaut: 100, max: 1000)
-- filters (optionnel) : Objet contenant les filtres de recherche
-  - search : Terme de recherche pour filtrer les {entity}
+Parameters:
+- limit (optional): Maximum number of {entity} to return (default: 100, max: 1000)
+- filters (optional): Object containing search filters
+  - search: Search term to filter {entity}
 
-Propriétés retournées pour chaque {entity} :
-- [OBLIGATOIRE: Lister toutes les propriétés avec descriptions]
+Properties returned for each {entity}:
+- [MANDATORY: List all properties with descriptions in English]
 ```
 
-#### 2. **README.md - Section "Exemples d'utilisation"**
+#### 2. **README.md - "Usage Examples" Section**
 ```markdown
-Lister tous les {entity} :
-Appel de l'outil list_hubspot_{entity} sans paramètres
+List all {entity}:
+Call list_hubspot_{entity} tool without parameters
 
-Lister les X premiers {entity} :
-Appel de l'outil list_hubspot_{entity} avec limit: X
+List first X {entity}:
+Call list_hubspot_{entity} tool with limit: X
 
-Rechercher des {entity} par terme :
-Appel de l'outil list_hubspot_{entity} avec filters: {"search": "terme"}
+Search {entity} by term:
+Call list_hubspot_{entity} tool with filters: {"search": "term"}
 ```
 
-### 🔧 Standards techniques
+### 🔧 Technical Standards
 
-#### 1. **Nommage obligatoire**
+#### 1. **Mandatory Naming**
 - Tool name: `list_hubspot_{entity}`
 - Class name: `{Entity}Tool`
 - Client method: `get_{entity}`
 - Formatter method: `format_{entity}`
 - Test functions: `test_{entity}_*`
 
-#### 2. **Schéma JSON requis**
+#### 2. **Required JSON Schema**
 ```python
 {
     "type": "object",
     "properties": {
         "limit": {
             "type": "integer",
-            "description": "Nombre maximum de {entity} à retourner (défaut: 100)",
+            "description": "Maximum number of {entity} to return (default: 100)",
             "default": 100,
             "minimum": 1,
             "maximum": 1000,
         },
         "filters": {
             "type": "object",
-            "description": "Filtres optionnels pour la recherche",
+            "description": "Optional filters for search",
             "properties": {
                 "search": {
                     "type": "string",
-                    "description": "Terme de recherche pour filtrer les {entity}",
+                    "description": "Search term to filter {entity}",
                 }
             },
             "additionalProperties": False,
@@ -120,88 +120,114 @@ Appel de l'outil list_hubspot_{entity} avec filters: {"search": "terme"}
 }
 ```
 
-#### 3. **Propriétés API HubSpot standards**
-Toujours inclure :
-- `createdate` : Date de création
-- `lastmodifieddate` : Date de dernière modification  
-- `id` : Identifiant unique
+#### 3. **Standard HubSpot API Properties**
+Always include:
+- `createdate`: Creation date
+- `lastmodifieddate`: Last modification date  
+- `id`: Unique identifier
 
-#### 4. **Formatage d'affichage**
+#### 4. **Display Formatting**
 ```python
-result = f"🎯 **{Entity.title()} HubSpot** ({len(data)} trouvé(e)s)\n\n"
+result = f"🎯 **HubSpot {Entity.title()}** ({len(data)} found)\n\n"
 
 for item in data:
     props = item.get("properties", {})
-    result += f"**{props.get('name', 'Nom non spécifié')}**\n"
-    # [Propriétés spécifiques avec emojis]
+    result += f"**{props.get('name', 'Name not specified')}**\n"
+    # [Specific properties with emojis]
     result += f"  🆔 ID: {item.get('id')}\n\n"
 ```
 
-### 📝 Processus de développement
+### 📝 Development Process
 
-#### 1. **Ordre de développement**
-1. Créer la méthode client (`get_{entity}`)
-2. Créer le formatter (`format_{entity}`)
-3. Créer la classe tool (`{Entity}Tool`)
-4. Enregistrer dans `__init__.py` et `handlers.py`
-5. Écrire les tests unitaires
-6. Mettre à jour la documentation README
+#### 1. **Development Order**
+1. Create client method (`get_{entity}`)
+2. Create formatter (`format_{entity}`)
+3. Create tool class (`{Entity}Tool`)
+4. Register in `__init__.py` and `handlers.py`
+5. Write unit tests
+6. Update README documentation
 
-#### 2. **Tests avant commit**
+#### 2. **Tests Before Commit**
 ```bash
-# Tests obligatoires
+# Mandatory tests
 uv run pytest tests/ --cov=src --cov-report=term-missing -v
 
-# Couverture minimum requise: 90%
-# Tous les tests doivent passer
+# Required minimum coverage: 90%
+# All tests must pass
 ```
 
-#### 3. **Commits semantic**
+#### 3. **Semantic Commits**
 ```bash
 git commit -m "feat: add {entity} tool with HubSpot API integration"
 git commit -m "test: add comprehensive unit tests for {entity} tool"
 git commit -m "docs: update README with {entity} tool documentation"
 ```
 
-### ✅ Checklist pour nouveau tool
+### ✅ Checklist for New Tool
 
-Avant de considérer un tool comme terminé :
+Before considering a tool complete:
 
-**Code :**
-- [ ] Classe `{Entity}Tool` héritant de `BaseTool`
-- [ ] Méthode `get_{entity}` dans `HubSpotClient`
-- [ ] Méthode `format_{entity}` dans `HubSpotFormatter`
-- [ ] Enregistrement dans `tools/__init__.py`
-- [ ] Enregistrement dans `server/handlers.py`
-- [ ] Schéma JSON complet avec validation
+**Code:**
+- [ ] `{Entity}Tool` class inheriting from `BaseTool`
+- [ ] `get_{entity}` method in `HubSpotClient`
+- [ ] `format_{entity}` method in `HubSpotFormatter`
+- [ ] Registration in `tools/__init__.py`
+- [ ] Registration in `server/handlers.py`
+- [ ] Complete JSON schema with validation
 
-**Tests :**
-- [ ] Test d'exécution normale
-- [ ] Test avec filtres de recherche
-- [ ] Test de gestion d'erreurs API
-- [ ] Test de formatage avec données variées
-- [ ] Couverture ≥ 90%
+**Tests:**
+- [ ] Normal execution test
+- [ ] Search filter test
+- [ ] API error handling test
+- [ ] Formatting test with varied data
+- [ ] Coverage ≥ 90%
 
-**Documentation :**
-- [ ] Section tool dans README.md
-- [ ] Exemples d'utilisation dans README.md
-- [ ] Mise à jour description principale
-- [ ] Docstrings en français sur toutes les méthodes
+**Documentation:**
+- [ ] Tool section in README.md (in English)
+- [ ] Usage examples in README.md (in English)
+- [ ] Main description update (in English)
+- [ ] English docstrings on all methods
 
-**Qualité :**
-- [ ] Respect PEP 8 et conventions projet
-- [ ] Type hints sur toutes les fonctions
-- [ ] Gestion d'erreurs robuste
-- [ ] Messages d'erreur en français
-- [ ] Formatage utilisateur avec emojis
+**Quality:**
+- [ ] Respect PEP 8 and project conventions
+- [ ] Type hints on all functions
+- [ ] Robust error handling
+- [ ] English error messages
+- [ ] User formatting with emojis
 
-### 🚨 Règles strictes
+### 🚨 Strict Rules
 
-- ❌ **Jamais** créer un tool sans tests complets
-- ❌ **Jamais** omettre la documentation README
-- ❌ **Jamais** utiliser des noms différents des conventions
-- ❌ **Jamais** commit sans vérifier la couverture de tests
-- ✅ **Toujours** suivre l'ordre de développement
-- ✅ **Toujours** utiliser les emojis dans le formatage
-- ✅ **Toujours** inclure des exemples d'utilisation
-- ✅ **Toujours** tester les cas d'erreur 
+- ❌ **NEVER** create a tool without complete tests
+- ❌ **NEVER** omit README documentation
+- ❌ **NEVER** use names different from conventions
+- ❌ **NEVER** commit without checking test coverage
+- ❌ **NEVER** use French in code, comments, or documentation
+- ❌ **NEVER** create French error messages or user output
+- ✅ **ALWAYS** follow development order
+- ✅ **ALWAYS** use emojis in formatting
+- ✅ **ALWAYS** include usage examples
+- ✅ **ALWAYS** test error cases
+- ✅ **ALWAYS** write everything in English
+
+### 🌍 English-Only Policy
+
+**All Code Elements:**
+- ✅ Function names, variable names, class names in English
+- ✅ Comments and docstrings in English
+- ✅ Error messages in English
+- ✅ User-facing output in English
+- ✅ Documentation in English
+
+**Development Communication:**
+- ✅ Commit messages in English
+- ✅ PR descriptions in English
+- ✅ Code review comments in English
+- ✅ Issue descriptions in English
+
+**Documentation:**
+- ✅ README sections in English
+- ✅ API documentation in English
+- ✅ Usage examples in English
+- ✅ Tool descriptions in English
+
+This ensures consistency, international collaboration, and professional standards across the entire project. 

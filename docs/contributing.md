@@ -1,39 +1,39 @@
-# Guide de contribution
+# Contributing Guide
 
-## Conventions de développement
+## Development Conventions
 
-Ce projet suit des conventions strictes pour maintenir la cohérence et la qualité du code. Consultez le fichier `.cursor/rules/mcp-tools-conventions.md` pour les détails complets.
+This project follows strict conventions to maintain code consistency and quality. Check the `.cursor/rules/mcp-tools-conventions.md` file for complete details.
 
-## Structure d'un nouvel outil MCP
+## Structure for a New MCP Tool
 
 ### 1. Client (`src/hubspot_mcp/client.py`)
 
-Ajoutez une méthode dans la classe `HubSpotClient` :
+Add a method in the `HubSpotClient` class:
 
 ```python
 async def get_new_resource(self, limit: int = 100, filters: dict = None) -> List[dict]:
-    """Récupère les nouvelles ressources depuis HubSpot."""
-    # Implémentation avec gestion d'erreurs
+    """Retrieves new resources from HubSpot."""
+    # Implementation with error handling
     pass
 ```
 
 ### 2. Formatter (`src/hubspot_mcp/formatters.py`)
 
-Créez une fonction de formatage :
+Create a formatting function:
 
 ```python
 def format_new_resources(resources: List[dict]) -> str:
-    """Formate la liste des nouvelles ressources pour affichage."""
+    """Formats the list of new resources for display."""
     if not resources:
-        return "❌ **Aucune ressource trouvée**"
+        return "❌ **No resources found**"
     
-    # Formatage avec emojis et structure cohérente
+    # Formatting with emojis and consistent structure
     pass
 ```
 
 ### 3. Tool (`src/hubspot_mcp/tools/`)
 
-Créez un nouveau fichier `new_resource_tool.py` :
+Create a new file `new_resource_tool.py`:
 
 ```python
 from mcp.types import Tool
@@ -48,13 +48,13 @@ class NewResourceTool:
     def definition(self) -> Tool:
         return Tool(
             name="list_hubspot_new_resources",
-            description="Description claire de l'outil",
+            description="Clear description of the tool",
             inputSchema={
                 "type": "object",
                 "properties": {
                     "limit": {
                         "type": "integer",
-                        "description": "Nombre maximum à récupérer",
+                        "description": "Maximum number to retrieve",
                         "default": 100
                     }
                 }
@@ -62,126 +62,126 @@ class NewResourceTool:
         )
     
     async def execute(self, limit: int = 100, filters: dict = None) -> str:
-        # Implémentation avec gestion d'erreurs
+        # Implementation with error handling
         pass
 ```
 
-### 4. Enregistrement
+### 4. Registration
 
-Mettez à jour `src/hubspot_mcp/__init__.py` et `src/hubspot_mcp/handlers.py`.
+Update `src/hubspot_mcp/__init__.py` and `src/hubspot_mcp/handlers.py`.
 
 ### 5. Tests
 
-Créez des tests dans `tests/` avec au minimum :
-- Test d'exécution normale
-- Test de gestion d'erreur
-- Test de formatage
+Create tests in `tests/` with at minimum:
+- Normal execution test
+- Error handling test
+- Formatting test
 
 ### 6. Documentation
 
-Mettez à jour `docs/api-reference.md` avec la documentation complète.
+Update `docs/api-reference.md` with complete documentation.
 
-## Processus de développement
+## Development Process
 
-### 1. Préparation
+### 1. Preparation
 
 ```bash
-# Cloner et installer
+# Clone and install
 git clone <repo>
 cd hubspot-mcp-server
 uv sync
 
-# Installer les hooks Git (recommandé)
+# Install Git hooks (recommended)
 ./scripts/install_hooks.sh
 
-# Créer une branche
-git checkout -b feature/nouveau-tool
+# Create a branch
+git checkout -b feature/new-tool
 ```
 
-### 2. Développement
+### 2. Development
 
-1. **Implémentation** : Suivre la structure ci-dessus
-2. **Tests** : Écrire les tests avant ou pendant le développement
-3. **Documentation** : Mettre à jour la documentation
+1. **Implementation**: Follow the structure above
+2. **Tests**: Write tests before or during development
+3. **Documentation**: Update documentation
 
 ### 3. Validation
 
 ```bash
-# Vérification complète de la qualité (recommandé)
+# Complete quality check (recommended)
 ./scripts/check_quality.sh
 
-# Ou vérifications individuelles :
-# Lancer les tests
+# Or individual checks:
+# Run tests
 uv run pytest
 
-# Vérifier la couverture
+# Check coverage
 uv run pytest --cov=src --cov-report=html
 
-# Formatage du code
+# Code formatting
 uv run black src/ main.py tests/ scripts/
 uv run isort src/ main.py tests/ scripts/
 
-# Analyse statique
+# Static analysis
 uv run flake8 src/ main.py tests/ scripts/
 uv run mypy src/ main.py
 
-# Rapport de qualité complet
+# Complete quality report
 uv run python scripts/lint_check.py
 ```
 
-### 4. Commit et PR
+### 4. Commit and PR
 
 ```bash
-# Commits semantic versioning
+# Semantic versioning commits
 git add .
 git commit -m "feat: add new_resource tool with HubSpot API integration"
 git commit -m "test: add comprehensive unit tests for new_resource tool"
 git commit -m "docs: update API reference with new_resource tool"
 
-# Push et PR
-git push origin feature/nouveau-tool
+# Push and PR
+git push origin feature/new-tool
 ```
 
-## Standards de qualité
+## Quality Standards
 
-### Checklist avant commit
+### Pre-commit Checklist
 
-- [ ] **Structure** : Respect de l'architecture (client/formatter/tool)
-- [ ] **Nommage** : Convention `list_hubspot_*` ou `get_*_by_*`
-- [ ] **Schéma JSON** : Propriétés avec types et descriptions
-- [ ] **Gestion d'erreurs** : Try/catch avec messages cohérents
-- [ ] **Formatage** : Emojis et structure uniforme
-- [ ] **Tests** : Couverture minimale 90%
-- [ ] **Documentation** : Section complète dans API reference
-- [ ] **Types** : Annotations de type Python
-- [ ] **Async/await** : Méthodes asynchrones
-- [ ] **Logging** : Messages informatifs appropriés
+- [ ] **Structure**: Respect architecture (client/formatter/tool)
+- [ ] **Naming**: Convention `list_hubspot_*` or `get_*_by_*`
+- [ ] **JSON Schema**: Properties with types and descriptions
+- [ ] **Error Handling**: Try/catch with consistent messages
+- [ ] **Formatting**: Emojis and uniform structure
+- [ ] **Tests**: Minimum 90% coverage
+- [ ] **Documentation**: Complete section in API reference
+- [ ] **Types**: Python type annotations
+- [ ] **Async/await**: Asynchronous methods
+- [ ] **Logging**: Appropriate informative messages
 
-### Standards de code
+### Code Standards
 
-#### Nommage des outils
-- **Liste** : `list_hubspot_[resource]` (ex: `list_hubspot_contacts`)
-- **Recherche** : `get_[resource]_by_[field]` (ex: `get_deal_by_name`)
+#### Tool Naming
+- **List**: `list_hubspot_[resource]` (e.g., `list_hubspot_contacts`)
+- **Search**: `get_[resource]_by_[field]` (e.g., `get_deal_by_name`)
 
-#### Formatage des réponses
-- **Titre** : `📋 **Ressources HubSpot** (X trouvées)`
-- **Emojis** : Cohérents par type de donnée
-- **Structure** : Nom en gras, propriétés indentées
-- **Erreurs** : `❌ **Message d'erreur**`
+#### Response Formatting
+- **Title**: `📋 **HubSpot Resources** (X found)`
+- **Emojis**: Consistent by data type
+- **Structure**: Bold name, indented properties
+- **Errors**: `❌ **Error message**`
 
-#### Gestion d'erreurs
+#### Error Handling
 ```python
 try:
-    # Appel API
+    # API call
     pass
 except Exception as e:
-    logger.error(f"Erreur lors de la récupération: {e}")
-    return f"❌ Erreur lors de la récupération des ressources: {str(e)}"
+    logger.error(f"Error during retrieval: {e}")
+    return f"❌ Error retrieving resources: {str(e)}"
 ```
 
 ## Tests
 
-### Structure des tests
+### Test Structure
 
 ```python
 import pytest
@@ -199,84 +199,84 @@ class TestNewResourceTool:
     
     @pytest.mark.asyncio
     async def test_execute_success(self, tool, mock_client):
-        # Test cas nominal
+        # Test normal case
         pass
     
     @pytest.mark.asyncio
     async def test_execute_error(self, tool, mock_client):
-        # Test gestion d'erreur
+        # Test error handling
         pass
 ```
 
-### Couverture requise
+### Required Coverage
 
-- **Minimum** : 90% de couverture globale
-- **Nouveau code** : 100% de couverture
-- **Tests obligatoires** :
-  - Exécution normale
-  - Gestion d'erreurs
-  - Formatage des données
-  - Validation des paramètres
+- **Minimum**: 90% global coverage
+- **New code**: 100% coverage
+- **Required tests**:
+  - Normal execution
+  - Error handling
+  - Data formatting
+  - Parameter validation
 
 ## Documentation
 
 ### API Reference
 
-Chaque nouvel outil doit avoir une section complète dans `docs/api-reference.md` :
+Each new tool must have a complete section in `docs/api-reference.md`:
 
 ```markdown
-## nouveau_tool
+## new_tool
 
-Description de l'outil.
+Tool description.
 
-### Paramètres
+### Parameters
 
-| Paramètre | Type | Obligatoire | Description | Défaut |
-|-----------|------|-------------|-------------|---------|
+| Parameter | Type | Required | Description | Default |
+|-----------|------|----------|-------------|---------|
 
-### Exemple d'utilisation
+### Usage Example
 
-### Réponse
+### Response
 ```
 
-### Exemples
+### Examples
 
-Ajoutez des exemples concrets dans `docs/examples.md`.
+Add concrete examples in `docs/examples.md`.
 
-## Qualité de code
+## Code Quality
 
-### Outils de vérification
+### Verification Tools
 
-Le projet utilise plusieurs outils pour maintenir la qualité :
+The project uses several tools to maintain quality:
 
-- **black** : Formatage automatique du code
-- **isort** : Tri automatique des imports
-- **flake8** : Analyse statique et style PEP 8
-- **mypy** : Vérification des types
-- **bandit** : Analyse de sécurité
-- **pytest** : Tests unitaires avec couverture
+- **black**: Automatic code formatting
+- **isort**: Automatic import sorting
+- **flake8**: Static analysis and PEP 8 style
+- **mypy**: Type checking
+- **bandit**: Security analysis
+- **pytest**: Unit tests with coverage
 
-### Scripts disponibles
+### Available Scripts
 
 ```bash
-# Vérification complète (recommandé avant commit)
+# Complete check (recommended before commit)
 ./scripts/check_quality.sh
 
-# Installation des hooks Git
+# Install Git hooks
 ./scripts/install_hooks.sh
 
-# Rapport de qualité détaillé
+# Detailed quality report
 uv run python scripts/lint_check.py
 ```
 
-### Hooks Git automatiques
+### Automatic Git Hooks
 
-Les hooks Git installés exécutent automatiquement :
+Installed Git hooks automatically execute:
 
-- **pre-commit** : Formatage, imports, analyse statique
-- **pre-push** : Tests unitaires
+- **pre-commit**: Formatting, imports, static analysis
+- **pre-push**: Unit tests
 
-Pour contourner temporairement :
+To temporarily bypass:
 ```bash
 git commit --no-verify
 git push --no-verify
@@ -284,17 +284,17 @@ git push --no-verify
 
 ### CI/CD
 
-Les vérifications de qualité s'exécutent automatiquement :
-- ✅ **Sur tous les push** vers main/develop
-- ✅ **Sur toutes les pull requests**
-- ❌ **Échec du build** si la qualité n'est pas satisfaisante
+Quality checks run automatically:
+- ✅ **On all pushes** to main/develop
+- ✅ **On all pull requests**
+- ❌ **Build failure** if quality is not satisfactory
 
-## Déploiement
+## Deployment
 
 ### Semantic Versioning
 
-- `feat:` - Nouvelle fonctionnalité
-- `fix:` - Correction de bug
+- `feat:` - New feature
+- `fix:` - Bug fix
 - `docs:` - Documentation
 - `test:` - Tests
 - `refactor:` - Refactoring
@@ -302,9 +302,9 @@ Les vérifications de qualité s'exécutent automatiquement :
 
 ### Release
 
-1. Tous les tests passent
-2. Documentation à jour
-3. Couverture de tests maintenue
-4. **Qualité de code validée**
-5. Commits semantic versioning
-6. PR reviewée et approuvée 
+1. All tests pass
+2. Documentation updated
+3. Test coverage maintained
+4. **Code quality validated**
+5. Semantic versioning commits
+6. PR reviewed and approved 

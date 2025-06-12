@@ -1,34 +1,44 @@
-# Standards Python
+# Python Standards
 
-## Règles de codage obligatoires
-- **PEP 8** : Respecter strictement le style guide Python
-- **Type hints** : Utiliser les annotations de type pour toutes les fonctions
-- **Docstrings** : Documenter les classes et fonctions publiques
-- **Snake_case** : Noms de variables et fonctions en snake_case
-- **PascalCase** : Noms de classes en PascalCase
+## Mandatory Coding Rules
+- **PEP 8**: Strictly follow Python style guide
+- **Type hints**: Use type annotations for all functions
+- **Docstrings**: Document public classes and functions in English
+- **Snake_case**: Variable and function names in snake_case
+- **PascalCase**: Class names in PascalCase
+- **English naming**: Use English names for variables, functions, and classes
 
-## Tests unitaires
-- **Obligatoires** pour toutes nouvelles fonctionnalités
-- **Framework** : pytest exclusivement
-- **Structure** : Tests dans `tests/` avec noms `test_*.py`
-- **Coverage** : Minimum 80% de couverture de code
-- **Async** : Utiliser pytest-asyncio pour les tests asynchrones
+## Unit Tests
+- **Mandatory** for all new features
+- **Framework**: pytest exclusively
+- **Structure**: Tests in `tests/` with names `test_*.py`
+- **Coverage**: Minimum 80% code coverage
+- **Async**: Use pytest-asyncio for asynchronous tests
+- **English**: Test names and descriptions in English
 
-## Imports et dépendances
-- **Ordre des imports** : standard library, third-party, local
-- **Imports absolus** préférés aux imports relatifs
-- **Gestionnaire** : `uv` pour toutes les dépendances
-- **Fichiers** : Configuration dans `pyproject.toml`
+## Imports and Dependencies
+- **Import order**: standard library, third-party, local
+- **Absolute imports** preferred over relative imports
+- **Manager**: `uv` for all dependencies
+- **Files**: Configuration in `pyproject.toml`
 
-## Bonnes pratiques
-- **Exceptions** : Capturer des exceptions spécifiques
-- **Logging** : Utiliser le module logging standard
-- **Constants** : UPPER_CASE pour les constantes
-- **Private** : Préfixer avec _ pour les méthodes privées
-- **Magic methods** : Implémenter __str__ et __repr__ si pertinent
+## Best Practices
+- **Exceptions**: Catch specific exceptions
+- **Logging**: Use standard logging module with English messages
+- **Constants**: UPPER_CASE for constants
+- **Private**: Prefix with _ for private methods
+- **Magic methods**: Implement __str__ and __repr__ if relevant
+- **Documentation**: All comments and docstrings in English
 
-## Outils recommandés
-- **black** : Formatage automatique du code
-- **isort** : Organisation des imports
-- **mypy** : Vérification des types statiques
-- **pylint/flake8** : Analyse statique du code 
+## Recommended Tools
+- **black**: Automatic code formatting
+- **isort**: Import organization
+- **mypy**: Static type checking
+- **pylint/flake8**: Static code analysis
+
+## Language Policy
+- ✅ **ALWAYS** use English for variable/function/class names
+- ✅ **ALWAYS** write docstrings in English
+- ✅ **ALWAYS** write comments in English
+- ✅ **ALWAYS** use English error messages
+- ❌ **NEVER** use French or other languages in code 

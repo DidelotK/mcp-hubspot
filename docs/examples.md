@@ -1,219 +1,219 @@
-# Exemples d'utilisation
+# Usage Examples
 
-## Exemples d'utilisation avec Claude
+## Usage Examples with Claude
 
-Une fois le serveur MCP configuré avec Claude Desktop, voici des exemples d'interactions :
+Once the MCP server is configured with Claude Desktop, here are examples of interactions:
 
-## Conversations d'exemple
+## Example Conversations
 
-### Exemple 1 : Lister les contacts
+### Example 1: List Contacts
 
-**Utilisateur :** *"Peux-tu me lister les 10 premiers contacts HubSpot ?"*
+**User:** *"Can you list the first 10 HubSpot contacts for me?"*
 
-**Claude :** *Je vais récupérer les 10 premiers contacts de votre HubSpot.*
+**Claude:** *I'll retrieve the first 10 contacts from your HubSpot.*
 
-*[Claude utilise automatiquement l'outil `list_hubspot_contacts` avec limit: 10]*
+*[Claude automatically uses the `list_hubspot_contacts` tool with limit: 10]*
 
-**Résultat affiché :**
+**Displayed Result:**
 ```
-📋 **Contacts HubSpot** (10 trouvés)
+📋 **HubSpot Contacts** (10 found)
 
 **Jean Dupont**
   📧 Email: jean.dupont@example.com
-  🏢 Entreprise: Acme Corp
-  📞 Téléphone: +33123456789
+  🏢 Company: Acme Corp
+  📞 Phone: +33123456789
   🆔 ID: 12345
 
 **Marie Martin**
   📧 Email: marie.martin@techcorp.com
-  🏢 Entreprise: TechCorp Solutions
-  📞 Téléphone: +33987654321
+  🏢 Company: TechCorp Solutions
+  📞 Phone: +33987654321
   🆔 ID: 12346
 ...
 ```
 
-### Exemple 2 : Rechercher une transaction
+### Example 2: Search for a Deal
 
-**Utilisateur :** *"Trouve-moi la transaction 'Contrat Premium 2024'"*
+**User:** *"Find me the deal 'Premium Contract 2024'"*
 
-**Claude :** *Je recherche cette transaction spécifique dans votre HubSpot.*
+**Claude:** *I'm searching for this specific deal in your HubSpot.*
 
-*[Claude utilise l'outil `get_transaction_by_name` avec deal_name: "Contrat Premium 2024"]*
+*[Claude uses the `get_deal_by_name` tool with deal_name: "Premium Contract 2024"]*
 
-**Résultat affiché :**
+**Displayed Result:**
 ```
-💰 **Transaction HubSpot**
+💰 **HubSpot Deal**
 
-**Contrat Premium 2024**
-  💰 Montant: 45,000.00 €
-  📊 Étape: proposal
+**Premium Contract 2024**
+  💰 Amount: €45,000.00
+  📊 Stage: proposal
   🔄 Pipeline: enterprise
-  📅 Date de clôture: 2024-12-31
+  📅 Close Date: 2024-12-31
   🆔 ID: 789012
 ```
 
-### Exemple 3 : Filtrer les entreprises
+### Example 3: Filter Companies
 
-**Utilisateur :** *"Montre-moi les entreprises du secteur 'technology'"*
+**User:** *"Show me the companies in the 'technology' sector"*
 
-**Claude :** *Je recherche les entreprises du secteur technologique.*
+**Claude:** *I'm searching for companies in the technology sector.*
 
-*[Claude utilise l'outil `list_hubspot_companies` avec filters: {"search": "technology"}]*
+*[Claude uses the `list_hubspot_companies` tool with filters: {"search": "technology"}]*
 
-**Résultat affiché :**
+**Displayed Result:**
 ```
-🏢 **Entreprises HubSpot** (3 trouvées)
+🏢 **HubSpot Companies** (3 found)
 
 **TechCorp Solutions**
-  🌐 Domaine: techcorp.com
-  🏭 Secteur: Technology
-  👥 Employés: 150
+  🌐 Domain: techcorp.com
+  🏭 Industry: Technology
+  👥 Employees: 150
   🆔 ID: 67890
 
 **InnovateTech**
-  🌐 Domaine: innovatetech.fr
-  🏭 Secteur: Software Technology
-  👥 Employés: 75
+  🌐 Domain: innovatetech.fr
+  🏭 Industry: Software Technology
+  👥 Employees: 75
   🆔 ID: 67891
 ```
 
-### Exemple 4 : Analyser les transactions
+### Example 4: Analyze Deals
 
-**Utilisateur :** *"Quelles sont les transactions de plus de 10 000€ ?"*
+**User:** *"What are the deals worth more than €10,000?"*
 
-**Claude :** *Je vais chercher les transactions importantes dans votre pipeline.*
+**Claude:** *I'll search for the significant deals in your pipeline.*
 
-*[Claude utilise l'outil `list_hubspot_deals` avec filters: {"amount_gte": 10000}]*
+*[Claude uses the `list_hubspot_deals` tool with filters: {"amount_gte": 10000}]*
 
 ---
 
-**Utilisateur :** *"Quelles sont les propriétés disponibles pour les contacts HubSpot ?"*
+**User:** *"What are the available properties for HubSpot contacts?"*
 
-**Claude :** *Je vais récupérer la liste des propriétés des contacts avec leurs types et descriptions.*
+**Claude:** *I'll retrieve the list of contact properties with their types and descriptions.*
 
-*[Claude utilise l'outil `get_hubspot_contact_properties`]*
+*[Claude uses the `get_hubspot_contact_properties` tool]*
 
-**Résultat affiché :**
+**Displayed Result:**
 ```
-🔧 **Propriétés des Contacts HubSpot** (405 propriétés)
+🔧 **HubSpot Contact Properties** (405 properties)
 
 ## 📁 contactinformation
 
-**📧 Adresse e-mail**
-  🏷️ Nom: `email`
+**📧 Email Address**
+  🏷️ Name: `email`
   🔧 Type: string (text)
-  📝 Description: L'adresse e-mail du contact
+  📝 Description: The contact's email address
 
-**📝 Prénom**
-  🏷️ Nom: `firstname`
+**📝 First Name**
+  🏷️ Name: `firstname`
   🔧 Type: string (text)
-  📝 Description: Le prénom du contact
+  📝 Description: The contact's first name
 
-**📞 Numéro de téléphone**
-  🏷️ Nom: `phone`
+**📞 Phone Number**
+  🏷️ Name: `phone`
   🔧 Type: string (text)
-  📝 Description: Le numéro de téléphone principal du contact
+  📝 Description: The contact's primary phone number
 
 ## 📁 demographic_information
 
-**📅 Date de naissance**
-  🏷️ Nom: `date_of_birth`
+**📅 Date of Birth**
+  🏷️ Name: `date_of_birth`
   🔧 Type: date (date)
-  📝 Description: La date de naissance du contact
+  📝 Description: The contact's date of birth
 ...
 ```
 
-## Commandes utiles pour Claude
+## Useful Commands for Claude
 
-### Recherche de contacts
-- *"Liste tous mes contacts HubSpot"*
-- *"Trouve les contacts de l'entreprise Acme"*
-- *"Cherche le contact jean.dupont@example.com"*
-- *"Affiche les 20 derniers contacts"*
+### Contact Search
+- *"List all my HubSpot contacts"*
+- *"Find contacts from Acme company"*
+- *"Search for the contact jean.dupont@example.com"*
+- *"Show the last 20 contacts"*
 
-### Gestion des entreprises
-- *"Montre-moi toutes les entreprises"*
-- *"Trouve les entreprises françaises"*
-- *"Cherche les entreprises du secteur automobile"*
-- *"Liste les entreprises avec plus de 100 employés"*
+### Company Management
+- *"Show me all companies"*
+- *"Find French companies"*
+- *"Search for companies in the automotive sector"*
+- *"List companies with more than 100 employees"*
 
-### Analyse des transactions
-- *"Affiche toutes les transactions"*
-- *"Quelles sont les transactions en cours ?"*
-- *"Trouve les deals dans le pipeline 'enterprise'"*
-- *"Recherche le deal 'Projet X'"*
-- *"Montre les transactions fermées ce mois"*
+### Deal Analysis
+- *"Show all deals"*
+- *"What are the current deals?"*
+- *"Find deals in the 'enterprise' pipeline"*
+- *"Search for the deal 'Project X'"*
+- *"Show deals closed this month"*
 
-### Exploration des données
-- *"Quelles sont les propriétés disponibles pour les contacts ?"*
-- *"Montre-moi les champs de contact HubSpot"*
-- *"Liste les types de données des contacts"*
+### Data Exploration
+- *"What are the available properties for contacts?"*
+- *"Show me the HubSpot contact fields"*
+- *"List the contact data types"*
 
-### Recherches combinées
-- *"Trouve tous les contacts de TechCorp et leurs transactions"*
-- *"Analyse les performances du secteur technologique"*
-- *"Quels sont les plus gros deals en cours ?"*
+### Combined Searches
+- *"Find all TechCorp contacts and their deals"*
+- *"Analyze the technology sector performance"*
+- *"What are the biggest deals in progress?"*
 
-## Cas d'usage métier
+## Business Use Cases
 
-### 1. Suivi commercial quotidien
+### 1. Daily Sales Follow-up
 
-**Scenario :** Un commercial veut faire le point sur ses prospects
+**Scenario:** A salesperson wants to review their prospects
 
-**Commandes :**
-1. *"Liste mes 10 derniers contacts"*
-2. *"Quelles transactions sont en phase de négociation ?"*
-3. *"Montre-moi les deals qui se ferment cette semaine"*
+**Commands:**
+1. *"List my last 10 contacts"*
+2. *"What deals are in negotiation phase?"*
+3. *"Show me deals closing this week"*
 
-### 2. Analyse sectorielle
+### 2. Sector Analysis
 
-**Scenario :** Analyser les opportunités dans un secteur
+**Scenario:** Analyze opportunities in a sector
 
-**Commandes :**
-1. *"Trouve toutes les entreprises du secteur 'fintech'"*
-2. *"Quelles sont leurs transactions en cours ?"*
-3. *"Quel est le montant total des deals fintech ?"*
+**Commands:**
+1. *"Find all companies in the 'fintech' sector"*
+2. *"What are their current deals?"*
+3. *"What's the total amount of fintech deals?"*
 
-### 3. Préparation de réunion
+### 3. Client Meeting Preparation
 
-**Scenario :** Préparer une réunion client
+**Scenario:** Prepare for a client meeting
 
-**Commandes :**
-1. *"Trouve l'entreprise 'Acme Corp'"*
-2. *"Liste tous les contacts de cette entreprise"*
-3. *"Quelles sont leurs transactions actives ?"*
+**Commands:**
+1. *"Find the company 'Acme Corp'"*
+2. *"List all contacts from this company"*
+3. *"What are their active deals?"*
 
-### 4. Reporting hebdomadaire
+### 4. Weekly Reporting
 
-**Scenario :** Générer un rapport d'activité
+**Scenario:** Generate activity report
 
-**Commandes :**
-1. *"Liste toutes les transactions créées cette semaine"*
-2. *"Combien de nouveaux contacts avons-nous ?"*
-3. *"Quels sont les deals les plus prometteurs ?"*
+**Commands:**
+1. *"List all deals created this week"*
+2. *"How many new contacts do we have?"*
+3. *"What are the most promising deals?"*
 
-## Exemples de filtres avancés
+## Advanced Filter Examples
 
-### Recherche par montant
+### Search by Amount
 ```
-"Trouve les transactions entre 5000€ et 50000€"
+"Find deals between €5,000 and €50,000"
 → filters: {"amount_gte": 5000, "amount_lte": 50000}
 ```
 
-### Recherche par étape
+### Search by Stage
 ```
-"Montre les deals en phase de proposition"
+"Show deals in proposal phase"
 → filters: {"stage": "proposal"}
 ```
 
-### Recherche textuelle
+### Text Search
 ```
-"Cherche les contacts avec 'manager' dans leur titre"
+"Search for contacts with 'manager' in their title"
 → filters: {"search": "manager"}
 ```
 
-### Combinaison de filtres
+### Combined Filters
 ```
-"Trouve les entreprises tech avec plus de 50 employés"
+"Find tech companies with more than 50 employees"
 → filters: {"search": "tech", "employees_gte": 50}
 ``` 

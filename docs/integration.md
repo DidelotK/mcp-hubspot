@@ -1,31 +1,31 @@
-# Intégration avec les clients MCP
+# Integration with MCP Clients
 
-## Intégration avec Claude Desktop
+## Integration with Claude Desktop
 
-Pour utiliser ce serveur MCP avec Claude Desktop, suivez ces étapes :
+To use this MCP server with Claude Desktop, follow these steps:
 
-### 1. Configuration Claude Desktop
+### 1. Claude Desktop Configuration
 
-Éditez le fichier de configuration Claude Desktop :
+Edit the Claude Desktop configuration file:
 
-**Sur macOS :**
+**On macOS:**
 ```bash
 ~/Library/Application Support/Claude/claude_desktop_config.json
 ```
 
-**Sur Windows :**
+**On Windows:**
 ```bash
 %APPDATA%\Claude\claude_desktop_config.json
 ```
 
-**Sur Linux :**
+**On Linux:**
 ```bash
 ~/.config/claude/claude_desktop_config.json
 ```
 
-### 2. Ajout du serveur MCP
+### 2. Add MCP Server
 
-Ajoutez la configuration suivante dans le fichier JSON (ou copiez le fichier `claude_desktop_config.example.json` fourni) :
+Add the following configuration to the JSON file (or copy the provided `claude_desktop_config.example.json` file):
 
 ```json
 {
@@ -35,21 +35,21 @@ Ajoutez la configuration suivante dans le fichier JSON (ou copiez le fichier `cl
       "args": [
         "run", 
         "python", 
-        "/chemin/vers/votre/projet/main.py",
+        "/path/to/your/project/main.py",
         "--mode", 
         "stdio"
       ],
       "env": {
-        "HUBSPOT_API_KEY": "votre_cle_api_hubspot"
+        "HUBSPOT_API_KEY": "your_hubspot_api_key"
       }
     }
   }
 }
 ```
 
-### 3. Configuration avec uv installé globalement
+### 3. Configuration with globally installed uv
 
-Si vous avez installé le projet globalement avec uv :
+If you have installed the project globally with uv:
 
 ```json
 {
@@ -57,88 +57,88 @@ Si vous avez installé le projet globalement avec uv :
     "hubspot": {
       "command": "hubspot-mcp-server",
       "env": {
-        "HUBSPOT_API_KEY": "votre_cle_api_hubspot"
+        "HUBSPOT_API_KEY": "your_hubspot_api_key"
       }
     }
   }
 }
 ```
 
-### 4. Redémarrage de Claude Desktop
+### 4. Restart Claude Desktop
 
-Après avoir modifié la configuration :
-1. Fermez complètement Claude Desktop
-2. Relancez l'application
-3. Les outils HubSpot seront disponibles dans Claude
+After modifying the configuration:
+1. Completely close Claude Desktop
+2. Restart the application
+3. HubSpot tools will be available in Claude
 
-## Intégration avec d'autres clients MCP
+## Integration with Other MCP Clients
 
-### Mode SSE (Server-Sent Events)
+### SSE Mode (Server-Sent Events)
 
-Pour intégrer avec d'autres clients MCP supportant SSE :
+To integrate with other MCP clients supporting SSE:
 
-1. **Démarrez le serveur en mode SSE :**
+1. **Start the server in SSE mode:**
 ```bash
 uv run python main.py --mode sse --host 127.0.0.1 --port 8080
 ```
 
-2. **Connectez votre client MCP à :**
+2. **Connect your MCP client to:**
 ```
 http://127.0.0.1:8080
 ```
 
-### Mode stdio
+### stdio Mode
 
-Pour les clients supportant stdio :
+For clients supporting stdio:
 
 ```bash
 uv run python main.py --mode stdio
 ```
 
-Le serveur communiquera via stdin/stdout selon le protocole MCP.
+The server will communicate via stdin/stdout according to the MCP protocol.
 
-## Test de l'intégration
+## Integration Testing
 
-Une fois configuré, vous pouvez tester les outils dans Claude en utilisant des phrases comme :
+Once configured, you can test the tools in Claude using phrases like:
 
-- *"Liste les contacts HubSpot"*
-- *"Trouve-moi les entreprises dans le secteur technologique"*
-- *"Affiche tous les deals"*
-- *"Recherche le deal nommé 'Contrat Premium'"*
+- *"List HubSpot contacts"*
+- *"Find companies in the tech sector"*
+- *"Show all deals"*
+- *"Search for the deal named 'Premium Contract'"*
 
-Claude utilisera automatiquement les outils MCP appropriés pour répondre à vos demandes.
+Claude will automatically use the appropriate MCP tools to respond to your requests.
 
-## Dépannage
+## Troubleshooting
 
-### Problèmes courants
+### Common Issues
 
-**1. Claude ne voit pas les outils HubSpot**
-- Vérifiez que le fichier de configuration est dans le bon répertoire
-- Assurez-vous que la syntaxe JSON est correcte
-- Redémarrez complètement Claude Desktop
-- Vérifiez les logs de Claude Desktop pour les erreurs
+**1. Claude doesn't see HubSpot tools**
+- Check that the configuration file is in the correct directory
+- Make sure the JSON syntax is correct
+- Completely restart Claude Desktop
+- Check Claude Desktop logs for errors
 
-**2. Erreur "Clé API invalide"**
-- Vérifiez que votre clé API HubSpot est correcte
-- Assurez-vous que la clé a les permissions nécessaires (contacts, deals, companies)
-- Testez la clé avec l'API HubSpot directement
+**2. "Invalid API key" error**
+- Verify that your HubSpot API key is correct
+- Make sure the key has the necessary permissions (contacts, deals, companies)
+- Test the key with the HubSpot API directly
 
-**3. Serveur ne démarre pas**
-- Vérifiez que Python 3.12+ est installé
-- Assurez-vous que uv est installé : `pip install uv`
-- Vérifiez que toutes les dépendances sont installées : `uv sync`
+**3. Server won't start**
+- Check that Python 3.12+ is installed
+- Make sure uv is installed: `pip install uv`
+- Verify that all dependencies are installed: `uv sync`
 
-**4. En mode SSE, impossible de se connecter**
-- Vérifiez que le port 8080 n'est pas utilisé par un autre service
-- Testez avec un autre port : `--port 8081`
-- Vérifiez les permissions de firewall
+**4. In SSE mode, unable to connect**
+- Check that port 8080 is not used by another service
+- Test with another port: `--port 8081`
+- Check firewall permissions
 
-### Logs et débogage
+### Logs and Debugging
 
-Pour activer les logs détaillés :
+To enable detailed logging:
 
 ```bash
-export PYTHONPATH=/chemin/vers/projet
+export PYTHONPATH=/path/to/project
 export LOG_LEVEL=DEBUG
 uv run python main.py --mode stdio
 ``` 

@@ -1,19 +1,19 @@
-# Référence API - Outils MCP
+# API Reference - MCP Tools
 
-Ce serveur MCP expose 5 outils pour interagir avec l'API HubSpot.
+This MCP server exposes 5 tools to interact with the HubSpot API.
 
 ## list_hubspot_contacts
 
-Récupère la liste des contacts HubSpot.
+Retrieves the list of HubSpot contacts.
 
-### Paramètres
+### Parameters
 
-| Paramètre | Type | Obligatoire | Description | Défaut |
-|-----------|------|-------------|-------------|---------|
-| `limit` | integer | Non | Nombre maximum de contacts à récupérer | 100 |
-| `filters` | object | Non | Filtres de recherche | {} |
+| Parameter | Type | Required | Description | Default |
+|-----------|------|----------|-------------|---------|
+| `limit` | integer | No | Maximum number of contacts to retrieve | 100 |
+| `filters` | object | No | Search filters | {} |
 
-### Exemple d'utilisation
+### Usage Example
 
 ```json
 {
@@ -27,30 +27,30 @@ Récupère la liste des contacts HubSpot.
 }
 ```
 
-### Réponse
+### Response
 
 ```
-📋 **Contacts HubSpot** (10 trouvés)
+📋 **HubSpot Contacts** (10 found)
 
 **Jean Dupont**
   📧 Email: jean.dupont@example.com
-  🏢 Entreprise: Acme Corp
-  📞 Téléphone: +33123456789
+  🏢 Company: Acme Corp
+  📞 Phone: +33123456789
   🆔 ID: 12345
 ```
 
 ## list_hubspot_companies
 
-Récupère la liste des entreprises HubSpot.
+Retrieves the list of HubSpot companies.
 
-### Paramètres
+### Parameters
 
-| Paramètre | Type | Obligatoire | Description | Défaut |
-|-----------|------|-------------|-------------|---------|
-| `limit` | integer | Non | Nombre maximum d'entreprises à récupérer | 100 |
-| `filters` | object | Non | Filtres de recherche | {} |
+| Parameter | Type | Required | Description | Default |
+|-----------|------|----------|-------------|---------|
+| `limit` | integer | No | Maximum number of companies to retrieve | 100 |
+| `filters` | object | No | Search filters | {} |
 
-### Exemple d'utilisation
+### Usage Example
 
 ```json
 {
@@ -64,30 +64,30 @@ Récupère la liste des entreprises HubSpot.
 }
 ```
 
-### Réponse
+### Response
 
 ```
-🏢 **Entreprises HubSpot** (5 trouvées)
+🏢 **HubSpot Companies** (5 found)
 
 **TechCorp Solutions**
-  🌐 Domaine: techcorp.com
-  🏭 Secteur: Technology
-  👥 Employés: 150
+  🌐 Domain: techcorp.com
+  🏭 Industry: Technology
+  👥 Employees: 150
   🆔 ID: 67890
 ```
 
 ## list_hubspot_deals
 
-Récupère la liste des deals HubSpot.
+Retrieves the list of HubSpot deals.
 
-### Paramètres
+### Parameters
 
-| Paramètre | Type | Obligatoire | Description | Défaut |
-|-----------|------|-------------|-------------|---------|
-| `limit` | integer | Non | Nombre maximum de deals à récupérer | 100 |
-| `filters` | object | Non | Filtres de recherche | {} |
+| Parameter | Type | Required | Description | Default |
+|-----------|------|----------|-------------|---------|
+| `limit` | integer | No | Maximum number of deals to retrieve | 100 |
+| `filters` | object | No | Search filters | {} |
 
-### Exemple d'utilisation
+### Usage Example
 
 ```json
 {
@@ -101,70 +101,70 @@ Récupère la liste des deals HubSpot.
 }
 ```
 
-### Réponse
+### Response
 
 ```
-💰 **Deals HubSpot** (20 trouvés)
+💰 **HubSpot Deals** (20 found)
 
-**Contrat Premium 2024**
-  💰 Montant: 45,000.00 €
-  📊 Étape: proposal
+**Premium Contract 2024**
+  💰 Amount: €45,000.00
+  📊 Stage: proposal
   🔄 Pipeline: enterprise
-  📅 Date de clôture: 2024-12-31
+  📅 Close Date: 2024-12-31
   🆔 ID: 789012
 ```
 
 ## get_deal_by_name
 
-Récupère un deal spécifique par son nom exact.
+Retrieves a specific deal by its exact name.
 
-### Paramètres
+### Parameters
 
-| Paramètre | Type | Obligatoire | Description |
-|-----------|------|-------------|-------------|
-| `deal_name` | string | **Oui** | Nom exact du deal à rechercher |
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `deal_name` | string | **Yes** | Exact name of the deal to search for |
 
-### Exemple d'utilisation
+### Usage Example
 
 ```json
 {
     "name": "get_deal_by_name",
     "arguments": {
-        "deal_name": "Contrat Premium 2024"
+        "deal_name": "Premium Contract 2024"
     }
 }
 ```
 
-### Réponse - Deal trouvé
+### Response - Deal Found
 
 ```
-💰 **Deal HubSpot**
+💰 **HubSpot Deal**
 
-**Contrat Premium 2024**
-  💰 Montant: 45,000.00 €
-  📊 Étape: proposal
+**Premium Contract 2024**
+  💰 Amount: €45,000.00
+  📊 Stage: proposal
   🔄 Pipeline: enterprise
-  📅 Date de clôture: 2024-12-31
+  📅 Close Date: 2024-12-31
   🆔 ID: 789012
 ```
 
-### Réponse - Deal non trouvé
+### Response - Deal Not Found
 
 ```
-❌ **Deal non trouvé**
+❌ **Deal Not Found**
 
-Aucun deal trouvé avec le nom: "Contrat Inexistant"
+No deal found with the name: "Non-existent Contract"
 ```
 
 ## get_hubspot_contact_properties
 
-Récupère la liste des propriétés disponibles pour les contacts HubSpot avec leurs types et descriptions.
+Retrieves the list of available properties for HubSpot contacts with their types and descriptions.
 
-### Paramètres
+### Parameters
 
-Aucun paramètre requis.
+No parameters required.
 
-### Exemple d'utilisation
+### Usage Example
 
 ```json
 {
@@ -173,97 +173,97 @@ Aucun paramètre requis.
 }
 ```
 
-### Réponse
+### Response
 
 ```
-🔧 **Propriétés des Contacts HubSpot** (405 propriétés)
+🔧 **HubSpot Contact Properties** (405 properties)
 
 ## 📁 contactinformation
 
-**📧 Adresse e-mail**
-  🏷️ Nom: `email`
+**📧 Email Address**
+  🏷️ Name: `email`
   🔧 Type: string (text)
-  📝 Description: L'adresse e-mail du contact
+  📝 Description: The contact's email address
 
-**📝 Prénom**
-  🏷️ Nom: `firstname`
+**📝 First Name**
+  🏷️ Name: `firstname`
   🔧 Type: string (text)
-  📝 Description: Le prénom du contact
+  📝 Description: The contact's first name
 
-**📝 Nom de famille**
-  🏷️ Nom: `lastname`
+**📝 Last Name**
+  🏷️ Name: `lastname`
   🔧 Type: string (text)
-  📝 Description: Le nom de famille du contact
+  📝 Description: The contact's last name
 
-**📞 Numéro de téléphone**
-  🏷️ Nom: `phone`
+**📞 Phone Number**
+  🏷️ Name: `phone`
   🔧 Type: string (text)
-  📝 Description: Le numéro de téléphone principal du contact
+  📝 Description: The contact's primary phone number
 
 ## 📁 demographic_information
 
-**📅 Date de naissance**
-  🏷️ Nom: `date_of_birth`
+**📅 Date of Birth**
+  🏷️ Name: `date_of_birth`
   🔧 Type: date (date)
-  📝 Description: La date de naissance du contact
+  📝 Description: The contact's date of birth
 
 ## 📁 company_information
 
-**📋 Secteur d'activité**
-  🏷️ Nom: `industry`
+**📋 Industry**
+  🏷️ Name: `industry`
   🔧 Type: enumeration (select)
-  📝 Description: Le secteur d'activité de l'entreprise
-  📋 Options: Technologie, Finance, Santé, ... et 25 autres
+  📝 Description: The company's industry sector
+  📋 Options: Technology, Finance, Healthcare, ... and 25 others
 ```
 
-### Utilité
+### Usefulness
 
-Cet outil est particulièrement utile pour :
-- **Découvrir les champs disponibles** dans HubSpot
-- **Comprendre les types de données** (text, date, select, etc.)
-- **Voir les options disponibles** pour les champs de sélection
-- **Planifier l'intégration** avec d'autres systèmes
-- **Déboguer les problèmes** de synchronisation de données
+This tool is particularly useful for:
+- **Discovering available fields** in HubSpot
+- **Understanding data types** (text, date, select, etc.)
+- **Viewing available options** for selection fields
+- **Planning integration** with other systems
+- **Debugging issues** with data synchronization
 
-## Gestion des erreurs
+## Error Handling
 
-Tous les outils gèrent les erreurs de manière cohérente :
+All tools handle errors consistently:
 
-### Erreurs d'authentification
-
-```
-❌ Erreur d'authentification HubSpot. Vérifiez votre clé API.
-```
-
-### Erreurs de réseau
+### Authentication Errors
 
 ```
-❌ Erreur de connexion à l'API HubSpot. Vérifiez votre connexion internet.
+❌ HubSpot authentication error. Check your API key.
 ```
 
-### Erreurs de paramètres
+### Network Errors
 
 ```
-❌ Paramètre manquant: deal_name est obligatoire pour get_deal_by_name
+❌ Connection error to HubSpot API. Check your internet connection.
 ```
 
-## Filtres de recherche
+### Parameter Errors
 
-Les filtres supportent les propriétés suivantes :
+```
+❌ Missing parameter: deal_name is required for get_deal_by_name
+```
 
-### Pour les contacts
-- `search` : Recherche textuelle dans nom, email, entreprise
-- `email` : Filtrage par email exact
-- `company` : Filtrage par nom d'entreprise
+## Search Filters
 
-### Pour les entreprises
-- `search` : Recherche textuelle dans nom, domaine, secteur
-- `domain` : Filtrage par domaine exact
-- `industry` : Filtrage par secteur d'activité
+Filters support the following properties:
 
-### Pour les deals
-- `search` : Recherche textuelle dans nom, étape, pipeline
-- `stage` : Filtrage par étape de vente
-- `pipeline` : Filtrage par pipeline de vente
-- `amount_gte` : Montant minimum
-- `amount_lte` : Montant maximum 
+### For Contacts
+- `search`: Text search in name, email, company
+- `email`: Filter by exact email
+- `company`: Filter by company name
+
+### For Companies
+- `search`: Text search in name, domain, industry
+- `domain`: Filter by exact domain
+- `industry`: Filter by industry sector
+
+### For Deals
+- `search`: Text search in name, stage, pipeline
+- `stage`: Filter by sales stage
+- `pipeline`: Filter by sales pipeline
+- `amount_gte`: Minimum amount
+- `amount_lte`: Maximum amount 

@@ -1,13 +1,13 @@
 [flake8]
 max-line-length = 88
 extend-ignore = 
-    # Ligne trop longue (compatible avec black)
+    # Line too long (compatible with black)
     E501,
-    # Ligne vide contient des espaces
+    # Blank line contains whitespace
     W293,
-    # Import non utilisé (parfois nécessaire pour les types)
+    # Unused import (sometimes necessary for types)
     F401,
-    # f-string sans placeholder (parfois utilisé pour la cohérence)
+    # f-string without placeholder (sometimes used for consistency)
     F541
 exclude = 
     .git,
@@ -20,7 +20,7 @@ exclude =
     .coverage,
     htmlcov
 per-file-ignores =
-    # Tests peuvent avoir des imports non utilisés
+    # Tests can have unused imports
     tests/*:F401,F841
-    # Scripts peuvent être plus permissifs
+    # Scripts can be more permissive
     scripts/*:E501,F401 

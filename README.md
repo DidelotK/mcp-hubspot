@@ -1,19 +1,19 @@
 # HubSpot MCP Server
 
-Serveur MCP (Model Context Protocol) pour intégrer HubSpot avec Claude Desktop et autres clients MCP. Permet d'accéder aux contacts, entreprises et deals HubSpot via des outils conversationnels.
+MCP (Model Context Protocol) server for integrating HubSpot with Claude Desktop and other MCP clients. Provides access to HubSpot contacts, companies, and deals through conversational tools.
 
-## 🚀 Démarrage rapide
+## 🚀 Quick Start
 
 ```bash
 # Installation
-git clone <url-du-repo>
+git clone <repo-url>
 cd hubspot-mcp-server
 uv sync
 
 # Configuration
-export HUBSPOT_API_KEY="votre_cle_api"
+export HUBSPOT_API_KEY="your_api_key"
 
-# Démarrage
+# Start
 uv run python main.py --mode stdio
 ```
 
@@ -21,71 +21,71 @@ uv run python main.py --mode stdio
 
 | Section | Description |
 |---------|-------------|
-| **[Installation](docs/installation.md)** | Guide d'installation et configuration |
-| **[Intégration](docs/integration.md)** | Configuration avec Claude Desktop et autres clients MCP |
-| **[Référence API](docs/api-reference.md)** | Documentation complète des 4 outils disponibles |
-| **[Exemples](docs/examples.md)** | Cas d'usage et conversations types avec Claude |
-| **[Contribution](docs/contributing.md)** | Guide pour développer de nouveaux outils |
+| **[Installation](docs/installation.md)** | Installation and configuration guide |
+| **[Integration](docs/integration.md)** | Configuration with Claude Desktop and other MCP clients |
+| **[API Reference](docs/api-reference.md)** | Complete documentation of the 4 available tools |
+| **[Examples](docs/examples.md)** | Use cases and example conversations with Claude |
+| **[Contributing](docs/contributing.md)** | Guide for developing new tools |
 
-## 🧪 Exemples pratiques
+## 🧪 Practical Examples
 
-| Exemple | Description |
+| Example | Description |
 |---------|-------------|
-| **[Test basique](examples/basic/)** | Script Python pour tester le serveur MCP avec un client |
+| **[Basic Test](examples/basic/)** | Python script to test the MCP server with a client |
 
-## 🛠️ Outils disponibles
+## 🛠️ Available Tools
 
-| Outil | Description |
+| Tool | Description |
 |-------|-------------|
-| `list_hubspot_contacts` | Liste et filtre les contacts HubSpot |
-| `list_hubspot_companies` | Liste et filtre les entreprises HubSpot |
-| `list_hubspot_deals` | Liste et filtre les deals HubSpot |
-| `get_deal_by_name` | Recherche un deal par nom exact |
-| `get_hubspot_contact_properties` | Récupère les propriétés des champs de contact avec types et descriptions |
+| `list_hubspot_contacts` | List and filter HubSpot contacts |
+| `list_hubspot_companies` | List and filter HubSpot companies |
+| `list_hubspot_deals` | List and filter HubSpot deals |
+| `get_deal_by_name` | Search for a deal by exact name |
+| `get_hubspot_contact_properties` | Retrieve contact field properties with types and descriptions |
 
-## ⚡ Utilisation avec Claude
+## ⚡ Usage with Claude
 
-Une fois configuré, utilisez des phrases naturelles :
+Once configured, use natural language phrases:
 
-- *"Liste mes contacts HubSpot"*
-- *"Trouve les entreprises du secteur tech"*
-- *"Affiche les deals en cours"*
-- *"Recherche le deal 'Projet X'"*
+- *"List my HubSpot contacts"*
+- *"Find tech sector companies"*
+- *"Show current deals"*
+- *"Search for the 'Project X' deal"*
 
-## 🧪 Tests et qualité
+## 🧪 Testing and Quality
 
 ```bash
-# Lancer les tests
+# Run tests
 uv run pytest
 
-# Couverture de code
+# Code coverage
 uv run pytest --cov=src --cov-report=html
 ```
 
-**Statut actuel :** ✅ 30 tests passés, 91% de couverture
+**Current Status:** ✅ 30 tests passed, 91% coverage
 
-## 📋 Prérequis
+## 📋 Prerequisites
 
 - Python 3.12+
-- uv (gestionnaire de paquets)
-- Clé API HubSpot avec permissions CRM
+- uv (package manager)
+- HubSpot API key with CRM permissions
 
-## 🤝 Contribution
+## 🤝 Contributing
 
-Consultez le [guide de contribution](docs/contributing.md) pour :
-- Standards de développement
-- Processus de création d'outils
-- Conventions de code et tests
-- Workflow Git et semantic versioning
+Check the [contributing guide](docs/contributing.md) for:
+- Development standards
+- Tool creation process
+- Code and testing conventions
+- Git workflow and semantic versioning
 
-## 📄 Licence
+## 📄 License
 
-[Licence du projet]
+[Project License]
 
 ---
 
-**Liens utiles :**
-- [Configuration Claude Desktop](docs/integration.md#intégration-avec-claude-desktop)
-- [Exemples d'utilisation](docs/examples.md#conversations-dexemple)
-- [Référence complète des outils](docs/api-reference.md)
-- [Dépannage](docs/integration.md#dépannage)
+**Useful Links:**
+- [Claude Desktop Configuration](docs/integration.md#integration-with-claude-desktop)
+- [Usage Examples](docs/examples.md#example-conversations)
+- [Complete Tool Reference](docs/api-reference.md)
+- [Troubleshooting](docs/integration.md#troubleshooting)

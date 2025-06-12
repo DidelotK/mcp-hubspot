@@ -1,18 +1,18 @@
 #!/bin/bash
-# Script de vérification de qualité de code pour le projet HubSpot MCP
+# Code quality check script for HubSpot MCP project
 
 set -e
 
-echo "🔍 Vérification de la qualité de code..."
+echo "🔍 Checking code quality..."
 echo "========================================"
 
-# Couleurs pour l'affichage
+# Color codes for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
-# Fonction pour afficher les résultats
+# Function to display results
 print_result() {
     if [ $1 -eq 0 ]; then
         echo -e "${GREEN}✅ $2${NC}"
@@ -21,74 +21,94 @@ print_result() {
     fi
 }
 
-# Vérifier que uv est installé
+# Initialize result tracking
+ALL_PASSED=true
+
+# Check if uv is installed
 if ! command -v uv &> /dev/null; then
-    echo -e "${RED}❌ uv n'est pas installé. Installez-le avec: pip install uv${NC}"
+    echo -e "${RED}❌ uv is not installed. Install it with: pip install uv${NC}"
     exit 1
 fi
 
-# Installer les dépendances si nécessaire
-echo "📦 Installation des dépendances..."
-uv sync --dev --all-extras
+# Run checks
+echo "🧪 Running tests with coverage..."
 
-# Exécuter les vérifications
-echo ""
-echo "🧪 Exécution des tests..."
-uv run python -m pytest --verbose --tb=short
-print_result $? "Tests"
-
-echo ""
-echo "📊 Vérification de la couverture de code..."
-uv run python -m pytest --cov=src --cov-report=term-missing --cov-report=html
-print_result $? "Couverture de code"
-
-echo ""
-echo "🔧 Vérification du formatage avec black..."
-uv run black --check src/ main.py tests/ scripts/
-print_result $? "Formatage black"
-
-echo ""
-echo "📋 Vérification des imports avec isort..."
-uv run isort --check-only src/ main.py tests/ scripts/
-print_result $? "Ordre des imports"
-
-echo ""
-echo "🔍 Analyse statique avec flake8..."
-uv run flake8 src/ main.py tests/ scripts/
-print_result $? "Analyse flake8"
-
-echo ""
-echo "🔬 Vérification des types avec mypy..."
-cd src && uv run mypy hubspot_mcp/ --ignore-missing-imports --no-strict-optional || true
-cd ..
-print_result 0 "Vérification des types (warnings ignorés)"
-
-echo ""
-echo "🛡️ Analyse de sécurité avec bandit..."
-uv run bandit -r src/ main.py -f json -o bandit_report.json || true
-if [ -f bandit_report.json ]; then
-    issues=$(cat bandit_report.json | python -c "import sys, json; data=json.load(sys.stdin); print(len(data.get('results', [])))")
-    if [ "$issues" -eq 0 ]; then
-        print_result 0 "Analyse de sécurité (0 problèmes)"
-    else
-        print_result 1 "Analyse de sécurité ($issues problèmes trouvés)"
-        echo -e "${YELLOW}Voir bandit_report.json pour les détails${NC}"
-    fi
+# Test coverage check
+echo "📊 Checking code coverage..."
+if uv run pytest --cov=src --cov-report=term-missing --cov-fail-under=80; then
+    print_result 0 "Code coverage (≥80%)"
 else
-    print_result 1 "Analyse de sécurité (erreur d'exécution)"
+    print_result 1 "Code coverage (≥80%)"
+    ALL_PASSED=false
+fi
+
+echo "🔧 Checking formatting with black..."
+if uv run black --check --diff src/ main.py tests/ scripts/; then
+    print_result 0 "Code formatting"
+else
+    print_result 1 "Code formatting"
+    ALL_PASSED=false
+fi
+
+echo "📋 Checking imports with isort..."
+if uv run isort --check-only --diff src/ main.py tests/ scripts/; then
+    print_result 0 "Import organization"
+else
+    print_result 1 "Import organization"
+    ALL_PASSED=false
+fi
+
+echo "🔍 Checking PEP 8 compliance with flake8..."
+if uv run flake8 src/ main.py tests/ scripts/; then
+    print_result 0 "PEP 8 compliance"
+else
+    print_result 1 "PEP 8 compliance"
+    ALL_PASSED=false
+fi
+
+echo "🔬 Checking types with mypy..."
+if uv run mypy src/ main.py; then
+    print_result 0 "Type checking"
+else
+    print_result 0 "Type checking (warnings ignored)"
+    # Type warnings are not blocking for now
+fi
+
+echo "🔒 Security analysis with bandit..."
+if uv run bandit -r src/ -f json -o bandit_report.json; then
+    print_result 0 "Security analysis"
+else
+    print_result 1 "Security analysis"
+    ALL_PASSED=false
 fi
 
 echo ""
-echo "📋 Génération du rapport complet..."
-uv run python scripts/lint_check.py
+echo "🎯 Summary:"
 
-echo ""
-echo "🎉 Vérifications terminées !"
-echo "📄 Rapport détaillé disponible dans: lint_report.md"
-echo "📊 Rapport de couverture HTML disponible dans: htmlcov/index.html"
+if [ "$ALL_PASSED" = true ]; then
+    echo -e "${GREEN}✅ All quality checks passed!${NC}"
+    echo ""
+    echo "🚀 Ready to commit and push!"
+    exit 0
+else
+    echo -e "${RED}❌ Some quality checks failed.${NC}"
+    echo ""
+    echo "🔧 To fix issues automatically:"
+    echo "  uv run black src/ main.py tests/ scripts/"
+    echo "  uv run isort src/ main.py tests/ scripts/"
+    echo ""
+    echo "📋 To check remaining issues:"
+    echo "  uv run flake8 src/ main.py tests/ scripts/"
+    echo "  uv run mypy src/ main.py"
+    exit 1
+fi
+
+echo "🎉 Quality checks completed!"
+echo "📄 Detailed report available in: lint_report.md"
+echo "📊 HTML coverage report available in: htmlcov/index.html"
 
 if [ -f lint_report.md ]; then
     echo ""
-    echo "📋 Résumé du rapport:"
+    echo "📋 Summary of the report:"
     head -20 lint_report.md
 fi 

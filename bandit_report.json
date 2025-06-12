@@ -1,10 +1,6 @@
 {
   "errors": [],
-<<<<<<< HEAD
-  "generated_at": "2025-06-12T13:44:30Z",
-=======
   "generated_at": "2025-06-12T14:22:08Z",
->>>>>>> feat: add get_hubspot_deal_properties tool - Add new DealPropertiesTool to retrieve HubSpot deal properties - Add get_deal_properties method to HubSpotClient - Add format_deal_properties method to HubSpotFormatter - Register new tool in handlers and tools module - Add comprehensive tests for the new tool - Translate all remaining French text to English - Update test assertions to match English translations - All 35 tests passing with 89% coverage
   "metrics": {
     "./main.py": {
       "CONFIDENCE.HIGH": 0,

@@ -1,73 +1,73 @@
-# Installation et Configuration
+# Installation and Configuration
 
-## Prérequis
+## Prerequisites
 
-- Python 3.12 ou supérieur
-- uv (gestionnaire de paquets Python)
-- Clé API HubSpot valide
+- Python 3.12 or higher
+- uv (Python package manager)
+- Valid HubSpot API key
 
 ## Installation
 
-### 1. Cloner le projet
+### 1. Clone the project
 
 ```bash
-git clone <url-du-repo>
+git clone <repo-url>
 cd hubspot-mcp-server
 ```
 
-### 2. Installation des dépendances
+### 2. Install dependencies
 
 ```bash
 uv sync
 ```
 
-### 3. Configuration des variables d'environnement
+### 3. Configure environment variables
 
-Créez un fichier `.envrc` ou définissez les variables d'environnement :
+Create a `.envrc` file or set environment variables:
 
 ```bash
-export HUBSPOT_API_KEY="votre_cle_api_hubspot"
+export HUBSPOT_API_KEY="your_hubspot_api_key"
 ```
 
-## Configuration HubSpot
+## HubSpot Configuration
 
-Le serveur nécessite une clé API HubSpot valide. Vous pouvez obtenir cette clé depuis votre compte HubSpot :
+The server requires a valid HubSpot API key. You can obtain this key from your HubSpot account:
 
-1. Connectez-vous à votre compte HubSpot
-2. Allez dans Paramètres > Intégrations > Clés API privées
-3. Créez une nouvelle clé API privée
-4. Définissez la variable d'environnement HUBSPOT_API_KEY
+1. Log in to your HubSpot account
+2. Go to Settings > Integrations > Private App API Keys
+3. Create a new private API key
+4. Set the HUBSPOT_API_KEY environment variable
 
-### Permissions requises
+### Required Permissions
 
-Assurez-vous que votre clé API a les permissions suivantes :
-- **Contacts** : Lecture
-- **Companies** : Lecture  
-- **Deals** : Lecture
-- **CRM Search** : Lecture
+Make sure your API key has the following permissions:
+- **Contacts**: Read
+- **Companies**: Read  
+- **Deals**: Read
+- **CRM Search**: Read
 
-## Démarrage du serveur
+## Starting the Server
 
-### Mode stdio (pour Claude Desktop)
+### stdio mode (for Claude Desktop)
 
 ```bash
 uv run python main.py --mode stdio
 ```
 
-### Mode SSE (pour autres clients MCP)
+### SSE mode (for other MCP clients)
 
 ```bash
 uv run python main.py --mode sse --host 127.0.0.1 --port 8080
 ```
 
-## Vérification de l'installation
+## Installation Verification
 
-Pour vérifier que tout fonctionne correctement :
+To verify everything is working correctly:
 
 ```bash
-# Lancer les tests
+# Run tests
 uv run pytest
 
-# Vérifier la connexion HubSpot
-uv run python -c "from src.hubspot_mcp.client import HubSpotClient; client = HubSpotClient(); print('✅ Connexion HubSpot OK')"
+# Verify HubSpot connection
+uv run python -c "from src.hubspot_mcp.client import HubSpotClient; client = HubSpotClient(); print('✅ HubSpot connection OK')"
 ``` 

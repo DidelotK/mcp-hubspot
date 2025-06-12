@@ -1,29 +1,23 @@
-"""Configuration du serveur MCP HubSpot."""
+"""HubSpot MCP configuration settings."""
 
 import os
-from typing import Optional
+from typing import List
 
 
-class Settings:
-    """Configuration du serveur MCP HubSpot."""
+class HubSpotConfig:
+    """Configuration class for HubSpot MCP server."""
 
     def __init__(self):
-        self.hubspot_api_key: Optional[str] = os.getenv("HUBSPOT_API_KEY")
-        self.server_name: str = "hubspot-mcp-server"
-        self.server_version: str = "1.0.0"
-        self.default_limit: int = 100
-        self.max_limit: int = 1000
-        self.hubspot_base_url: str = "https://api.hubapi.com"
+        self.api_key = os.getenv("HUBSPOT_API_KEY")
+        self.base_url = "https://api.hubapi.com"
 
     def validate(self) -> bool:
-        """Valide la configuration."""
-        if not self.hubspot_api_key:
-            return False
-        return True
+        """Validates that all required configuration is present."""
+        return self.api_key is not None
 
-    def get_missing_config(self) -> list[str]:
-        """Retourne la liste des configurations manquantes."""
+    def get_missing_config(self) -> List[str]:
+        """Returns the list of missing configurations."""
         missing = []
-        if not self.hubspot_api_key:
-            missing.append("HUBSPOT_API_KEY")
+        if not self.api_key:
+            missing.append("HUBSPOT_API_KEY environment variable")
         return missing

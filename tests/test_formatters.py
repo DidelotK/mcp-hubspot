@@ -98,7 +98,7 @@ def test_format_deals():
             },
         },
         {"id": "201", "properties": {"dealname": "Petit deal", "amount": "0"}},
-        {"id": "202", "properties": {"dealname": "Deal sans montant"}},
+        {"id": "202", "properties": {"dealname": "Deal without amount"}},
     ]
 
     result = HubSpotFormatter.format_deals(deals_data)
@@ -109,7 +109,7 @@ def test_format_deals():
     assert "negotiation" in result
     assert "sales" in result
     assert "**Petit deal**" in result
-    assert "**Deal sans montant**" in result
+    assert "**Deal without amount**" in result
     assert "🆔 ID: 200" in result
     assert "🆔 ID: 201" in result
     assert "🆔 ID: 202" in result
@@ -121,7 +121,7 @@ def test_format_deals_with_invalid_amount():
         {
             "id": "300",
             "properties": {
-                "dealname": "Deal avec montant invalide",
+                "dealname": "Deal with invalid amount",
                 "amount": "invalid_amount",
             },
         }
@@ -129,7 +129,7 @@ def test_format_deals_with_invalid_amount():
 
     result = HubSpotFormatter.format_deals(deals_data)
 
-    assert "**Deal avec montant invalide**" in result
+    assert "**Deal with invalid amount**" in result
     assert "$invalid_amount" in result
 
 
@@ -819,3 +819,45 @@ def test_format_deal_properties_with_hubspot_field_names():
     assert (
         "📅 HubSpot Close Date" in result
     )  # date field type has priority over hs_closedate name
+
+
+def test_format_deals_multiple():
+    """Test formatting multiple deals."""
+    deals_data = [
+        {"id": "200", "properties": {"dealname": "Large deal", "amount": "50000"}},
+        {"id": "201", "properties": {"dealname": "Small deal", "amount": "0"}},
+        {"id": "202", "properties": {"dealname": "Deal without amount"}},
+    ]
+
+    result = HubSpotFormatter.format_deals(deals_data)
+
+    # Assertions
+    assert "💰 **HubSpot Deals**" in result
+    assert "sales" in result
+    assert "**Small deal**" in result
+    assert "**Deal without amount**" in result
+    assert "🆔 ID: 200" in result
+    assert "🆔 ID: 201" in result
+    assert "🆔 ID: 202" in result
+
+
+def test_format_deals_with_invalid_amount():
+    """Test formatting deals with invalid amount."""
+    deals_data = [
+        {
+            "id": "123",
+            "properties": {
+                "dealname": "Deal with invalid amount",
+                "amount": "not_a_number",
+                "dealstage": "proposal",
+                "pipeline": "sales",
+            },
+        }
+    ]
+
+    result = HubSpotFormatter.format_deals(deals_data)
+
+    assert "💰 **HubSpot Deals**" in result
+    assert "**Deal with invalid amount**" in result
+    assert "📊 Stage: proposal" in result
+    assert "💰 Amount: not_a_number" in result  # Invalid amount displayed as-is

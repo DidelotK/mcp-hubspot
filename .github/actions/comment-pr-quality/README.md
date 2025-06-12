@@ -1,105 +1,104 @@
-# Comment PR with Code Quality Report
+# PR Quality Comment Action
 
-Action GitHub composite pour poster ou mettre à jour automatiquement des commentaires sur les Pull Requests avec des rapports de qualité de code.
+GitHub Action to automatically comment on Pull Requests with code quality reports.
 
-## 📋 Description
+## Features
 
-Cette action lit un rapport de qualité de code (au format Markdown) et :
-- Poste un nouveau commentaire sur la PR si aucun commentaire de qualité n'existe
-- Met à jour le commentaire existant s'il y en a déjà un
-- Gère intelligemment les erreurs et les cas edge
+- Analyzes quality reports (lint, coverage, tests)
+- Adds or updates comments on PRs automatically
+- Handles errors and edge cases intelligently
+- Configurable comment format
+- Supports multiple report types
 
-## 🚀 Utilisation
-
-### Exemple basique
-
-```yaml
-- name: Comment PR with code quality report
-  uses: ./.github/actions/comment-pr-quality
-  with:
-    report-path: 'lint_report.md'
-    github-token: ${{ secrets.GITHUB_TOKEN }}
-```
-
-### Exemple avec génération de rapport
+## Usage
 
 ```yaml
-- name: Run code quality checks
-  run: |
-    python scripts/lint_check.py
+name: Quality Check
+on:
+  pull_request:
+    types: [opened, synchronize]
 
-- name: Comment PR with quality report
-  if: always()  # Commenter même si les checks échouent
-  uses: ./.github/actions/comment-pr-quality
-  with:
-    report-path: 'lint_report.md'
-    github-token: ${{ secrets.GITHUB_TOKEN }}
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Run quality checks
+        run: |
+          # Your quality check commands here
+          ./scripts/check_quality.sh
+      
+      - name: Comment PR with quality report
+        uses: ./.github/actions/comment-pr-quality
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          report-path: 'lint_report.md'
+          comment-title: '📊 Code Quality Report'
 ```
 
-## 📥 Inputs
+## Inputs
 
 | Input | Description | Required | Default |
 |-------|-------------|----------|---------|
-| `report-path` | Chemin vers le fichier rapport (format Markdown) | ✅ | `lint_report.md` |
-| `github-token` | Token GitHub pour l'accès API | ✅ | `${{ github.token }}` |
+| `github-token` | GitHub token for API access | ✅ | |
+| `report-path` | Path to the quality report file | ✅ | |
+| `comment-title` | Title for the PR comment | ❌ | `📊 Quality Report` |
+| `update-existing` | Update existing comment instead of creating new ones | ❌ | `true` |
 
-## 🎯 Fonctionnalités
+## Dependencies
 
-### ✅ Gestion intelligente des commentaires
-- Détecte automatiquement les commentaires existants
-- Met à jour plutôt que de créer des doublons
-- Utilise l'API GitHub optimisée pour les commentaires
+- `actions/checkout@v4` - To access repository files
+- `peter-evans/find-comment@v3` - To find existing comments
+- `peter-evans/create-or-update-comment@v3` - To create/update comments
 
-### 🛡️ Robustesse
-- Gère les cas où le rapport n'existe pas
-- Messages d'erreur clairs
-- Pas de plantage si le fichier est manquant
+## Behavior
 
-### 🔄 Mise à jour automatique
-- Ajoute un footer informatif sur la génération automatique
-- Mode `replace` pour éviter l'accumulation de contenu
+1. **Report Analysis**: Reads the quality report file
+2. **Comment Management**: 
+   - Searches for existing comments with the same title
+   - Updates existing comment or creates a new one
+3. **Error Handling**: Handles cases where the report doesn't exist
+4. **Format**: Maintains consistent comment formatting
 
-## 🔧 Dépendances
+## Example Report Format
 
-Cette action utilise les actions GitHub suivantes :
-- `peter-evans/find-comment@v3` - Pour trouver les commentaires existants
-- `peter-evans/create-or-update-comment@v4` - Pour créer/mettre à jour les commentaires
-
-## 📝 Format du rapport attendu
-
-Le fichier rapport doit être au format Markdown. Exemple :
+The action expects reports in Markdown format:
 
 ```markdown
-## ✅ Vérification de la qualité du code - SUCCÈS
+## 📊 Code Quality Report
 
-Toutes les vérifications ont réussi !
+✅ **Black Formatting**: OK
+✅ **Import Organization (isort)**: OK  
+❌ **PEP 8 Compliance (flake8)**: Issues found
+✅ **Type Checking (mypy)**: OK
 
-✅ **Black**: Code correctement formaté
-✅ **isort**: Imports bien organisés
-✅ **flake8**: Aucune violation PEP 8
-✅ **mypy**: Types correctement définis
+### 🔧 How to fix:
+```bash
+# Auto-fix formatting and imports
+black src/ tests/
+isort src/ tests/
 ```
 
-## 🎨 Personnalisation
+## File Structure
 
-Pour personnaliser cette action pour votre projet :
+```
+.github/actions/comment-pr-quality/
+├── action.yml          # Action definition
+├── README.md          # This documentation
+└── scripts/
+    └── comment.sh     # Main script logic
+```
 
-1. Modifiez le `body-includes` dans l'étape `Find existing quality comment`
-2. Ajustez le format du footer dans `Create or update PR comment`
-3. Adaptez les messages d'erreur selon vos besoins
+## Development
 
-## 🚦 Codes de sortie
+To modify this action:
 
-- `0` - Succès (commentaire posté/mis à jour)
-- `1` - Erreur (impossible de lire le rapport)
+1. Edit `action.yml` for input/output definitions
+2. Modify `scripts/comment.sh` for logic changes  
+3. Test with a sample PR
+4. Update this README if needed
 
-## 🔗 Intégration avec d'autres workflows
+## Contributing
 
-Cette action peut être utilisée dans n'importe quel workflow qui génère des rapports de qualité de code :
-
-- Tests unitaires avec couverture
-- Analyse de sécurité
-- Audits de dépendances
-- Vérifications de performance
-
-Il suffit de générer un rapport au format Markdown et d'utiliser cette action pour le poster sur la PR ! 
+This action is part of the HubSpot MCP project quality pipeline. Follow the project's contributing guidelines when making changes. 

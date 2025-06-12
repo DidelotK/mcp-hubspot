@@ -1,73 +1,67 @@
 #!/bin/bash
-# Script d'installation des hooks Git pour la qualité de code
+# Install Git hooks for code quality
 
-echo "🔧 Installation des hooks Git..."
+set -e
 
-# Créer le hook pre-commit
+echo "🔧 Installing Git hooks..."
+
+# Create pre-commit hook
 cat > .git/hooks/pre-commit << 'EOF'
 #!/bin/bash
-# Hook pre-commit pour vérifier la qualité de code
+echo "🔍 Checking code quality before commit..."
 
-echo "🔍 Vérification de la qualité de code avant commit..."
+# Exit on first error
+set -e
 
-# Vérifier que uv est installé
-if ! command -v uv &> /dev/null; then
-    echo "❌ uv n'est pas installé. Installez-le avec: pip install uv"
-    exit 1
-fi
-
-# Exécuter les vérifications rapides
-echo "🔧 Vérification du formatage..."
+# Run quick checks
+echo "🔧 Checking formatting..."
 if ! uv run black --check src/ main.py tests/ scripts/ 2>/dev/null; then
-    echo "❌ Le code n'est pas formaté correctement."
-    echo "💡 Exécutez: uv run black src/ main.py tests/ scripts/"
+    echo "❌ Code formatting issues found. Run: uv run black src/ main.py tests/ scripts/"
     exit 1
 fi
 
-echo "📋 Vérification des imports..."
+echo "📋 Checking imports..."
 if ! uv run isort --check-only src/ main.py tests/ scripts/ 2>/dev/null; then
-    echo "❌ Les imports ne sont pas triés correctement."
-    echo "💡 Exécutez: uv run isort src/ main.py tests/ scripts/"
+    echo "❌ Import organization issues found. Run: uv run isort src/ main.py tests/ scripts/"
     exit 1
 fi
 
-echo "🔍 Analyse statique rapide..."
+# flake8 check (non-blocking for pre-commit)
 if ! uv run flake8 src/ main.py tests/ scripts/ 2>/dev/null; then
-    echo "❌ Des problèmes de style ont été détectés."
-    echo "💡 Exécutez: uv run flake8 src/ main.py tests/ scripts/"
-    exit 1
+    echo "⚠️ Code style warnings found. Please check and fix if needed."
+    echo "Run: uv run flake8 src/ main.py tests/ scripts/"
 fi
 
-echo "✅ Vérifications de qualité passées !"
+echo "✅ Quality checks passed!"
 EOF
 
-# Rendre le hook exécutable
-chmod +x .git/hooks/pre-commit
-
-# Créer le hook pre-push pour les tests
+# Create pre-push hook
 cat > .git/hooks/pre-push << 'EOF'
 #!/bin/bash
-# Hook pre-push pour exécuter les tests
+echo "🧪 Running tests before push..."
 
-echo "🧪 Exécution des tests avant push..."
+# Exit on first error
+set -e
 
-if ! uv run python -m pytest --tb=short -q; then
-    echo "❌ Les tests ont échoué. Push annulé."
+# Run full test suite
+if ! uv run pytest --cov=src --cov-report=term-missing; then
+    echo "❌ Tests failed. Please fix before pushing."
     exit 1
 fi
 
-echo "✅ Tous les tests passent !"
+echo "✅ All tests passed!"
 EOF
 
-# Rendre le hook exécutable
+# Make hooks executable
+chmod +x .git/hooks/pre-commit
 chmod +x .git/hooks/pre-push
 
-echo "✅ Hooks Git installés avec succès !"
+echo "✅ Git hooks installed successfully!"
 echo ""
-echo "📋 Hooks installés:"
-echo "  - pre-commit: Vérification du formatage et du style"
-echo "  - pre-push: Exécution des tests"
+echo "📋 Hooks installed:"
+echo "  - pre-commit: Format and style checking"
+echo "  - pre-push: Full test suite"
 echo ""
-echo "💡 Pour désactiver temporairement les hooks:"
+echo "💡 To bypass hooks temporarily:"
 echo "  git commit --no-verify"
 echo "  git push --no-verify" 

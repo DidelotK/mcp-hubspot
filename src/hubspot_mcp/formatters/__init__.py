@@ -1,4 +1,4 @@
-"""Module de formatage des données HubSpot."""
+"""HubSpot data formatting module."""
 
 from .hubspot_formatter import HubSpotFormatter
 
