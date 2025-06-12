@@ -14,7 +14,7 @@ def test_parse_arguments_defaults(monkeypatch):
     monkeypatch.setattr(sys, "argv", ["main.py"])
     args = parse_arguments()
     assert args.mode == "stdio"
-    assert args.host == "127.0.0.1"
+    assert args.host == "localhost"
     assert args.port == 8080
 
 
