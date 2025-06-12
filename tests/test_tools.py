@@ -626,3 +626,325 @@ def test_company_properties_tool_definition():
         in definition.description
     )
     assert len(definition.inputSchema["properties"]) == 0  # No required parameters
+
+
+@pytest.mark.asyncio
+async def test_base_tool_handle_httpx_error():
+    """Test base tool error handling for HTTPStatusError."""
+    from httpx import HTTPStatusError, Request, Response
+
+    from src.hubspot_mcp.tools.base import BaseTool
+
+    # Create a concrete implementation for testing
+    class TestTool(BaseTool):
+        def get_tool_definition(self):
+            return None
+
+        async def execute(self, arguments):
+            return []
+
+    client = HubSpotClient("test-key")
+    tool = TestTool(client)
+
+    # Create a mock HTTPStatusError
+    response = Response(404, text="Not Found")
+    request = Request("GET", "https://api.hubapi.com/test")
+    error = HTTPStatusError("Not Found", request=request, response=response)
+
+    result = tool.handle_error(error)
+
+    assert isinstance(result, list)
+    assert len(result) == 1
+    assert isinstance(result[0], TextContent)
+    assert "HubSpot API Error (404)" in result[0].text
+    assert "Not Found" in result[0].text
+
+
+@pytest.mark.asyncio
+async def test_base_tool_handle_generic_error():
+    """Test base tool error handling for generic exceptions."""
+    from src.hubspot_mcp.tools.base import BaseTool
+
+    # Create a concrete implementation for testing
+    class TestTool(BaseTool):
+        def get_tool_definition(self):
+            return None
+
+        async def execute(self, arguments):
+            return []
+
+    client = HubSpotClient("test-key")
+    tool = TestTool(client)
+
+    # Create a generic error
+    error = ValueError("Something went wrong")
+
+    result = tool.handle_error(error)
+
+    assert isinstance(result, list)
+    assert len(result) == 1
+    assert isinstance(result[0], TextContent)
+    assert "Unexpected error: Something went wrong" in result[0].text
+
+
+@pytest.mark.asyncio
+async def test_create_deal_tool_missing_dealname():
+    """Test create deal tool with missing dealname."""
+    client = HubSpotClient("test-key")
+    tool = CreateDealTool(client)
+
+    result = await tool.execute({})
+
+    assert isinstance(result, list)
+    assert len(result) == 1
+    assert isinstance(result[0], TextContent)
+    assert "Deal name (dealname) is required" in result[0].text
+
+
+@pytest.mark.asyncio
+async def test_create_deal_tool_empty_dealname():
+    """Test create deal tool with empty dealname."""
+    client = HubSpotClient("test-key")
+    tool = CreateDealTool(client)
+
+    result = await tool.execute({"dealname": ""})
+
+    assert isinstance(result, list)
+    assert len(result) == 1
+    assert isinstance(result[0], TextContent)
+    assert "Deal name (dealname) is required" in result[0].text
+
+
+@pytest.mark.asyncio
+async def test_create_deal_tool_with_all_fields():
+    """Test create deal tool with all optional fields."""
+    test_data = {
+        "id": "1000",
+        "properties": {
+            "dealname": "Complete Deal",
+            "amount": "10000.00",
+            "dealstage": "closedwon",
+            "pipeline": "sales",
+            "closedate": "2024-12-31",
+            "hubspot_owner_id": "12345",
+            "description": "A complete deal with all fields",
+            "createdate": "2024-01-15T10:30:00Z",
+        },
+    }
+
+    def mock_client(*args, **kwargs):
+        return DummyAsyncClient(response_data=test_data)
+
+    with patch("httpx.AsyncClient", mock_client):
+        client = HubSpotClient("test-key")
+        tool = CreateDealTool(client)
+
+        result = await tool.execute(
+            {
+                "dealname": "Complete Deal",
+                "amount": "10000.00",
+                "dealstage": "closedwon",
+                "pipeline": "sales",
+                "closedate": "2024-12-31",
+                "hubspot_owner_id": "12345",
+                "description": "A complete deal with all fields",
+            }
+        )
+
+        assert isinstance(result, list)
+        assert len(result) == 1
+        assert isinstance(result[0], TextContent)
+        assert "✅ **Deal created successfully" in result[0].text
+        assert "Complete Deal" in result[0].text
+        assert "$10,000.00" in result[0].text
+        assert "closedwon" in result[0].text
+        assert "sales" in result[0].text
+
+
+@pytest.mark.asyncio
+async def test_deal_properties_tool_error():
+    """Test deal properties tool error handling."""
+
+    def mock_client(*args, **kwargs):
+        return DummyAsyncClient(raise_error=True)
+
+    with patch("httpx.AsyncClient", mock_client):
+        client = HubSpotClient("test-key")
+        tool = DealPropertiesTool(client)
+
+        result = await tool.execute({})
+
+        assert isinstance(result, list)
+        assert len(result) == 1
+        assert "HubSpot API Error" in result[0].text
+
+
+def test_deal_properties_tool_definition():
+    """Test deal properties tool definition."""
+    client = HubSpotClient("test-key")
+    tool = DealPropertiesTool(client)
+
+    definition = tool.get_tool_definition()
+
+    assert definition.name == "get_hubspot_deal_properties"
+    assert (
+        "Retrieves the list of available properties for HubSpot deals"
+        in definition.description
+    )
+    assert len(definition.inputSchema["properties"]) == 0  # No required parameters
+
+
+@pytest.mark.asyncio
+async def test_contacts_tool_error_handling():
+    """Test contacts tool error handling."""
+
+    def mock_client(*args, **kwargs):
+        return DummyAsyncClient(raise_error=True)
+
+    with patch("httpx.AsyncClient", mock_client):
+        client = HubSpotClient("test-key")
+        tool = ContactsTool(client)
+
+        result = await tool.execute({"limit": 10})
+
+        assert isinstance(result, list)
+        assert len(result) == 1
+        assert "HubSpot API Error" in result[0].text
+
+
+@pytest.mark.asyncio
+async def test_companies_tool_error_handling():
+    """Test companies tool error handling."""
+
+    def mock_client(*args, **kwargs):
+        return DummyAsyncClient(raise_error=True)
+
+    with patch("httpx.AsyncClient", mock_client):
+        client = HubSpotClient("test-key")
+        tool = CompaniesTool(client)
+
+        result = await tool.execute({"limit": 10})
+
+        assert isinstance(result, list)
+        assert len(result) == 1
+        assert "HubSpot API Error" in result[0].text
+
+
+@pytest.mark.asyncio
+async def test_deal_by_name_tool_error_handling():
+    """Test deal by name tool error handling."""
+
+    def mock_client(*args, **kwargs):
+        return DummyAsyncClient(raise_error=True)
+
+    with patch("httpx.AsyncClient", mock_client):
+        client = HubSpotClient("test-key")
+        tool = DealByNameTool(client)
+
+        result = await tool.execute({"deal_name": "Test Deal"})
+
+        assert isinstance(result, list)
+        assert len(result) == 1
+        assert "HubSpot API Error" in result[0].text
+
+
+def test_all_tools_have_proper_definitions():
+    """Test that all tools have proper definitions."""
+    client = HubSpotClient("test-key")
+
+    tools = [
+        ContactsTool(client),
+        CompaniesTool(client),
+        DealsTool(client),
+        CreateDealTool(client),
+        DealByNameTool(client),
+        ContactPropertiesTool(client),
+        CompanyPropertiesTool(client),
+        DealPropertiesTool(client),
+    ]
+
+    for tool in tools:
+        definition = tool.get_tool_definition()
+
+        # Check that all tools have required fields
+        assert hasattr(definition, "name")
+        assert hasattr(definition, "description")
+        assert hasattr(definition, "inputSchema")
+        assert isinstance(definition.name, str)
+        assert isinstance(definition.description, str)
+        assert isinstance(definition.inputSchema, dict)
+
+        # Check that inputSchema has required structure
+        assert "type" in definition.inputSchema
+        assert "properties" in definition.inputSchema
+        assert "additionalProperties" in definition.inputSchema
+
+
+@pytest.mark.asyncio
+async def test_create_deal_tool_with_invalid_amount_format():
+    """Test create deal tool with invalid amount that can't be formatted."""
+    test_data = {
+        "id": "1100",
+        "properties": {
+            "dealname": "Deal with Invalid Amount Format",
+            "amount": "not_a_number",
+            "createdate": "2024-01-15T10:30:00Z",
+        },
+    }
+
+    def mock_client(*args, **kwargs):
+        return DummyAsyncClient(response_data=test_data)
+
+    with patch("httpx.AsyncClient", mock_client):
+        client = HubSpotClient("test-key")
+        tool = CreateDealTool(client)
+
+        result = await tool.execute(
+            {
+                "dealname": "Deal with Invalid Amount Format",
+                "amount": "not_a_number",
+            }
+        )
+
+        assert isinstance(result, list)
+        assert len(result) == 1
+        assert isinstance(result[0], TextContent)
+        assert "✅ **Deal created successfully" in result[0].text
+        assert "Deal with Invalid Amount Format" in result[0].text
+        # Should handle invalid amount gracefully without crashing
+        assert "$not_a_number" in result[0].text
+
+
+@pytest.mark.asyncio
+async def test_create_deal_tool_with_no_amount():
+    """Test create deal tool with no amount property in response."""
+    test_data = {
+        "id": "1200",
+        "properties": {
+            "dealname": "Deal without Amount",
+            "dealstage": "proposal",
+            "createdate": "2024-01-15T10:30:00Z",
+        },
+    }
+
+    def mock_client(*args, **kwargs):
+        return DummyAsyncClient(response_data=test_data)
+
+    with patch("httpx.AsyncClient", mock_client):
+        client = HubSpotClient("test-key")
+        tool = CreateDealTool(client)
+
+        result = await tool.execute(
+            {
+                "dealname": "Deal without Amount",
+                "dealstage": "proposal",
+            }
+        )
+
+        assert isinstance(result, list)
+        assert len(result) == 1
+        assert isinstance(result[0], TextContent)
+        assert "✅ **Deal created successfully" in result[0].text
+        assert "Deal without Amount" in result[0].text
+        # Should not include amount line when no amount is present
+        assert "💰 Amount:" not in result[0].text

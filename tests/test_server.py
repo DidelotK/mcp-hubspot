@@ -138,3 +138,60 @@ def test_handle_call_tool_deal_properties(monkeypatch):
     assert isinstance(result, list)
     assert isinstance(result[0], TextContent)
     assert "HubSpot Deal Properties" in result[0].text
+
+
+def test_handle_call_tool_unknown_tool():
+    """Test calling an unknown tool."""
+    client = HubSpotClient("test-key")
+    handlers = MCPHandlers(client)
+    result = asyncio.run(handlers.handle_call_tool("unknown_tool", {}))
+    assert isinstance(result, list)
+    assert isinstance(result[0], TextContent)
+    assert "Unknown tool: unknown_tool" in result[0].text
+
+
+def test_handle_call_tool_with_arguments():
+    """Test calling tools with various arguments."""
+    client = HubSpotClient("test-key")
+    handlers = MCPHandlers(client)
+
+    # Test with limit argument
+    result = asyncio.run(
+        handlers.handle_call_tool("list_hubspot_contacts", {"limit": 50})
+    )
+    assert isinstance(result, list)
+    assert isinstance(result[0], TextContent)
+
+    # Test with filters
+    result = asyncio.run(
+        handlers.handle_call_tool(
+            "list_hubspot_deals", {"limit": 25, "filters": {"search": "important"}}
+        )
+    )
+    assert isinstance(result, list)
+    assert isinstance(result[0], TextContent)
+
+
+def test_handle_list_tools_count():
+    """Test that all expected tools are listed."""
+    client = HubSpotClient("test-key")
+    handlers = MCPHandlers(client)
+    tools = asyncio.run(handlers.handle_list_tools())
+
+    # Should have exactly 8 tools
+    assert len(tools) == 8
+
+    expected_tools = [
+        "list_hubspot_contacts",
+        "list_hubspot_companies",
+        "list_hubspot_deals",
+        "create_deal",
+        "get_deal_by_name",
+        "get_hubspot_contact_properties",
+        "get_hubspot_company_properties",
+        "get_hubspot_deal_properties",
+    ]
+
+    tool_names = [tool.name for tool in tools]
+    for expected_tool in expected_tools:
+        assert expected_tool in tool_names
