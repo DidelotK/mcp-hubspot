@@ -2,7 +2,7 @@
 
 > **Note** : La branche principale de ce projet est `main` (anciennement `master`).
 
-Ce serveur MCP permet d'interagir avec l'API HubSpot pour lister les contacts, entreprises et transactions (deals) avec des capacités de filtrage.
+Ce serveur MCP permet d'interagir avec l'API HubSpot pour lister les contacts, entreprises et transactions (deals) avec des capacités de filtrage, ainsi que récupérer des transactions spécifiques par nom.
 
 ## Installation
 
@@ -98,6 +98,24 @@ Propriétés retournées pour chaque transaction :
 - hubspot_owner_id : Propriétaire de la transaction
 - id : Identifiant unique
 
+### get_transaction_by_name
+
+Récupère une transaction HubSpot spécifique par son nom exact.
+
+Paramètres :
+- deal_name (obligatoire) : Nom exact de la transaction à rechercher
+
+Propriétés retournées pour la transaction :
+- dealname : Nom de la transaction
+- amount : Montant de la transaction (formaté en euros)
+- dealstage : Étape actuelle du pipeline
+- pipeline : Pipeline de vente associé
+- closedate : Date de clôture prévue
+- createdate : Date de création
+- lastmodifieddate : Date de dernière modification
+- hubspot_owner_id : Propriétaire de la transaction
+- id : Identifiant unique
+
 ## Configuration
 
 Le serveur nécessite une clé API HubSpot valide. Vous pouvez obtenir cette clé depuis votre compte HubSpot :
@@ -142,6 +160,9 @@ Appel de l'outil list_hubspot_deals avec limit: 20
 
 Rechercher des transactions par nom :
 Appel de l'outil list_hubspot_deals avec filters: {"search": "contrat"}
+
+Récupérer une transaction spécifique :
+Appel de l'outil get_transaction_by_name avec deal_name: "Nom Exact Du Deal"
 
 ## Tests
 
