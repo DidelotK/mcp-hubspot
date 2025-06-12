@@ -63,7 +63,9 @@ def check_flake8():
 def check_mypy():
     """Check types with mypy."""
     print("🔍 Checking types with mypy...")
-    return_code, stdout, stderr = run_command("uv run mypy src/ main.py")
+    return_code, stdout, stderr = run_command(
+        "cd src && uv run mypy hubspot_mcp/ --config-file=../mypy.ini"
+    )
 
     if return_code == 0:
         print("✅ mypy types: OK")
