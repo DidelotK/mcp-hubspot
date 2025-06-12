@@ -51,8 +51,8 @@ class HubSpotFormatter:
 
     @staticmethod
     def format_deals(deals: List[Dict[str, Any]]) -> str:
-        """Formate la liste des transactions pour l'affichage."""
-        result = f"💰 **Transactions HubSpot** ({len(deals)} trouvées)\n\n"
+        """Formate la liste des deals pour l'affichage."""
+        result = f"💰 **Deals HubSpot** ({len(deals)} trouvés)\n\n"
 
         for deal in deals:
             props = deal.get("properties", {})
@@ -68,7 +68,7 @@ class HubSpotFormatter:
             else:
                 amount_formatted = "N/A"
 
-            result += f"**{props.get('dealname', 'Transaction sans nom')}**\n"
+            result += f"**{props.get('dealname', 'Deal sans nom')}**\n"
             result += f"  💰 Montant: {amount_formatted}\n"
             result += f"  📊 Étape: {props.get('dealstage', 'N/A')}\n"
             result += f"  🔄 Pipeline: {props.get('pipeline', 'N/A')}\n"
@@ -80,12 +80,12 @@ class HubSpotFormatter:
         return result
 
     @staticmethod
-    def format_single_transaction(transaction: Optional[Dict[str, Any]]) -> str:
-        """Formate une transaction unique pour l'affichage."""
-        if not transaction:
-            return "🔍 **Transaction non trouvée**\n\nAucune transaction ne correspond au nom spécifié."
+    def format_single_deal(deal: Optional[Dict[str, Any]]) -> str:
+        """Formate un deal unique pour l'affichage."""
+        if not deal:
+            return "🔍 **Deal non trouvé**\n\nAucun deal ne correspond au nom spécifié."
 
-        props = transaction.get("properties", {})
+        props = deal.get("properties", {})
         amount = props.get("amount", "0")
 
         # Formatage du montant si disponible
@@ -98,8 +98,8 @@ class HubSpotFormatter:
         else:
             amount_formatted = "N/A"
 
-        result = f"💰 **Transaction HubSpot**\n\n"
-        result += f"**{props.get('dealname', 'Transaction sans nom')}**\n"
+        result = f"💰 **Deal HubSpot**\n\n"
+        result += f"**{props.get('dealname', 'Deal sans nom')}**\n"
         result += f"  💰 Montant: {amount_formatted}\n"
         result += f"  📊 Étape: {props.get('dealstage', 'N/A')}\n"
         result += f"  🔄 Pipeline: {props.get('pipeline', 'N/A')}\n"
@@ -107,7 +107,7 @@ class HubSpotFormatter:
         result += f"  📅 Créée: {props.get('createdate', 'N/A')}\n"
         result += f"  📅 Modifiée: {props.get('lastmodifieddate', 'N/A')}\n"
         result += f"  👤 Propriétaire: {props.get('hubspot_owner_id', 'N/A')}\n"
-        result += f"  🆔 ID: {transaction.get('id')}\n"
+        result += f"  🆔 ID: {deal.get('id')}\n"
 
         return result
 

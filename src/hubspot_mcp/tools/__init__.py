@@ -5,14 +5,14 @@ from .company_properties_tool import CompanyPropertiesTool
 from .contact_properties_tool import ContactPropertiesTool
 from .contacts import ContactsTool
 from .deals import CreateDealTool, DealsTool
-from .transaction_by_name import TransactionByNameTool
+from .deal_by_name import DealByNameTool
 
 __all__ = [
     "ContactsTool",
     "CompaniesTool",
     "DealsTool",
     "CreateDealTool",
-    "TransactionByNameTool",
+    "DealByNameTool",
     "ContactPropertiesTool",
     "CompanyPropertiesTool",
 ]

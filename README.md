@@ -1,6 +1,6 @@
 # HubSpot MCP Server
 
-Serveur MCP (Model Context Protocol) pour intégrer HubSpot avec Claude Desktop et autres clients MCP. Permet d'accéder aux contacts, entreprises et transactions HubSpot via des outils conversationnels.
+Serveur MCP (Model Context Protocol) pour intégrer HubSpot avec Claude Desktop et autres clients MCP. Permet d'accéder aux contacts, entreprises et deals HubSpot via des outils conversationnels.
 
 ## 🚀 Démarrage rapide
 
@@ -39,8 +39,8 @@ uv run python main.py --mode stdio
 |-------|-------------|
 | `list_hubspot_contacts` | Liste et filtre les contacts HubSpot |
 | `list_hubspot_companies` | Liste et filtre les entreprises HubSpot |
-| `list_hubspot_deals` | Liste et filtre les transactions HubSpot |
-| `get_transaction_by_name` | Recherche une transaction par nom exact |
+| `list_hubspot_deals` | Liste et filtre les deals HubSpot |
+| `get_deal_by_name` | Recherche un deal par nom exact |
 | `get_hubspot_contact_properties` | Récupère les propriétés des champs de contact avec types et descriptions |
 
 ## ⚡ Utilisation avec Claude
@@ -49,7 +49,7 @@ Une fois configuré, utilisez des phrases naturelles :
 
 - *"Liste mes contacts HubSpot"*
 - *"Trouve les entreprises du secteur tech"*
-- *"Affiche les transactions en cours"*
+- *"Affiche les deals en cours"*
 - *"Recherche le deal 'Projet X'"*
 
 ## 🧪 Tests et qualité

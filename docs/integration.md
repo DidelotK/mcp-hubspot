@@ -103,8 +103,8 @@ Une fois configuré, vous pouvez tester les outils dans Claude en utilisant des 
 
 - *"Liste les contacts HubSpot"*
 - *"Trouve-moi les entreprises dans le secteur technologique"*
-- *"Affiche toutes les transactions"*
-- *"Recherche la transaction nommée 'Contrat Premium'"*
+- *"Affiche tous les deals"*
+- *"Recherche le deal nommé 'Contrat Premium'"*
 
 Claude utilisera automatiquement les outils MCP appropriés pour répondre à vos demandes.
 

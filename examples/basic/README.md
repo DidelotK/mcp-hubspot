@@ -66,10 +66,10 @@ Le script exécute 4 tests principaux :
 - **Paramètres** : `{"limit": 3}`
 - **Objectif** : Vérifier l'accès aux données d'entreprises
 
-### Test 4 : Récupération des transactions
+### Test 4 : Récupération des deals
 - **Outil** : `list_hubspot_deals`
 - **Paramètres** : `{"limit": 3}`
-- **Objectif** : Tester l'accès aux données de transactions
+- **Objectif** : Tester l'accès aux données de deals
 
 ## 📊 Sortie attendue
 
@@ -85,8 +85,8 @@ Le script exécute 4 tests principaux :
 ✅ 4 outils disponibles:
   - list_hubspot_contacts: Liste les contacts HubSpot avec possibilité de filtrage
   - list_hubspot_companies: Liste les entreprises HubSpot avec possibilité de filtrage
-  - list_hubspot_deals: Liste les transactions HubSpot avec possibilité de filtrage
-  - get_transaction_by_name: Récupère une transaction HubSpot par son nom exact
+  - list_hubspot_deals: Liste les deals HubSpot avec possibilité de filtrage
+- get_deal_by_name: Récupère un deal HubSpot par son nom exact
 
 🧪 Test 1: Récupération des 5 premiers contacts...
 ✅ Contacts récupérés avec succès:
@@ -107,8 +107,8 @@ Le script exécute 4 tests principaux :
 ✅ Entreprises récupérées avec succès:
 ...
 
-🧪 Test 4: Récupération des transactions...
-✅ Transactions récupérées avec succès:
+🧪 Test 4: Récupération des deals...
+✅ Deals récupérés avec succès:
 ...
 
 🎉 Tests terminés avec succès!
@@ -123,9 +123,9 @@ Vous pouvez facilement modifier le script pour :
 
 1. **Tester d'autres outils** :
 ```python
-# Tester get_transaction_by_name
+# Tester get_deal_by_name
 result = await session.call_tool(
-    "get_transaction_by_name",
+    "get_deal_by_name",
     arguments={"deal_name": "Nom Exact Du Deal"}
 )
 ```

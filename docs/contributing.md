@@ -161,7 +161,7 @@ git push origin feature/nouveau-tool
 
 #### Nommage des outils
 - **Liste** : `list_hubspot_[resource]` (ex: `list_hubspot_contacts`)
-- **Recherche** : `get_[resource]_by_[field]` (ex: `get_transaction_by_name`)
+- **Recherche** : `get_[resource]_by_[field]` (ex: `get_deal_by_name`)
 
 #### Formatage des réponses
 - **Titre** : `📋 **Ressources HubSpot** (X trouvées)`

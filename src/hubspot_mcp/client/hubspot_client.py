@@ -67,7 +67,7 @@ class HubSpotClient:
     async def get_deals(
         self, limit: int = 100, filters: Optional[Dict] = None
     ) -> List[Dict]:
-        """Récupère la liste des transactions (deals) avec filtrage optionnel."""
+        """Récupère la liste des deals avec filtrage optionnel."""
         url = f"{self.base_url}/crm/v3/objects/deals"
 
         params = {
@@ -86,8 +86,8 @@ class HubSpotClient:
             data = response.json()
             return data.get("results", [])
 
-    async def get_transaction_by_name(self, deal_name: str) -> Optional[Dict]:
-        """Récupère une transaction spécifique par son nom."""
+    async def get_deal_by_name(self, deal_name: str) -> Optional[Dict]:
+        """Récupère un deal spécifique par son nom."""
         url = f"{self.base_url}/crm/v3/objects/deals/search"
 
         # Corps de la requête pour rechercher par nom de deal
@@ -144,7 +144,7 @@ class HubSpotClient:
             return data.get("results", [])
 
     async def create_deal(self, deal_data: Dict[str, Any]) -> Dict[str, Any]:
-        """Crée une nouvelle transaction (deal) dans HubSpot."""
+        """Crée un nouveau deal dans HubSpot."""
         url = f"{self.base_url}/crm/v3/objects/deals"
 
         # Structure des données pour HubSpot

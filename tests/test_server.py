@@ -38,7 +38,7 @@ def test_handle_list_tools():
     assert "list_hubspot_contacts" in names
     assert "list_hubspot_companies" in names
     assert "list_hubspot_deals" in names
-    assert "get_transaction_by_name" in names
+    assert "get_deal_by_name" in names
     assert "get_hubspot_company_properties" in names
 
 
@@ -94,7 +94,7 @@ def test_get_contacts_and_companies(monkeypatch):
 
 
 def test_get_deals(monkeypatch):
-    # Test spécifique pour les deals/transactions
+    # Test spécifique pour les deals
     monkeypatch.setattr(httpx, "AsyncClient", DummyAsyncClient)
     client = HubSpotClient("testkey")
     deals = asyncio.run(client.get_deals(limit=5, filters={"search": "deal"}))
@@ -109,4 +109,4 @@ def test_handle_call_tool_deals(monkeypatch):
     result = asyncio.run(handlers.handle_call_tool("list_hubspot_deals", {"limit": 10}))
     assert isinstance(result, list)
     assert isinstance(result[0], TextContent)
-    assert "Transactions HubSpot" in result[0].text
+    assert "Deals HubSpot" in result[0].text

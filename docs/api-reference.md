@@ -78,13 +78,13 @@ Récupère la liste des entreprises HubSpot.
 
 ## list_hubspot_deals
 
-Récupère la liste des transactions (deals) HubSpot.
+Récupère la liste des deals HubSpot.
 
 ### Paramètres
 
 | Paramètre | Type | Obligatoire | Description | Défaut |
 |-----------|------|-------------|-------------|---------|
-| `limit` | integer | Non | Nombre maximum de transactions à récupérer | 100 |
+| `limit` | integer | Non | Nombre maximum de deals à récupérer | 100 |
 | `filters` | object | Non | Filtres de recherche | {} |
 
 ### Exemple d'utilisation
@@ -104,7 +104,7 @@ Récupère la liste des transactions (deals) HubSpot.
 ### Réponse
 
 ```
-💰 **Transactions HubSpot** (20 trouvées)
+💰 **Deals HubSpot** (20 trouvés)
 
 **Contrat Premium 2024**
   💰 Montant: 45,000.00 €
@@ -114,31 +114,31 @@ Récupère la liste des transactions (deals) HubSpot.
   🆔 ID: 789012
 ```
 
-## get_transaction_by_name
+## get_deal_by_name
 
-Récupère une transaction spécifique par son nom exact.
+Récupère un deal spécifique par son nom exact.
 
 ### Paramètres
 
 | Paramètre | Type | Obligatoire | Description |
 |-----------|------|-------------|-------------|
-| `deal_name` | string | **Oui** | Nom exact de la transaction à rechercher |
+| `deal_name` | string | **Oui** | Nom exact du deal à rechercher |
 
 ### Exemple d'utilisation
 
 ```json
 {
-  "name": "get_transaction_by_name",
-  "arguments": {
-    "deal_name": "Contrat Premium 2024"
-  }
+    "name": "get_deal_by_name",
+    "arguments": {
+        "deal_name": "Contrat Premium 2024"
+    }
 }
 ```
 
-### Réponse - Transaction trouvée
+### Réponse - Deal trouvé
 
 ```
-💰 **Transaction HubSpot**
+💰 **Deal HubSpot**
 
 **Contrat Premium 2024**
   💰 Montant: 45,000.00 €
@@ -148,12 +148,12 @@ Récupère une transaction spécifique par son nom exact.
   🆔 ID: 789012
 ```
 
-### Réponse - Transaction non trouvée
+### Réponse - Deal non trouvé
 
 ```
-❌ **Transaction non trouvée**
+❌ **Deal non trouvé**
 
-Aucune transaction trouvée avec le nom: "Contrat Inexistant"
+Aucun deal trouvé avec le nom: "Contrat Inexistant"
 ```
 
 ## get_hubspot_contact_properties
@@ -244,7 +244,7 @@ Tous les outils gèrent les erreurs de manière cohérente :
 ### Erreurs de paramètres
 
 ```
-❌ Paramètre manquant: deal_name est obligatoire pour get_transaction_by_name
+❌ Paramètre manquant: deal_name est obligatoire pour get_deal_by_name
 ```
 
 ## Filtres de recherche
@@ -261,7 +261,7 @@ Les filtres supportent les propriétés suivantes :
 - `domain` : Filtrage par domaine exact
 - `industry` : Filtrage par secteur d'activité
 
-### Pour les transactions
+### Pour les deals
 - `search` : Recherche textuelle dans nom, étape, pipeline
 - `stage` : Filtrage par étape de vente
 - `pipeline` : Filtrage par pipeline de vente

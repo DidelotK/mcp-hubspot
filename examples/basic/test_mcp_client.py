@@ -125,8 +125,8 @@ async def test_hubspot_mcp_server():
                 except Exception as e:
                     print(f"❌ Erreur lors de la récupération des entreprises: {e}")
                 
-                # Test 4: Lister les transactions
-                print("\n🧪 Test 4: Récupération des transactions...")
+                # Test 4: Lister les deals
+                print("\n🧪 Test 4: Récupération des deals...")
                 try:
                     result = await session.call_tool(
                         "list_hubspot_deals",
@@ -134,15 +134,15 @@ async def test_hubspot_mcp_server():
                     )
                     
                     if result.content:
-                        print("✅ Transactions récupérées avec succès:")
+                        print("✅ Deals récupérés avec succès:")
                         for content in result.content:
                             if hasattr(content, 'text'):
                                 print(content.text)
                     else:
-                        print("⚠️ Aucune transaction trouvée")
+                        print("⚠️ Aucun deal trouvé")
                         
                 except Exception as e:
-                    print(f"❌ Erreur lors de la récupération des transactions: {e}")
+                    print(f"❌ Erreur lors de la récupération des deals: {e}")
                 
                 print("\n🎉 Tests terminés avec succès!")
                 return True

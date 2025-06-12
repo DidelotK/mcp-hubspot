@@ -58,31 +58,31 @@ class DealsTool(BaseTool):
 
 
 class CreateDealTool(BaseTool):
-    """Outil pour créer une nouvelle transaction HubSpot."""
+    """Outil pour créer un nouveau deal HubSpot."""
 
     def get_tool_definition(self) -> types.Tool:
-        """Retourne la définition de l'outil de création de transaction."""
+        """Retourne la définition de l'outil de création de deal."""
         return types.Tool(
-            name="create_transaction",
-            description="Crée une nouvelle transaction (deal) dans HubSpot",
+            name="create_deal",
+            description="Crée un nouveau deal dans HubSpot",
             inputSchema={
                 "type": "object",
                 "properties": {
                     "dealname": {
                         "type": "string",
-                        "description": "Nom de la transaction (obligatoire)",
+                        "description": "Nom du deal (obligatoire)",
                     },
                     "amount": {
                         "type": "string",
-                        "description": "Montant de la transaction",
+                        "description": "Montant du deal",
                     },
                     "dealstage": {
                         "type": "string",
-                        "description": "Étape de la transaction (ex: 'appointmentscheduled', 'qualifiedtobuy', 'presentationscheduled', 'decisionmakerboughtin', 'contractsent', 'closedwon', 'closedlost')",
+                        "description": "Étape du deal (ex: 'appointmentscheduled', 'qualifiedtobuy', 'presentationscheduled', 'decisionmakerboughtin', 'contractsent', 'closedwon', 'closedlost')",
                     },
                     "pipeline": {
                         "type": "string",
-                        "description": "Pipeline de la transaction",
+                        "description": "Pipeline du deal",
                     },
                     "closedate": {
                         "type": "string",
@@ -90,11 +90,11 @@ class CreateDealTool(BaseTool):
                     },
                     "hubspot_owner_id": {
                         "type": "string",
-                        "description": "ID du propriétaire de la transaction",
+                        "description": "ID du propriétaire du deal",
                     },
                     "description": {
                         "type": "string",
-                        "description": "Description de la transaction",
+                        "description": "Description du deal",
                     },
                 },
                 "required": ["dealname"],
@@ -103,18 +103,18 @@ class CreateDealTool(BaseTool):
         )
 
     async def execute(self, arguments: Dict[str, Any]) -> List[types.TextContent]:
-        """Exécute la création de la transaction."""
+        """Exécute la création du deal."""
         try:
             # Valider les arguments requis
             if not arguments.get("dealname"):
                 return [
                     types.TextContent(
                         type="text",
-                        text="❌ **Erreur de validation**\n\nLe nom de la transaction (dealname) est obligatoire.",
+                        text="❌ **Erreur de validation**\n\nLe nom du deal (dealname) est obligatoire.",
                     )
                 ]
 
-            # Préparer les données de la transaction
+            # Préparer les données du deal
             deal_data = {
                 "dealname": arguments["dealname"],
             }
@@ -133,11 +133,11 @@ class CreateDealTool(BaseTool):
                 if field in arguments and arguments[field]:
                     deal_data[field] = arguments[field]
 
-            # Créer la transaction
+            # Créer le deal
             created_deal = await self.client.create_deal(deal_data)
 
             # Formater la réponse de succès
-            result_text = "✅ **Transaction créée avec succès !**\n\n"
+            result_text = "✅ **Deal créé avec succès !**\n\n"
             result_text += f"**{deal_data['dealname']}**\n"
             result_text += f"🆔 ID: {created_deal.get('id')}\n"
 

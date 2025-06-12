@@ -223,7 +223,7 @@
       "nosec": 0,
       "skipped_tests": 0
     },
-    "src/hubspot_mcp/tools/transaction_by_name.py": {
+    "src/hubspot_mcp/tools/deal_by_name.py": {
       "CONFIDENCE.HIGH": 0,
       "CONFIDENCE.LOW": 0,
       "CONFIDENCE.MEDIUM": 0,

@@ -72,7 +72,7 @@ def test_format_companies():
 
 
 def test_format_deals():
-    """Test du formatage des transactions."""
+    """Test du formatage des deals."""
     deals_data = [
         {
             "id": "200",
@@ -92,7 +92,7 @@ def test_format_deals():
 
     result = HubSpotFormatter.format_deals(deals_data)
 
-    assert "💰 **Transactions HubSpot** (3 trouvées)" in result
+    assert "💰 **Deals HubSpot** (3 trouvés)" in result
     assert "**Gros contrat**" in result
     assert "50,000.00 €" in result
     assert "negotiation" in result
@@ -129,14 +129,14 @@ def test_format_empty_lists():
         "🏢 **Entreprises HubSpot** (0 trouvées)"
         in HubSpotFormatter.format_companies([])
     )
-    assert "💰 **Transactions HubSpot** (0 trouvées)" in HubSpotFormatter.format_deals(
+    assert "💰 **Deals HubSpot** (0 trouvés)" in HubSpotFormatter.format_deals(
         []
     )
 
 
-def test_format_single_transaction():
-    """Test du formatage d'une transaction unique."""
-    transaction_data = {
+def test_format_single_deal():
+    """Test du formatage d'un deal unique."""
+    deal_data = {
         "id": "500",
         "properties": {
             "dealname": "Contrat Premium",
@@ -150,9 +150,9 @@ def test_format_single_transaction():
         },
     }
 
-    result = HubSpotFormatter.format_single_transaction(transaction_data)
+    result = HubSpotFormatter.format_single_deal(deal_data)
 
-    assert "💰 **Transaction HubSpot**" in result
+    assert "💰 **Deal HubSpot**" in result
     assert "**Contrat Premium**" in result
     assert "25,000.00 €" in result
     assert "proposal" in result
@@ -161,19 +161,19 @@ def test_format_single_transaction():
     assert "🆔 ID: 500" in result
 
 
-def test_format_single_transaction_not_found():
-    """Test du formatage quand aucune transaction n'est trouvée."""
-    result = HubSpotFormatter.format_single_transaction(None)
+def test_format_single_deal_not_found():
+    """Test du formatage quand aucun deal n'est trouvé."""
+    result = HubSpotFormatter.format_single_deal(None)
 
-    assert "🔍 **Transaction non trouvée**" in result
-    assert "Aucune transaction ne correspond au nom spécifié" in result
+    assert "🔍 **Deal non trouvé**" in result
+    assert "Aucun deal ne correspond au nom spécifié" in result
 
 
-def test_format_single_transaction_minimal_data():
-    """Test du formatage d'une transaction avec données minimales."""
-    transaction_data = {"id": "600", "properties": {"dealname": "Deal Simple"}}
+def test_format_single_deal_minimal_data():
+    """Test du formatage d'un deal avec données minimales."""
+    deal_data = {"id": "600", "properties": {"dealname": "Deal Simple"}}
 
-    result = HubSpotFormatter.format_single_transaction(transaction_data)
+    result = HubSpotFormatter.format_single_deal(deal_data)
 
     assert "**Deal Simple**" in result
     assert "💰 Montant: N/A" in result

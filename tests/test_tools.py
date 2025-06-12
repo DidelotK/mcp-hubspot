@@ -15,7 +15,7 @@ from src.hubspot_mcp.tools import (
     ContactsTool,
     CreateDealTool,
     DealsTool,
-    TransactionByNameTool,
+    DealByNameTool,
 )
 
 
@@ -191,8 +191,8 @@ async def test_tool_error_handling():
 
 
 @pytest.mark.asyncio
-async def test_transaction_by_name_tool_execute():
-    """Test d'exécution du tool transaction par nom."""
+async def test_deal_by_name_tool_execute():
+    """Test d'exécution du tool deal par nom."""
     test_data = {
         "results": [
             {
@@ -212,7 +212,7 @@ async def test_transaction_by_name_tool_execute():
 
     with patch("httpx.AsyncClient", mock_client):
         client = HubSpotClient("test-key")
-        tool = TransactionByNameTool(client)
+        tool = DealByNameTool(client)
 
         result = await tool.execute({"deal_name": "Contrat Spécifique"})
 
@@ -224,8 +224,8 @@ async def test_transaction_by_name_tool_execute():
 
 
 @pytest.mark.asyncio
-async def test_transaction_by_name_tool_not_found():
-    """Test du tool transaction par nom quand aucune transaction n'est trouvée."""
+async def test_deal_by_name_tool_not_found():
+    """Test du tool deal par nom quand aucun deal n'est trouvé."""
     test_data = {"results": []}
 
     def mock_client(*args, **kwargs):
@@ -233,26 +233,26 @@ async def test_transaction_by_name_tool_not_found():
 
     with patch("httpx.AsyncClient", mock_client):
         client = HubSpotClient("test-key")
-        tool = TransactionByNameTool(client)
+        tool = DealByNameTool(client)
 
-        result = await tool.execute({"deal_name": "Transaction Inexistante"})
+        result = await tool.execute({"deal_name": "Deal Inexistant"})
 
         assert isinstance(result, list)
         assert len(result) == 1
-        assert "Transaction non trouvée" in result[0].text
+        assert "Deal non trouvé" in result[0].text
 
 
 @pytest.mark.asyncio
-async def test_transaction_by_name_tool_missing_name():
-    """Test du tool transaction par nom sans nom fourni."""
+async def test_deal_by_name_tool_missing_name():
+    """Test du tool deal par nom sans nom fourni."""
     client = HubSpotClient("test-key")
-    tool = TransactionByNameTool(client)
+    tool = DealByNameTool(client)
 
     result = await tool.execute({})
 
     assert isinstance(result, list)
     assert len(result) == 1
-    assert "Le nom de la transaction est obligatoire" in result[0].text
+    assert "Le nom du deal est obligatoire" in result[0].text
 
 
 @pytest.mark.asyncio
@@ -341,7 +341,7 @@ def test_tools_definitions():
     contacts_tool = ContactsTool(client)
     companies_tool = CompaniesTool(client)
     deals_tool = DealsTool(client)
-    transaction_by_name_tool = TransactionByNameTool(client)
+    deal_by_name_tool = DealByNameTool(client)
     contact_properties_tool = ContactPropertiesTool(client)
     company_properties_tool = CompanyPropertiesTool(client)
 
@@ -349,14 +349,14 @@ def test_tools_definitions():
     contacts_def = contacts_tool.get_tool_definition()
     companies_def = companies_tool.get_tool_definition()
     deals_def = deals_tool.get_tool_definition()
-    transaction_def = transaction_by_name_tool.get_tool_definition()
+    deal_def = deal_by_name_tool.get_tool_definition()
     contact_properties_def = contact_properties_tool.get_tool_definition()
     company_properties_def = company_properties_tool.get_tool_definition()
 
     assert contacts_def.name == "list_hubspot_contacts"
     assert companies_def.name == "list_hubspot_companies"
     assert deals_def.name == "list_hubspot_deals"
-    assert transaction_def.name == "get_transaction_by_name"
+    assert deal_def.name == "get_deal_by_name"
     assert contact_properties_def.name == "get_hubspot_contact_properties"
     assert company_properties_def.name == "get_hubspot_company_properties"
 
@@ -367,8 +367,8 @@ def test_tools_definitions():
     assert "filters" in companies_def.inputSchema["properties"]
     assert "limit" in deals_def.inputSchema["properties"]
     assert "filters" in deals_def.inputSchema["properties"]
-    assert "deal_name" in transaction_def.inputSchema["properties"]
-    assert transaction_def.inputSchema["required"] == ["deal_name"]
+    assert "deal_name" in deal_def.inputSchema["properties"]
+    assert deal_def.inputSchema["required"] == ["deal_name"]
     assert (
         len(contact_properties_def.inputSchema["properties"]) == 0
     )  # Pas de paramètres requis
@@ -408,7 +408,7 @@ async def test_create_deal_tool_execute():
         assert isinstance(result, list)
         assert len(result) == 1
         assert isinstance(result[0], TextContent)
-        assert "✅ **Transaction créée avec succès" in result[0].text
+        assert "✅ **Deal créé avec succès" in result[0].text
         assert "New Test Deal" in result[0].text
 
 
@@ -434,7 +434,7 @@ async def test_create_deal_tool_minimal():
 
         assert isinstance(result, list)
         assert len(result) == 1
-        assert "✅ **Transaction créée avec succès" in result[0].text
+        assert "✅ **Deal créé avec succès" in result[0].text
         assert "Minimal Deal" in result[0].text
 
 
@@ -463,7 +463,7 @@ def test_create_deal_tool_definition():
 
     definition = tool.get_tool_definition()
 
-    assert definition.name == "create_transaction"
+    assert definition.name == "create_deal"
     assert "dealname" in definition.inputSchema["properties"]
     assert "amount" in definition.inputSchema["properties"]
     assert "dealstage" in definition.inputSchema["properties"]
