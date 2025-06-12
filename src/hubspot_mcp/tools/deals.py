@@ -1,4 +1,4 @@
-"""Outil MCP pour gérer les transactions HubSpot."""
+"""MCP tool to manage HubSpot deals."""
 
 from typing import Any, Dict, List
 
@@ -9,30 +9,30 @@ from .base import BaseTool
 
 
 class DealsTool(BaseTool):
-    """Outil pour lister les transactions HubSpot."""
+    """Tool to list HubSpot deals."""
 
     def get_tool_definition(self) -> types.Tool:
-        """Retourne la définition de l'outil transactions."""
+        """Return the deals tool definition."""
         return types.Tool(
             name="list_hubspot_deals",
-            description="Liste les transactions (deals) HubSpot avec possibilité de filtrage",
+            description="Lists HubSpot deals with optional filtering",
             inputSchema={
                 "type": "object",
                 "properties": {
                     "limit": {
                         "type": "integer",
-                        "description": "Nombre maximum de transactions à retourner (défaut: 100)",
+                        "description": "Maximum number of deals to return (default: 100)",
                         "default": 100,
                         "minimum": 1,
                         "maximum": 1000,
                     },
                     "filters": {
                         "type": "object",
-                        "description": "Filtres optionnels pour la recherche",
+                        "description": "Optional filters for search",
                         "properties": {
                             "search": {
                                 "type": "string",
-                                "description": "Terme de recherche pour filtrer les transactions",
+                                "description": "Search term to filter deals",
                             }
                         },
                         "additionalProperties": False,
@@ -43,7 +43,7 @@ class DealsTool(BaseTool):
         )
 
     async def execute(self, arguments: Dict[str, Any]) -> List[types.TextContent]:
-        """Exécute la récupération des transactions."""
+        """Execute deals retrieval."""
         try:
             limit = arguments.get("limit", 100)
             filters = arguments.get("filters", {})

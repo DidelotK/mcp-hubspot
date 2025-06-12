@@ -76,7 +76,7 @@ class HubSpotFormatter:
     def format_single_deal(deal: Optional[Dict[str, Any]]) -> str:
         """Format a single deal for display."""
         if not deal:
-            return "🔍 **Transaction not found**\n\nNo transaction matches the specified name."
+            return "🔍 **Deal not found**\n\nNo deal matches the specified name."
 
         props = deal.get("properties", {})
         amount = props.get("amount", "0")
@@ -91,8 +91,8 @@ class HubSpotFormatter:
         else:
             amount_formatted = "N/A"
 
-        result = f"💰 **HubSpot Transaction**\n\n"
-        result += f"**{props.get('dealname', 'Unnamed transaction')}**\n"
+        result = f"💰 **HubSpot Deal**\n\n"
+        result += f"**{props.get('dealname', 'Unnamed deal')}**\n"
         result += f"  💰 Amount: {amount_formatted}\n"
         result += f"  📊 Stage: {props.get('dealstage', 'N/A')}\n"
         result += f"  🔄 Pipeline: {props.get('pipeline', 'N/A')}\n"

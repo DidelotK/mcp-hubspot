@@ -86,8 +86,8 @@ class HubSpotClient:
             data = response.json()
             return data.get("results", [])
 
-    async def get_transaction_by_name(self, deal_name: str) -> Optional[Dict]:
-        """Retrieve a specific transaction by its name."""
+    async def get_deal_by_name(self, deal_name: str) -> Optional[Dict]:
+        """Retrieve a specific deal by its name."""
         url = f"{self.base_url}/crm/v3/objects/deals/search"
 
         # Request body to search by deal name

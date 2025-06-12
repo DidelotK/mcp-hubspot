@@ -1,9 +1,8 @@
-"""Tests pour les outils MCP HubSpot."""
+"""Tests for HubSpot MCP tools."""
 
 import asyncio
 from unittest.mock import patch
 
-import httpx
 import pytest
 from mcp.types import TextContent
 
@@ -13,13 +12,10 @@ from src.hubspot_mcp.tools import (
     CompanyPropertiesTool,
     ContactPropertiesTool,
     ContactsTool,
-<<<<<<< HEAD
     CreateDealTool,
-=======
-    DealPropertiesTool,
->>>>>>> feat: add get_hubspot_deal_properties tool - Add new DealPropertiesTool to retrieve HubSpot deal properties - Add get_deal_properties method to HubSpotClient - Add format_deal_properties method to HubSpotFormatter - Register new tool in handlers and tools module - Add comprehensive tests for the new tool - Translate all remaining French text to English - Update test assertions to match English translations - All 35 tests passing with 89% coverage
-    DealsTool,
     DealByNameTool,
+    DealPropertiesTool,
+    DealsTool,
 )
 
 
@@ -49,30 +45,34 @@ class DummyAsyncClient:
 
     async def get(self, url, headers=None, params=None):
         if self.raise_error:
-            raise httpx.HTTPStatusError(
-                "API Error", request=None, response=DummyResponse()
-            )
+            from httpx import HTTPStatusError, Request, Response
+
+            response = Response(200, text="")
+            request = Request("GET", url)
+            raise HTTPStatusError("Test error", request=request, response=response)
         return DummyResponse(self.response_data)
 
     async def post(self, url, headers=None, json=None):
         if self.raise_error:
-            raise httpx.HTTPStatusError(
-                "API Error", request=None, response=DummyResponse()
-            )
+            from httpx import HTTPStatusError, Request, Response
+
+            response = Response(200, text="")
+            request = Request("POST", url)
+            raise HTTPStatusError("Test error", request=request, response=response)
         return DummyResponse(self.response_data)
 
 
 @pytest.mark.asyncio
 async def test_contacts_tool_execute():
-    """Test d'exécution du tool contacts."""
+    """Test contacts tool execution."""
     test_data = {
         "results": [
             {
                 "id": "1",
                 "properties": {
-                    "firstname": "Test",
-                    "lastname": "User",
-                    "email": "test@example.com",
+                    "firstname": "John",
+                    "lastname": "Doe",
+                    "email": "john.doe@example.com",
                 },
             }
         ]
@@ -90,12 +90,12 @@ async def test_contacts_tool_execute():
         assert isinstance(result, list)
         assert len(result) == 1
         assert isinstance(result[0], TextContent)
-        assert "Test User" in result[0].text
+        assert "John Doe" in result[0].text
 
 
 @pytest.mark.asyncio
 async def test_companies_tool_execute():
-    """Test d'exécution du tool entreprises."""
+    """Test companies tool execution."""
     test_data = {
         "results": [
             {"id": "100", "properties": {"name": "Test Company", "domain": "test.com"}}
@@ -109,17 +109,16 @@ async def test_companies_tool_execute():
         client = HubSpotClient("test-key")
         tool = CompaniesTool(client)
 
-        result = await tool.execute({"limit": 5})
+        result = await tool.execute({"limit": 15})
 
         assert isinstance(result, list)
         assert len(result) == 1
-        assert isinstance(result[0], TextContent)
         assert "Test Company" in result[0].text
 
 
 @pytest.mark.asyncio
 async def test_deals_tool_execute():
-    """Test d'exécution du tool deals."""
+    """Test deals tool execution."""
     test_data = {
         "results": [
             {
@@ -195,19 +194,14 @@ async def test_tool_error_handling():
 
 
 @pytest.mark.asyncio
-<<<<<<< HEAD
 async def test_deal_by_name_tool_execute():
-    """Test d'exécution du tool deal par nom."""
-=======
-async def test_transaction_by_name_tool_execute():
-    """Test transaction by name tool execution."""
->>>>>>> feat: add get_hubspot_deal_properties tool - Add new DealPropertiesTool to retrieve HubSpot deal properties - Add get_deal_properties method to HubSpotClient - Add format_deal_properties method to HubSpotFormatter - Register new tool in handlers and tools module - Add comprehensive tests for the new tool - Translate all remaining French text to English - Update test assertions to match English translations - All 35 tests passing with 89% coverage
+    """Test deal by name tool execution."""
     test_data = {
         "results": [
             {
                 "id": "400",
                 "properties": {
-                    "dealname": "Contrat Spécifique",
+                    "dealname": "Specific Deal",
                     "amount": "15000.00",
                     "dealstage": "closedwon",
                     "pipeline": "sales",
@@ -223,23 +217,18 @@ async def test_transaction_by_name_tool_execute():
         client = HubSpotClient("test-key")
         tool = DealByNameTool(client)
 
-        result = await tool.execute({"deal_name": "Contrat Spécifique"})
+        result = await tool.execute({"deal_name": "Specific Deal"})
 
         assert isinstance(result, list)
         assert len(result) == 1
         assert isinstance(result[0], TextContent)
-        assert "Contrat Spécifique" in result[0].text
+        assert "Specific Deal" in result[0].text
         assert "$15,000.00" in result[0].text
 
 
 @pytest.mark.asyncio
-<<<<<<< HEAD
 async def test_deal_by_name_tool_not_found():
-    """Test du tool deal par nom quand aucun deal n'est trouvé."""
-=======
-async def test_transaction_by_name_tool_not_found():
-    """Test transaction by name tool when no transaction is found."""
->>>>>>> feat: add get_hubspot_deal_properties tool - Add new DealPropertiesTool to retrieve HubSpot deal properties - Add get_deal_properties method to HubSpotClient - Add format_deal_properties method to HubSpotFormatter - Register new tool in handlers and tools module - Add comprehensive tests for the new tool - Translate all remaining French text to English - Update test assertions to match English translations - All 35 tests passing with 89% coverage
+    """Test deal by name tool when no deal is found."""
     test_data = {"results": []}
 
     def mock_client(*args, **kwargs):
@@ -249,25 +238,16 @@ async def test_transaction_by_name_tool_not_found():
         client = HubSpotClient("test-key")
         tool = DealByNameTool(client)
 
-        result = await tool.execute({"deal_name": "Deal Inexistant"})
+        result = await tool.execute({"deal_name": "Nonexistent Deal"})
 
         assert isinstance(result, list)
         assert len(result) == 1
-<<<<<<< HEAD
-        assert "Deal non trouvé" in result[0].text
+        assert "Deal not found" in result[0].text
 
 
 @pytest.mark.asyncio
 async def test_deal_by_name_tool_missing_name():
-    """Test du tool deal par nom sans nom fourni."""
-=======
-        assert "Transaction not found" in result[0].text
-
-
-@pytest.mark.asyncio
-async def test_transaction_by_name_tool_missing_name():
-    """Test transaction by name tool without provided name."""
->>>>>>> feat: add get_hubspot_deal_properties tool - Add new DealPropertiesTool to retrieve HubSpot deal properties - Add get_deal_properties method to HubSpotClient - Add format_deal_properties method to HubSpotFormatter - Register new tool in handlers and tools module - Add comprehensive tests for the new tool - Translate all remaining French text to English - Update test assertions to match English translations - All 35 tests passing with 89% coverage
+    """Test deal by name tool without provided name."""
     client = HubSpotClient("test-key")
     tool = DealByNameTool(client)
 
@@ -275,11 +255,7 @@ async def test_transaction_by_name_tool_missing_name():
 
     assert isinstance(result, list)
     assert len(result) == 1
-<<<<<<< HEAD
-    assert "Le nom du deal est obligatoire" in result[0].text
-=======
-    assert "Transaction name is required" in result[0].text
->>>>>>> feat: add get_hubspot_deal_properties tool - Add new DealPropertiesTool to retrieve HubSpot deal properties - Add get_deal_properties method to HubSpotClient - Add format_deal_properties method to HubSpotFormatter - Register new tool in handlers and tools module - Add comprehensive tests for the new tool - Translate all remaining French text to English - Update test assertions to match English translations - All 35 tests passing with 89% coverage
+    assert "Deal name is required" in result[0].text
 
 
 @pytest.mark.asyncio
@@ -423,7 +399,7 @@ async def test_deal_properties_tool_empty():
 
 
 def test_tools_definitions():
-    """Test des définitions des outils."""
+    """Test tool definitions."""
     client = HubSpotClient("test-key")
 
     contacts_tool = ContactsTool(client)
@@ -433,7 +409,6 @@ def test_tools_definitions():
     contact_properties_tool = ContactPropertiesTool(client)
     company_properties_tool = CompanyPropertiesTool(client)
 
-    # Test des définitions
     contacts_def = contacts_tool.get_tool_definition()
     companies_def = companies_tool.get_tool_definition()
     deals_def = deals_tool.get_tool_definition()
@@ -448,7 +423,7 @@ def test_tools_definitions():
     assert contact_properties_def.name == "get_hubspot_contact_properties"
     assert company_properties_def.name == "get_hubspot_company_properties"
 
-    # Vérifier les schémas d'entrée
+    # Check input schemas
     assert "limit" in contacts_def.inputSchema["properties"]
     assert "filters" in contacts_def.inputSchema["properties"]
     assert "limit" in companies_def.inputSchema["properties"]
@@ -459,15 +434,15 @@ def test_tools_definitions():
     assert deal_def.inputSchema["required"] == ["deal_name"]
     assert (
         len(contact_properties_def.inputSchema["properties"]) == 0
-    )  # Pas de paramètres requis
+    )  # No required parameters
     assert (
         len(company_properties_def.inputSchema["properties"]) == 0
-    )  # Pas de paramètres requis
+    )  # No required parameters
 
 
 @pytest.mark.asyncio
 async def test_create_deal_tool_execute():
-    """Test d'exécution du tool de création de deal."""
+    """Test create deal tool execution."""
     test_data = {
         "id": "400",
         "properties": {
@@ -496,13 +471,13 @@ async def test_create_deal_tool_execute():
         assert isinstance(result, list)
         assert len(result) == 1
         assert isinstance(result[0], TextContent)
-        assert "✅ **Deal créé avec succès" in result[0].text
+        assert "✅ **Deal created successfully" in result[0].text
         assert "New Test Deal" in result[0].text
 
 
 @pytest.mark.asyncio
 async def test_create_deal_tool_minimal():
-    """Test de création de deal avec uniquement les champs obligatoires."""
+    """Test deal creation with only required fields."""
     test_data = {
         "id": "500",
         "properties": {
@@ -522,13 +497,13 @@ async def test_create_deal_tool_minimal():
 
         assert isinstance(result, list)
         assert len(result) == 1
-        assert "✅ **Deal créé avec succès" in result[0].text
+        assert "✅ **Deal created successfully" in result[0].text
         assert "Minimal Deal" in result[0].text
 
 
 @pytest.mark.asyncio
 async def test_create_deal_tool_error():
-    """Test de gestion d'erreur pour la création de deal."""
+    """Test error handling for deal creation."""
 
     def mock_client(*args, **kwargs):
         return DummyAsyncClient(raise_error=True)
@@ -541,11 +516,11 @@ async def test_create_deal_tool_error():
 
         assert isinstance(result, list)
         assert len(result) == 1
-        assert "Erreur API HubSpot" in result[0].text
+        assert "HubSpot API Error" in result[0].text
 
 
 def test_create_deal_tool_definition():
-    """Test de la définition du tool de création de deal."""
+    """Test create deal tool definition."""
     client = HubSpotClient("test-key")
     tool = CreateDealTool(client)
 
@@ -561,7 +536,7 @@ def test_create_deal_tool_definition():
 
 @pytest.mark.asyncio
 async def test_company_properties_tool_execute():
-    """Test d'exécution du tool propriétés d'entreprises."""
+    """Test company properties tool execution."""
     test_data = {
         "results": [
             {
@@ -595,7 +570,7 @@ async def test_company_properties_tool_execute():
         assert isinstance(result, list)
         assert len(result) == 1
         assert isinstance(result[0], TextContent)
-        assert "Propriétés des Entreprises HubSpot" in result[0].text
+        assert "HubSpot Company Properties" in result[0].text
         assert "Nom de l'entreprise" in result[0].text
         assert "Domaine web" in result[0].text
         assert "companyinformation" in result[0].text
@@ -603,7 +578,7 @@ async def test_company_properties_tool_execute():
 
 @pytest.mark.asyncio
 async def test_company_properties_tool_empty():
-    """Test du tool propriétés d'entreprises avec réponse vide."""
+    """Test company properties tool with empty response."""
     test_data = {"results": []}
 
     def mock_client(*args, **kwargs):
@@ -617,12 +592,12 @@ async def test_company_properties_tool_empty():
 
         assert isinstance(result, list)
         assert len(result) == 1
-        assert "Aucune propriété trouvée" in result[0].text
+        assert "No properties found" in result[0].text
 
 
 @pytest.mark.asyncio
 async def test_company_properties_tool_error():
-    """Test de la gestion d'erreur du tool propriétés d'entreprises."""
+    """Test company properties tool error handling."""
 
     def mock_client(*args, **kwargs):
         return DummyAsyncClient(raise_error=True)
@@ -635,11 +610,11 @@ async def test_company_properties_tool_error():
 
         assert isinstance(result, list)
         assert len(result) == 1
-        assert "Erreur API HubSpot" in result[0].text
+        assert "HubSpot API Error" in result[0].text
 
 
 def test_company_properties_tool_definition():
-    """Test de la définition du tool propriétés d'entreprises."""
+    """Test company properties tool definition."""
     client = HubSpotClient("test-key")
     tool = CompanyPropertiesTool(client)
 
@@ -647,7 +622,7 @@ def test_company_properties_tool_definition():
 
     assert definition.name == "get_hubspot_company_properties"
     assert (
-        "Récupère la liste des propriétés disponibles pour les entreprises HubSpot"
+        "Retrieves the list of available properties for HubSpot companies"
         in definition.description
     )
-    assert len(definition.inputSchema["properties"]) == 0  # Pas de paramètres requis
+    assert len(definition.inputSchema["properties"]) == 0  # No required parameters

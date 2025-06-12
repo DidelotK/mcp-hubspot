@@ -12,9 +12,9 @@ from ..tools import (
     ContactPropertiesTool,
     ContactsTool,
     CreateDealTool,
+    DealByNameTool,
     DealPropertiesTool,
     DealsTool,
-    TransactionByNameTool,
 )
 
 logger = logging.getLogger(__name__)
@@ -29,7 +29,7 @@ class MCPHandlers:
         self.companies_tool = CompaniesTool(client)
         self.deals_tool = DealsTool(client)
         self.create_deal_tool = CreateDealTool(client)
-        self.transaction_by_name_tool = TransactionByNameTool(client)
+        self.deal_by_name_tool = DealByNameTool(client)
         self.contact_properties_tool = ContactPropertiesTool(client)
         self.company_properties_tool = CompanyPropertiesTool(client)
         self.deal_properties_tool = DealPropertiesTool(client)
@@ -39,8 +39,8 @@ class MCPHandlers:
             "list_hubspot_contacts": self.contacts_tool,
             "list_hubspot_companies": self.companies_tool,
             "list_hubspot_deals": self.deals_tool,
-            "create_transaction": self.create_deal_tool,
-            "get_transaction_by_name": self.transaction_by_name_tool,
+            "create_deal": self.create_deal_tool,
+            "get_deal_by_name": self.deal_by_name_tool,
             "get_hubspot_contact_properties": self.contact_properties_tool,
             "get_hubspot_company_properties": self.company_properties_tool,
             "get_hubspot_deal_properties": self.deal_properties_tool,
