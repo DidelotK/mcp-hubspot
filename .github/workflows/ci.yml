@@ -9,7 +9,6 @@ on:
 jobs:
   code-quality:
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
     permissions:
       contents: read
       pull-requests: write
@@ -38,12 +37,31 @@ jobs:
         uv run python scripts/lint_check.py
       continue-on-error: true
     
+    - name: Check code quality status
+      run: |
+        if [ ${{ steps.lint.outcome }} != 'success' ]; then
+          echo "❌ Code quality checks failed. Please fix the issues before merging."
+          exit 1
+        else
+          echo "✅ Code quality checks passed."
+        fi
+    
     - name: Comment PR with code quality report
-      if: always()
+      if: always() && github.event_name == 'pull_request'
       uses: ./.github/actions/comment-pr-quality
       with:
         report-path: 'lint_report.md'
         github-token: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Display code quality report
+      if: always() && github.event_name == 'push'
+      run: |
+        echo "📋 Code Quality Report:"
+        if [ -f lint_report.md ]; then
+          cat lint_report.md
+        else
+          echo "❌ No lint report found"
+        fi
 
   test:
     runs-on: ubuntu-latest

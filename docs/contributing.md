@@ -91,6 +91,9 @@ git clone <repo>
 cd hubspot-mcp-server
 uv sync
 
+# Installer les hooks Git (recommandé)
+./scripts/install_hooks.sh
+
 # Créer une branche
 git checkout -b feature/nouveau-tool
 ```
@@ -104,14 +107,26 @@ git checkout -b feature/nouveau-tool
 ### 3. Validation
 
 ```bash
+# Vérification complète de la qualité (recommandé)
+./scripts/check_quality.sh
+
+# Ou vérifications individuelles :
 # Lancer les tests
 uv run pytest
 
 # Vérifier la couverture
 uv run pytest --cov=src --cov-report=html
 
-# Linter (si configuré)
-uv run ruff check src/
+# Formatage du code
+uv run black src/ main.py tests/ scripts/
+uv run isort src/ main.py tests/ scripts/
+
+# Analyse statique
+uv run flake8 src/ main.py tests/ scripts/
+uv run mypy src/ main.py
+
+# Rapport de qualité complet
+uv run python scripts/lint_check.py
 ```
 
 ### 4. Commit et PR
@@ -228,6 +243,52 @@ Description de l'outil.
 
 Ajoutez des exemples concrets dans `docs/examples.md`.
 
+## Qualité de code
+
+### Outils de vérification
+
+Le projet utilise plusieurs outils pour maintenir la qualité :
+
+- **black** : Formatage automatique du code
+- **isort** : Tri automatique des imports
+- **flake8** : Analyse statique et style PEP 8
+- **mypy** : Vérification des types
+- **bandit** : Analyse de sécurité
+- **pytest** : Tests unitaires avec couverture
+
+### Scripts disponibles
+
+```bash
+# Vérification complète (recommandé avant commit)
+./scripts/check_quality.sh
+
+# Installation des hooks Git
+./scripts/install_hooks.sh
+
+# Rapport de qualité détaillé
+uv run python scripts/lint_check.py
+```
+
+### Hooks Git automatiques
+
+Les hooks Git installés exécutent automatiquement :
+
+- **pre-commit** : Formatage, imports, analyse statique
+- **pre-push** : Tests unitaires
+
+Pour contourner temporairement :
+```bash
+git commit --no-verify
+git push --no-verify
+```
+
+### CI/CD
+
+Les vérifications de qualité s'exécutent automatiquement :
+- ✅ **Sur tous les push** vers main/develop
+- ✅ **Sur toutes les pull requests**
+- ❌ **Échec du build** si la qualité n'est pas satisfaisante
+
 ## Déploiement
 
 ### Semantic Versioning
@@ -244,5 +305,6 @@ Ajoutez des exemples concrets dans `docs/examples.md`.
 1. Tous les tests passent
 2. Documentation à jour
 3. Couverture de tests maintenue
-4. Commits semantic versioning
-5. PR reviewée et approuvée 
+4. **Qualité de code validée**
+5. Commits semantic versioning
+6. PR reviewée et approuvée 

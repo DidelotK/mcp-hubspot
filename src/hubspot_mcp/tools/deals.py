@@ -54,4 +54,4 @@ class DealsTool(BaseTool):
             return [types.TextContent(type="text", text=formatted_result)]
 
         except Exception as e:
-            return self.handle_error(e) 
+            return self.handle_error(e)

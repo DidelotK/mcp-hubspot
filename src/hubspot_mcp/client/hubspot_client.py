@@ -98,25 +98,26 @@ class HubSpotClient:
                         {
                             "propertyName": "dealname",
                             "operator": "EQ",
-                            "value": deal_name
+                            "value": deal_name,
                         }
                     ]
                 }
             ],
             "properties": [
-                "dealname", "amount", "dealstage", "pipeline", 
-                "closedate", "createdate", "lastmodifieddate", 
-                "hubspot_owner_id"
+                "dealname",
+                "amount",
+                "dealstage",
+                "pipeline",
+                "closedate",
+                "createdate",
+                "lastmodifieddate",
+                "hubspot_owner_id",
             ],
-            "limit": 1
+            "limit": 1,
         }
 
         async with httpx.AsyncClient() as client:
-            response = await client.post(
-                url, 
-                headers=self.headers, 
-                json=search_body
-            )
+            response = await client.post(url, headers=self.headers, json=search_body)
             response.raise_for_status()
             data = response.json()
             results = data.get("results", [])

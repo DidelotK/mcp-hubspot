@@ -34,12 +34,14 @@ class TransactionByNameTool(BaseTool):
         """Exécute la récupération de la transaction par nom."""
         try:
             deal_name = arguments.get("deal_name")
-            
+
             if not deal_name:
-                return [types.TextContent(
-                    type="text", 
-                    text="❌ **Erreur**: Le nom de la transaction est obligatoire."
-                )]
+                return [
+                    types.TextContent(
+                        type="text",
+                        text="❌ **Erreur**: Le nom de la transaction est obligatoire.",
+                    )
+                ]
 
             transaction = await self.client.get_transaction_by_name(deal_name)
             formatted_result = HubSpotFormatter.format_single_transaction(transaction)
@@ -47,4 +49,4 @@ class TransactionByNameTool(BaseTool):
             return [types.TextContent(type="text", text=formatted_result)]
 
         except Exception as e:
-            return self.handle_error(e) 
+            return self.handle_error(e)

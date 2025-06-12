@@ -57,7 +57,7 @@ class HubSpotFormatter:
         for deal in deals:
             props = deal.get("properties", {})
             amount = props.get("amount", "0")
-            
+
             # Formatage du montant si disponible
             if amount and amount != "0":
                 try:
@@ -84,10 +84,10 @@ class HubSpotFormatter:
         """Formate une transaction unique pour l'affichage."""
         if not transaction:
             return "🔍 **Transaction non trouvée**\n\nAucune transaction ne correspond au nom spécifié."
-        
+
         props = transaction.get("properties", {})
         amount = props.get("amount", "0")
-        
+
         # Formatage du montant si disponible
         if amount and amount != "0":
             try:
@@ -116,9 +116,11 @@ class HubSpotFormatter:
         """Formate la liste des propriétés de contacts pour l'affichage."""
         if not properties:
             return "❌ **Aucune propriété trouvée**\n\nImpossible de récupérer les propriétés des contacts."
-        
-        result = f"🔧 **Propriétés des Contacts HubSpot** ({len(properties)} propriétés)\n\n"
-        
+
+        result = (
+            f"🔧 **Propriétés des Contacts HubSpot** ({len(properties)} propriétés)\n\n"
+        )
+
         # Grouper les propriétés par groupe
         grouped_properties = {}
         for prop in properties:
@@ -126,18 +128,18 @@ class HubSpotFormatter:
             if group_name not in grouped_properties:
                 grouped_properties[group_name] = []
             grouped_properties[group_name].append(prop)
-        
+
         # Afficher par groupe
         for group_name, group_props in grouped_properties.items():
             result += f"## 📁 {group_name}\n\n"
-            
+
             for prop in group_props:
                 name = prop.get("name", "N/A")
                 label = prop.get("label", "N/A")
                 type_info = prop.get("type", "N/A")
                 field_type = prop.get("fieldType", "N/A")
                 description = prop.get("description", "")
-                
+
                 # Icône selon le type de champ
                 icon = "📝"
                 if field_type == "date":
@@ -158,25 +160,28 @@ class HubSpotFormatter:
                     icon = "📞"
                 elif name in ["company", "associatedcompanyid"]:
                     icon = "🏢"
-                
+
                 result += f"**{icon} {label}**\n"
                 result += f"  🏷️ Nom: `{name}`\n"
                 result += f"  🔧 Type: {type_info} ({field_type})\n"
-                
+
                 if description:
                     result += f"  📝 Description: {description}\n"
-                
+
                 # Options pour les champs select
                 if field_type == "select" and "options" in prop:
                     options = prop["options"]
                     if options:
-                        option_labels = [opt.get("label", opt.get("value", "")) for opt in options[:5]]
+                        option_labels = [
+                            opt.get("label", opt.get("value", ""))
+                            for opt in options[:5]
+                        ]
                         if len(options) > 5:
                             option_labels.append(f"... et {len(options) - 5} autres")
                         result += f"  📋 Options: {', '.join(option_labels)}\n"
-                
+
                 result += "\n"
-            
+
             result += "\n"
-        
+
         return result

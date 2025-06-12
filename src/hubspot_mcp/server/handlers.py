@@ -6,7 +6,13 @@ from typing import Any, Dict, List, Optional
 import mcp.types as types
 
 from ..client import HubSpotClient
-from ..tools import CompaniesTool, ContactsTool, ContactPropertiesTool, DealsTool, TransactionByNameTool
+from ..tools import (
+    CompaniesTool,
+    ContactPropertiesTool,
+    ContactsTool,
+    DealsTool,
+    TransactionByNameTool,
+)
 
 logger = logging.getLogger(__name__)
 

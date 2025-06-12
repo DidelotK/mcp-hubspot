@@ -12,25 +12,25 @@ def test_format_contacts():
             "id": "1",
             "properties": {
                 "firstname": "Jean",
-                "lastname": "Dupont", 
+                "lastname": "Dupont",
                 "email": "jean.dupont@example.com",
                 "company": "Acme Corp",
                 "phone": "+33123456789",
-                "createdate": "2024-01-01T00:00:00Z"
-            }
+                "createdate": "2024-01-01T00:00:00Z",
+            },
         },
         {
             "id": "2",
             "properties": {
                 "firstname": "Marie",
                 "lastname": "Martin",
-                "email": "marie.martin@example.com"
-            }
-        }
+                "email": "marie.martin@example.com",
+            },
+        },
     ]
-    
+
     result = HubSpotFormatter.format_contacts(contacts_data)
-    
+
     assert "📋 **Contacts HubSpot** (2 trouvés)" in result
     assert "**Jean Dupont**" in result
     assert "jean.dupont@example.com" in result
@@ -53,19 +53,14 @@ def test_format_companies():
                 "state": "Île-de-France",
                 "country": "France",
                 "industry": "Technology",
-                "createdate": "2024-01-15T00:00:00Z"
-            }
+                "createdate": "2024-01-15T00:00:00Z",
+            },
         },
-        {
-            "id": "101",
-            "properties": {
-                "name": "Startup Inc"
-            }
-        }
+        {"id": "101", "properties": {"name": "Startup Inc"}},
     ]
-    
+
     result = HubSpotFormatter.format_companies(companies_data)
-    
+
     assert "🏢 **Entreprises HubSpot** (2 trouvées)" in result
     assert "**Tech Solutions**" in result
     assert "techsolutions.com" in result
@@ -88,26 +83,15 @@ def test_format_deals():
                 "pipeline": "sales",
                 "closedate": "2024-06-30",
                 "createdate": "2024-01-01T00:00:00Z",
-                "hubspot_owner_id": "12345"
-            }
+                "hubspot_owner_id": "12345",
+            },
         },
-        {
-            "id": "201",
-            "properties": {
-                "dealname": "Petit deal",
-                "amount": "0"
-            }
-        },
-        {
-            "id": "202",
-            "properties": {
-                "dealname": "Deal sans montant"
-            }
-        }
+        {"id": "201", "properties": {"dealname": "Petit deal", "amount": "0"}},
+        {"id": "202", "properties": {"dealname": "Deal sans montant"}},
     ]
-    
+
     result = HubSpotFormatter.format_deals(deals_data)
-    
+
     assert "💰 **Transactions HubSpot** (3 trouvées)" in result
     assert "**Gros contrat**" in result
     assert "50,000.00 €" in result
@@ -127,13 +111,13 @@ def test_format_deals_with_invalid_amount():
             "id": "300",
             "properties": {
                 "dealname": "Deal avec montant invalide",
-                "amount": "invalid_amount"
-            }
+                "amount": "invalid_amount",
+            },
         }
     ]
-    
+
     result = HubSpotFormatter.format_deals(deals_data)
-    
+
     assert "**Deal avec montant invalide**" in result
     assert "invalid_amount €" in result
 
@@ -141,8 +125,13 @@ def test_format_deals_with_invalid_amount():
 def test_format_empty_lists():
     """Test du formatage avec des listes vides."""
     assert "📋 **Contacts HubSpot** (0 trouvés)" in HubSpotFormatter.format_contacts([])
-    assert "🏢 **Entreprises HubSpot** (0 trouvées)" in HubSpotFormatter.format_companies([])
-    assert "💰 **Transactions HubSpot** (0 trouvées)" in HubSpotFormatter.format_deals([])
+    assert (
+        "🏢 **Entreprises HubSpot** (0 trouvées)"
+        in HubSpotFormatter.format_companies([])
+    )
+    assert "💰 **Transactions HubSpot** (0 trouvées)" in HubSpotFormatter.format_deals(
+        []
+    )
 
 
 def test_format_single_transaction():
@@ -157,12 +146,12 @@ def test_format_single_transaction():
             "closedate": "2024-12-31",
             "createdate": "2024-06-01T00:00:00Z",
             "lastmodifieddate": "2024-06-12T12:00:00Z",
-            "hubspot_owner_id": "98765"
-        }
+            "hubspot_owner_id": "98765",
+        },
     }
-    
+
     result = HubSpotFormatter.format_single_transaction(transaction_data)
-    
+
     assert "💰 **Transaction HubSpot**" in result
     assert "**Contrat Premium**" in result
     assert "25,000.00 €" in result
@@ -175,22 +164,17 @@ def test_format_single_transaction():
 def test_format_single_transaction_not_found():
     """Test du formatage quand aucune transaction n'est trouvée."""
     result = HubSpotFormatter.format_single_transaction(None)
-    
+
     assert "🔍 **Transaction non trouvée**" in result
     assert "Aucune transaction ne correspond au nom spécifié" in result
 
 
 def test_format_single_transaction_minimal_data():
     """Test du formatage d'une transaction avec données minimales."""
-    transaction_data = {
-        "id": "600",
-        "properties": {
-            "dealname": "Deal Simple"
-        }
-    }
-    
+    transaction_data = {"id": "600", "properties": {"dealname": "Deal Simple"}}
+
     result = HubSpotFormatter.format_single_transaction(transaction_data)
-    
+
     assert "**Deal Simple**" in result
     assert "💰 Montant: N/A" in result
     assert "📊 Étape: N/A" in result
@@ -206,7 +190,7 @@ def test_format_contact_properties():
             "type": "string",
             "fieldType": "text",
             "groupName": "contactinformation",
-            "description": "Le prénom du contact"
+            "description": "Le prénom du contact",
         },
         {
             "name": "email",
@@ -214,14 +198,14 @@ def test_format_contact_properties():
             "type": "string",
             "fieldType": "text",
             "groupName": "contactinformation",
-            "description": "L'adresse e-mail du contact"
+            "description": "L'adresse e-mail du contact",
         },
         {
             "name": "birthdate",
             "label": "Date de naissance",
             "type": "date",
             "fieldType": "date",
-            "groupName": "demographic_information"
+            "groupName": "demographic_information",
         },
         {
             "name": "industry",
@@ -232,13 +216,13 @@ def test_format_contact_properties():
             "options": [
                 {"label": "Technologie", "value": "TECHNOLOGY"},
                 {"label": "Finance", "value": "FINANCE"},
-                {"label": "Santé", "value": "HEALTHCARE"}
-            ]
-        }
+                {"label": "Santé", "value": "HEALTHCARE"},
+            ],
+        },
     ]
-    
+
     result = HubSpotFormatter.format_contact_properties(properties_data)
-    
+
     assert "🔧 **Propriétés des Contacts HubSpot** (4 propriétés)" in result
     assert "## 📁 contactinformation" in result
     assert "## 📁 demographic_information" in result
@@ -256,7 +240,7 @@ def test_format_contact_properties():
 def test_format_contact_properties_empty():
     """Test du formatage des propriétés de contacts avec liste vide."""
     result = HubSpotFormatter.format_contact_properties([])
-    
+
     assert "❌ **Aucune propriété trouvée**" in result
     assert "Impossible de récupérer les propriétés des contacts" in result
 
@@ -268,13 +252,13 @@ def test_format_contact_properties_minimal():
             "name": "custom_field",
             "label": "Champ personnalisé",
             "type": "string",
-            "fieldType": "text"
+            "fieldType": "text",
         }
     ]
-    
+
     result = HubSpotFormatter.format_contact_properties(properties_data)
-    
+
     assert "🔧 **Propriétés des Contacts HubSpot** (1 propriétés)" in result
     assert "## 📁 Autres" in result  # Groupe par défaut
     assert "**📝 Champ personnalisé**" in result
-    assert "`custom_field`" in result 
+    assert "`custom_field`" in result

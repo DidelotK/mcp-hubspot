@@ -1,0 +1,26 @@
+[flake8]
+max-line-length = 88
+extend-ignore = 
+    # Ligne trop longue (compatible avec black)
+    E501,
+    # Ligne vide contient des espaces
+    W293,
+    # Import non utilisé (parfois nécessaire pour les types)
+    F401,
+    # f-string sans placeholder (parfois utilisé pour la cohérence)
+    F541
+exclude = 
+    .git,
+    __pycache__,
+    .venv,
+    .pytest_cache,
+    build,
+    dist,
+    *.egg-info,
+    .coverage,
+    htmlcov
+per-file-ignores =
+    # Tests peuvent avoir des imports non utilisés
+    tests/*:F401,F841
+    # Scripts peuvent être plus permissifs
+    scripts/*:E501,F401 
