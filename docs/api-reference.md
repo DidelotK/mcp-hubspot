@@ -1,6 +1,6 @@
 # API Reference - MCP Tools
 
-This MCP server exposes 5 tools to interact with the HubSpot API.
+This MCP server exposes 8 tools to interact with the HubSpot API.
 
 ## list_hubspot_contacts
 
@@ -114,6 +114,52 @@ Retrieves the list of HubSpot deals.
   🆔 ID: 789012
 ```
 
+## create_deal
+
+Creates a new deal in HubSpot.
+
+### Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `dealname` | string | **Yes** | Name of the deal |
+| `amount` | string | No | Deal amount |
+| `dealstage` | string | No | Deal stage |
+| `pipeline` | string | No | Deal pipeline |
+| `closedate` | string | No | Expected close date (YYYY-MM-DD) |
+| `hubspot_owner_id` | string | No | Deal owner ID |
+| `description` | string | No | Deal description |
+
+### Usage Example
+
+```json
+{
+  "name": "create_deal",
+  "arguments": {
+    "dealname": "New Enterprise Contract",
+    "amount": "75000",
+    "dealstage": "appointmentscheduled",
+    "pipeline": "default",
+    "closedate": "2024-12-31",
+    "description": "Large enterprise deal for Q4"
+  }
+}
+```
+
+### Response
+
+```
+✅ **Deal Created Successfully**
+
+**New Enterprise Contract**
+  💰 Amount: $75,000.00
+  📊 Stage: appointmentscheduled
+  🔄 Pipeline: default
+  📅 Close Date: 2024-12-31
+  📝 Description: Large enterprise deal for Q4
+  🆔 ID: 987654
+```
+
 ## get_deal_by_name
 
 Retrieves a specific deal by its exact name.
@@ -199,31 +245,105 @@ No parameters required.
   🏷️ Name: `phone`
   🔧 Type: string (text)
   📝 Description: The contact's primary phone number
+```
 
-## 📁 demographic_information
+## get_hubspot_company_properties
 
-**📅 Date of Birth**
-  🏷️ Name: `date_of_birth`
-  🔧 Type: date (date)
-  📝 Description: The contact's date of birth
+Retrieves the list of available properties for HubSpot companies with their types and descriptions.
 
-## 📁 company_information
+### Parameters
 
-**📋 Industry**
+No parameters required.
+
+### Usage Example
+
+```json
+{
+  "name": "get_hubspot_company_properties",
+  "arguments": {}
+}
+```
+
+### Response
+
+```
+🏢 **HubSpot Company Properties** (156 properties)
+
+## 📁 companyinformation
+
+**🏢 Company Name**
+  🏷️ Name: `name`
+  🔧 Type: string (text)
+  📝 Description: The company name
+
+**🌐 Website Domain**
+  🏷️ Name: `domain`
+  🔧 Type: string (text)
+  📝 Description: The company website domain
+
+**🏭 Industry**
   🏷️ Name: `industry`
   🔧 Type: enumeration (select)
   📝 Description: The company's industry sector
   📋 Options: Technology, Finance, Healthcare, ... and 25 others
+
+**👥 Number of Employees**
+  🏷️ Name: `numberofemployees`
+  🔧 Type: number (number)
+  📝 Description: Total number of employees
 ```
 
-### Usefulness
+## get_hubspot_deal_properties
 
-This tool is particularly useful for:
-- **Discovering available fields** in HubSpot
-- **Understanding data types** (text, date, select, etc.)
-- **Viewing available options** for selection fields
-- **Planning integration** with other systems
-- **Debugging issues** with data synchronization
+Retrieves the list of available properties for HubSpot deals with their types and descriptions.
+
+### Parameters
+
+No parameters required.
+
+### Usage Example
+
+```json
+{
+  "name": "get_hubspot_deal_properties",
+  "arguments": {}
+}
+```
+
+### Response
+
+```
+💰 **HubSpot Deal Properties** (89 properties)
+
+## 📁 dealinformation
+
+**🏷️ Deal Name**
+  🏷️ Name: `dealname`
+  🔧 Type: string (text)
+  📝 Description: The name of the deal
+
+**💰 Deal Amount**
+  🏷️ Name: `amount`
+  🔧 Type: number (number)
+  📝 Description: The deal amount
+
+**📊 Deal Stage**
+  🏷️ Name: `dealstage`
+  🔧 Type: enumeration (select)
+  📝 Description: The current stage of the deal
+  📋 Options: appointmentscheduled, qualifiedtobuy, presentationscheduled, ... and 5 others
+
+**🔄 Pipeline**
+  🏷️ Name: `pipeline`
+  🔧 Type: enumeration (select)
+  📝 Description: The sales pipeline
+  📋 Options: default, enterprise, ... and 2 others
+
+**📅 Close Date**
+  🏷️ Name: `closedate`
+  🔧 Type: date (date)
+  📝 Description: Expected close date
+```
 
 ## Error Handling
 
@@ -247,6 +367,12 @@ All tools handle errors consistently:
 ❌ Missing parameter: deal_name is required for get_deal_by_name
 ```
 
+### Validation Errors
+
+```
+❌ Invalid parameter: dealname cannot be empty
+```
+
 ## Search Filters
 
 Filters support the following properties:
@@ -266,4 +392,15 @@ Filters support the following properties:
 - `stage`: Filter by sales stage
 - `pipeline`: Filter by sales pipeline
 - `amount_gte`: Minimum amount
-- `amount_lte`: Maximum amount 
+- `amount_lte`: Maximum amount
+
+## Usefulness
+
+These tools are particularly useful for:
+- **Discovering available fields** in HubSpot
+- **Understanding data types** (text, date, select, etc.)
+- **Viewing available options** for selection fields
+- **Planning integration** with other systems
+- **Creating and managing deals** programmatically
+- **Debugging issues** with data synchronization
+- **Building custom workflows** with HubSpot data 

@@ -23,7 +23,7 @@ uv run python main.py --mode stdio
 |---------|-------------|
 | **[Installation](docs/installation.md)** | Installation and configuration guide |
 | **[Integration](docs/integration.md)** | Configuration with Claude Desktop and other MCP clients |
-| **[API Reference](docs/api-reference.md)** | Complete documentation of the 4 available tools |
+| **[API Reference](docs/api-reference.md)** | Complete documentation of the 8 available tools |
 | **[Examples](docs/examples.md)** | Use cases and example conversations with Claude |
 | **[Contributing](docs/contributing.md)** | Guide for developing new tools |
 
@@ -40,8 +40,11 @@ uv run python main.py --mode stdio
 | `list_hubspot_contacts` | List and filter HubSpot contacts |
 | `list_hubspot_companies` | List and filter HubSpot companies |
 | `list_hubspot_deals` | List and filter HubSpot deals |
+| `create_deal` | Create a new deal in HubSpot |
 | `get_deal_by_name` | Search for a deal by exact name |
 | `get_hubspot_contact_properties` | Retrieve contact field properties with types and descriptions |
+| `get_hubspot_company_properties` | Retrieve company field properties with types and descriptions |
+| `get_hubspot_deal_properties` | Retrieve deal field properties with types and descriptions |
 
 ## ⚡ Usage with Claude
 
@@ -50,7 +53,9 @@ Once configured, use natural language phrases:
 - *"List my HubSpot contacts"*
 - *"Find tech sector companies"*
 - *"Show current deals"*
+- *"Create a new deal for Project X"*
 - *"Search for the 'Project X' deal"*
+- *"What contact properties are available?"*
 
 ## 🧪 Testing and Quality
 
@@ -62,7 +67,7 @@ uv run pytest
 uv run pytest --cov=src --cov-report=html
 ```
 
-**Current Status:** ✅ 30 tests passed, 91% coverage
+**Current Status:** ✅ 79 tests passed, 96% coverage
 
 ## 📋 Prerequisites
 
