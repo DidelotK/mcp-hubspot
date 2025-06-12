@@ -8,8 +8,10 @@ import mcp.types as types
 from ..client import HubSpotClient
 from ..tools import (
     CompaniesTool,
+    CompanyPropertiesTool,
     ContactPropertiesTool,
     ContactsTool,
+    CreateDealTool,
     DealsTool,
     TransactionByNameTool,
 )
@@ -25,16 +27,20 @@ class MCPHandlers:
         self.contacts_tool = ContactsTool(client)
         self.companies_tool = CompaniesTool(client)
         self.deals_tool = DealsTool(client)
+        self.create_deal_tool = CreateDealTool(client)
         self.transaction_by_name_tool = TransactionByNameTool(client)
         self.contact_properties_tool = ContactPropertiesTool(client)
+        self.company_properties_tool = CompanyPropertiesTool(client)
 
         # Mappage des outils
         self.tools_map = {
             "list_hubspot_contacts": self.contacts_tool,
             "list_hubspot_companies": self.companies_tool,
             "list_hubspot_deals": self.deals_tool,
+            "create_transaction": self.create_deal_tool,
             "get_transaction_by_name": self.transaction_by_name_tool,
             "get_hubspot_contact_properties": self.contact_properties_tool,
+            "get_hubspot_company_properties": self.company_properties_tool,
         }
 
     async def handle_list_tools(self) -> List[types.Tool]:

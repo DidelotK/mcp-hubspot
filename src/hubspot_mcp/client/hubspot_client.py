@@ -132,3 +132,13 @@ class HubSpotClient:
             response.raise_for_status()
             data = response.json()
             return data.get("results", [])
+
+    async def get_company_properties(self) -> List[Dict]:
+        """Récupère la liste des propriétés disponibles pour les entreprises."""
+        url = f"{self.base_url}/crm/v3/properties/companies"
+
+        async with httpx.AsyncClient() as client:
+            response = await client.get(url, headers=self.headers)
+            response.raise_for_status()
+            data = response.json()
+            return data.get("results", [])

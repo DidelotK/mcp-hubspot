@@ -185,3 +185,82 @@ class HubSpotFormatter:
             result += "\n"
 
         return result
+
+    @staticmethod
+    def format_company_properties(properties: List[Dict[str, Any]]) -> str:
+        """Formate la liste des propriétés d'entreprises pour l'affichage."""
+        if not properties:
+            return "❌ **Aucune propriété trouvée**\n\nImpossible de récupérer les propriétés des entreprises."
+
+        result = f"🏢 **Propriétés des Entreprises HubSpot** ({len(properties)} propriétés)\n\n"
+
+        # Grouper les propriétés par groupe
+        grouped_properties = {}
+        for prop in properties:
+            group_name = prop.get("groupName", "Autres")
+            if group_name not in grouped_properties:
+                grouped_properties[group_name] = []
+            grouped_properties[group_name].append(prop)
+
+        # Afficher par groupe
+        for group_name, group_props in grouped_properties.items():
+            result += f"## 📁 {group_name}\n\n"
+
+            for prop in group_props:
+                name = prop.get("name", "N/A")
+                label = prop.get("label", "N/A")
+                type_info = prop.get("type", "N/A")
+                field_type = prop.get("fieldType", "N/A")
+                description = prop.get("description", "")
+
+                # Icône selon le type de champ
+                icon = "📝"
+                if field_type == "date":
+                    icon = "📅"
+                elif field_type == "number":
+                    icon = "🔢"
+                elif field_type == "select":
+                    icon = "📋"
+                elif field_type == "checkbox":
+                    icon = "☑️"
+                elif field_type == "textarea":
+                    icon = "📄"
+                elif field_type == "file":
+                    icon = "📎"
+                elif name in ["domain", "website"]:
+                    icon = "🌐"
+                elif name in ["phone", "fax"]:
+                    icon = "📞"
+                elif name in ["city", "state", "country", "address"]:
+                    icon = "📍"
+                elif name in ["industry", "type"]:
+                    icon = "🏭"
+                elif name in ["name", "description"]:
+                    icon = "🏢"
+                elif name in ["annualrevenue", "numberofemployees"]:
+                    icon = "💰"
+
+                result += f"**{icon} {label}**\n"
+                result += f"  🏷️ Nom: `{name}`\n"
+                result += f"  🔧 Type: {type_info} ({field_type})\n"
+
+                if description:
+                    result += f"  📝 Description: {description}\n"
+
+                # Options pour les champs select
+                if field_type == "select" and "options" in prop:
+                    options = prop["options"]
+                    if options:
+                        option_labels = [
+                            opt.get("label", opt.get("value", ""))
+                            for opt in options[:5]
+                        ]
+                        if len(options) > 5:
+                            option_labels.append(f"... et {len(options) - 5} autres")
+                        result += f"  📋 Options: {', '.join(option_labels)}\n"
+
+                result += "\n"
+
+            result += "\n"
+
+        return result

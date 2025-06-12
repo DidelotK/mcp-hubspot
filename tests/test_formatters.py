@@ -262,3 +262,87 @@ def test_format_contact_properties_minimal():
     assert "## 📁 Autres" in result  # Groupe par défaut
     assert "**📝 Champ personnalisé**" in result
     assert "`custom_field`" in result
+
+
+def test_format_company_properties():
+    """Test du formatage des propriétés d'entreprises."""
+    properties_data = [
+        {
+            "name": "name",
+            "label": "Nom de l'entreprise",
+            "type": "string",
+            "fieldType": "text",
+            "groupName": "companyinformation",
+            "description": "Le nom de l'entreprise",
+        },
+        {
+            "name": "domain",
+            "label": "Domaine web",
+            "type": "string",
+            "fieldType": "text",
+            "groupName": "companyinformation",
+            "description": "Le domaine web de l'entreprise",
+        },
+        {
+            "name": "industry",
+            "label": "Secteur d'activité",
+            "type": "enumeration",
+            "fieldType": "select",
+            "groupName": "business_information",
+            "options": [
+                {"label": "Technologie", "value": "TECHNOLOGY"},
+                {"label": "Finance", "value": "FINANCE"},
+                {"label": "Santé", "value": "HEALTHCARE"},
+            ],
+        },
+        {
+            "name": "annualrevenue",
+            "label": "Chiffre d'affaires annuel",
+            "type": "number",
+            "fieldType": "number",
+            "groupName": "financial_information",
+        },
+    ]
+
+    result = HubSpotFormatter.format_company_properties(properties_data)
+
+    assert "🏢 **Propriétés des Entreprises HubSpot** (4 propriétés)" in result
+    assert "## 📁 companyinformation" in result
+    assert "## 📁 business_information" in result
+    assert "## 📁 financial_information" in result
+    assert "**🏢 Nom de l'entreprise**" in result
+    assert "**🌐 Domaine web**" in result
+    assert "**📋 Secteur d'activité**" in result
+    assert "**🔢 Chiffre d'affaires annuel**" in result
+    assert "`name`" in result
+    assert "`domain`" in result
+    assert "Le nom de l'entreprise" in result
+    assert "Le domaine web de l'entreprise" in result
+    assert "Technologie, Finance, Santé" in result
+
+
+def test_format_company_properties_empty():
+    """Test du formatage des propriétés d'entreprises avec liste vide."""
+    result = HubSpotFormatter.format_company_properties([])
+
+    assert "❌ **Aucune propriété trouvée**" in result
+    assert "Impossible de récupérer les propriétés des entreprises" in result
+
+
+def test_format_company_properties_minimal():
+    """Test du formatage des propriétés d'entreprises avec données minimales."""
+    properties_data = [
+        {
+            "name": "custom_company_field",
+            "label": "Champ personnalisé entreprise",
+            "type": "string",
+            "fieldType": "text",
+        }
+    ]
+
+    result = HubSpotFormatter.format_company_properties(properties_data)
+
+    assert "🏢 **Propriétés des Entreprises HubSpot** (1 propriétés)" in result
+    assert "## 📁 Autres" in result  # Groupe par défaut
+    assert "**📝 Champ personnalisé entreprise**" in result
+    assert "`custom_company_field`" in result

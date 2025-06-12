@@ -39,6 +39,7 @@ def test_handle_list_tools():
     assert "list_hubspot_companies" in names
     assert "list_hubspot_deals" in names
     assert "get_transaction_by_name" in names
+    assert "get_hubspot_company_properties" in names
 
 
 def test_handle_call_tool_no_client():

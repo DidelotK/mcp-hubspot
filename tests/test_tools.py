@@ -10,8 +10,10 @@ from mcp.types import TextContent
 from src.hubspot_mcp.client import HubSpotClient
 from src.hubspot_mcp.tools import (
     CompaniesTool,
+    CompanyPropertiesTool,
     ContactPropertiesTool,
     ContactsTool,
+    CreateDealTool,
     DealsTool,
     TransactionByNameTool,
 )
@@ -341,19 +343,22 @@ def test_tools_definitions():
     deals_tool = DealsTool(client)
     transaction_by_name_tool = TransactionByNameTool(client)
     contact_properties_tool = ContactPropertiesTool(client)
+    company_properties_tool = CompanyPropertiesTool(client)
 
     # Test des définitions
     contacts_def = contacts_tool.get_tool_definition()
     companies_def = companies_tool.get_tool_definition()
     deals_def = deals_tool.get_tool_definition()
     transaction_def = transaction_by_name_tool.get_tool_definition()
-    properties_def = contact_properties_tool.get_tool_definition()
+    contact_properties_def = contact_properties_tool.get_tool_definition()
+    company_properties_def = company_properties_tool.get_tool_definition()
 
     assert contacts_def.name == "list_hubspot_contacts"
     assert companies_def.name == "list_hubspot_companies"
     assert deals_def.name == "list_hubspot_deals"
     assert transaction_def.name == "get_transaction_by_name"
-    assert properties_def.name == "get_hubspot_contact_properties"
+    assert contact_properties_def.name == "get_hubspot_contact_properties"
+    assert company_properties_def.name == "get_hubspot_company_properties"
 
     # Vérifier les schémas d'entrée
     assert "limit" in contacts_def.inputSchema["properties"]
@@ -365,5 +370,196 @@ def test_tools_definitions():
     assert "deal_name" in transaction_def.inputSchema["properties"]
     assert transaction_def.inputSchema["required"] == ["deal_name"]
     assert (
-        len(properties_def.inputSchema["properties"]) == 0
+        len(contact_properties_def.inputSchema["properties"]) == 0
     )  # Pas de paramètres requis
+    assert (
+        len(company_properties_def.inputSchema["properties"]) == 0
+    )  # Pas de paramètres requis
+
+
+@pytest.mark.asyncio
+async def test_create_deal_tool_execute():
+    """Test d'exécution du tool de création de deal."""
+    test_data = {
+        "id": "400",
+        "properties": {
+            "dealname": "New Test Deal",
+            "amount": "5000.00",
+            "dealstage": "appointmentscheduled",
+            "createdate": "2024-01-15T10:30:00Z",
+        },
+    }
+
+    def mock_client(*args, **kwargs):
+        return DummyAsyncClient(response_data=test_data)
+
+    with patch("httpx.AsyncClient", mock_client):
+        client = HubSpotClient("test-key")
+        tool = CreateDealTool(client)
+
+        result = await tool.execute(
+            {
+                "dealname": "New Test Deal",
+                "amount": "5000.00",
+                "dealstage": "appointmentscheduled",
+            }
+        )
+
+        assert isinstance(result, list)
+        assert len(result) == 1
+        assert isinstance(result[0], TextContent)
+        assert "✅ Transaction créée avec succès" in result[0].text
+        assert "New Test Deal" in result[0].text
+
+
+@pytest.mark.asyncio
+async def test_create_deal_tool_minimal():
+    """Test de création de deal avec uniquement les champs obligatoires."""
+    test_data = {
+        "id": "500",
+        "properties": {
+            "dealname": "Minimal Deal",
+            "createdate": "2024-01-15T10:30:00Z",
+        },
+    }
+
+    def mock_client(*args, **kwargs):
+        return DummyAsyncClient(response_data=test_data)
+
+    with patch("httpx.AsyncClient", mock_client):
+        client = HubSpotClient("test-key")
+        tool = CreateDealTool(client)
+
+        result = await tool.execute({"dealname": "Minimal Deal"})
+
+        assert isinstance(result, list)
+        assert len(result) == 1
+        assert "✅ Transaction créée avec succès" in result[0].text
+        assert "Minimal Deal" in result[0].text
+
+
+@pytest.mark.asyncio
+async def test_create_deal_tool_error():
+    """Test de gestion d'erreur pour la création de deal."""
+
+    def mock_client(*args, **kwargs):
+        return DummyAsyncClient(raise_error=True)
+
+    with patch("httpx.AsyncClient", mock_client):
+        client = HubSpotClient("test-key")
+        tool = CreateDealTool(client)
+
+        result = await tool.execute({"dealname": "Error Deal"})
+
+        assert isinstance(result, list)
+        assert len(result) == 1
+        assert "Erreur API HubSpot" in result[0].text
+
+
+def test_create_deal_tool_definition():
+    """Test de la définition du tool de création de deal."""
+    client = HubSpotClient("test-key")
+    tool = CreateDealTool(client)
+
+    definition = tool.get_tool_definition()
+
+    assert definition.name == "create_transaction"
+    assert "dealname" in definition.inputSchema["properties"]
+    assert "amount" in definition.inputSchema["properties"]
+    assert "dealstage" in definition.inputSchema["properties"]
+    assert "dealname" in definition.inputSchema["required"]
+    assert definition.inputSchema["properties"]["dealname"]["type"] == "string"
+
+
+@pytest.mark.asyncio
+async def test_company_properties_tool_execute():
+    """Test d'exécution du tool propriétés d'entreprises."""
+    test_data = {
+        "results": [
+            {
+                "name": "name",
+                "label": "Nom de l'entreprise",
+                "type": "string",
+                "fieldType": "text",
+                "groupName": "companyinformation",
+                "description": "Le nom de l'entreprise",
+            },
+            {
+                "name": "domain",
+                "label": "Domaine web",
+                "type": "string",
+                "fieldType": "text",
+                "groupName": "companyinformation",
+                "description": "Le domaine web de l'entreprise",
+            },
+        ]
+    }
+
+    def mock_client(*args, **kwargs):
+        return DummyAsyncClient(response_data=test_data)
+
+    with patch("httpx.AsyncClient", mock_client):
+        client = HubSpotClient("test-key")
+        tool = CompanyPropertiesTool(client)
+
+        result = await tool.execute({})
+
+        assert isinstance(result, list)
+        assert len(result) == 1
+        assert isinstance(result[0], TextContent)
+        assert "Propriétés des Entreprises HubSpot" in result[0].text
+        assert "Nom de l'entreprise" in result[0].text
+        assert "Domaine web" in result[0].text
+        assert "companyinformation" in result[0].text
+
+
+@pytest.mark.asyncio
+async def test_company_properties_tool_empty():
+    """Test du tool propriétés d'entreprises avec réponse vide."""
+    test_data = {"results": []}
+
+    def mock_client(*args, **kwargs):
+        return DummyAsyncClient(response_data=test_data)
+
+    with patch("httpx.AsyncClient", mock_client):
+        client = HubSpotClient("test-key")
+        tool = CompanyPropertiesTool(client)
+
+        result = await tool.execute({})
+
+        assert isinstance(result, list)
+        assert len(result) == 1
+        assert "Aucune propriété trouvée" in result[0].text
+
+
+@pytest.mark.asyncio
+async def test_company_properties_tool_error():
+    """Test de la gestion d'erreur du tool propriétés d'entreprises."""
+
+    def mock_client(*args, **kwargs):
+        return DummyAsyncClient(raise_error=True)
+
+    with patch("httpx.AsyncClient", mock_client):
+        client = HubSpotClient("test-key")
+        tool = CompanyPropertiesTool(client)
+
+        result = await tool.execute({})
+
+        assert isinstance(result, list)
+        assert len(result) == 1
+        assert "Erreur API HubSpot" in result[0].text
+
+
+def test_company_properties_tool_definition():
+    """Test de la définition du tool propriétés d'entreprises."""
+    client = HubSpotClient("test-key")
+    tool = CompanyPropertiesTool(client)
+
+    definition = tool.get_tool_definition()
+
+    assert definition.name == "get_hubspot_company_properties"
+    assert (
+        "Récupère la liste des propriétés disponibles pour les entreprises HubSpot"
+        in definition.description
+    )
+    assert len(definition.inputSchema["properties"]) == 0  # Pas de paramètres requis
