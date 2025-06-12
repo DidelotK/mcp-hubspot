@@ -34,6 +34,13 @@ Comportement spécifique de l'assistant Cursor
 - Priorités d'action
 - Interdictions strictes
 
+### 🛠️ [mcp-tools-conventions.md](./mcp-tools-conventions.md)
+Conventions spécifiques aux tools MCP HubSpot
+- Structure de fichiers obligatoire
+- Standards techniques et nommage
+- Process de développement et tests
+- Checklist qualité complète
+
 ## 🎯 Utilisation
 Cursor lira automatiquement tous ces fichiers pour appliquer les règles correspondantes lors du développement. Cette organisation modulaire permet :
 
