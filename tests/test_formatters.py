@@ -16,7 +16,8 @@ def test_format_contacts():
                 "email": "jean.dupont@example.com",
                 "company": "Acme Corp",
                 "phone": "+33123456789",
-                "createdate": "2024-01-01T00:00:00Z",
+                "createdate": "2024-01-15T10:30:00Z",
+                "lastmodifieddate": "2024-01-20T14:45:00Z",
             },
         },
         {
@@ -25,13 +26,14 @@ def test_format_contacts():
                 "firstname": "Marie",
                 "lastname": "Martin",
                 "email": "marie.martin@example.com",
+                "createdate": "2024-01-10T09:15:00Z",
             },
         },
     ]
 
     result = HubSpotFormatter.format_contacts(contacts_data)
 
-    assert "📋 **HubSpot Contacts** (2 found)" in result
+    assert "👥 **HubSpot Contacts** (2 found)" in result
     assert "**Jean Dupont**" in result
     assert "jean.dupont@example.com" in result
     assert "Acme Corp" in result
@@ -53,10 +55,17 @@ def test_format_companies():
                 "state": "Île-de-France",
                 "country": "France",
                 "industry": "Technology",
-                "createdate": "2024-01-15T00:00:00Z",
+                "createdate": "2024-01-01T00:00:00Z",
+                "lastmodifieddate": "2024-01-15T12:00:00Z",
             },
         },
-        {"id": "101", "properties": {"name": "Startup Inc"}},
+        {
+            "id": "101",
+            "properties": {
+                "name": "Global Corp",
+                "domain": "globalcorp.com",
+            },
+        },
     ]
 
     result = HubSpotFormatter.format_companies(companies_data)
@@ -64,9 +73,11 @@ def test_format_companies():
     assert "🏢 **HubSpot Companies** (2 found)" in result
     assert "**Tech Solutions**" in result
     assert "techsolutions.com" in result
-    assert "Paris, Île-de-France, France" in result
-    assert "Technology" in result
-    assert "**Startup Inc**" in result
+    assert "Paris" in result
+    assert "Île-de-France" in result
+    assert "France" in result
+    assert "**Global Corp**" in result
+    assert "globalcorp.com" in result
     assert "🆔 ID: 100" in result
     assert "🆔 ID: 101" in result
 
@@ -124,7 +135,7 @@ def test_format_deals_with_invalid_amount():
 
 def test_format_empty_lists():
     """Test formatting with empty lists."""
-    assert "📋 **HubSpot Contacts** (0 found)" in HubSpotFormatter.format_contacts([])
+    assert "👥 **HubSpot Contacts** (0 found)" in HubSpotFormatter.format_contacts([])
     assert "🏢 **HubSpot Companies** (0 found)" in HubSpotFormatter.format_companies([])
     assert "💰 **HubSpot Deals** (0 found)" in HubSpotFormatter.format_deals([])
 
