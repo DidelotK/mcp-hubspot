@@ -3,5 +3,6 @@
 from .companies import CompaniesTool
 from .contacts import ContactsTool
 from .deals import DealsTool
+from .transaction_by_name import TransactionByNameTool
 
-__all__ = ["ContactsTool", "CompaniesTool", "DealsTool"]
+__all__ = ["ContactsTool", "CompaniesTool", "DealsTool", "TransactionByNameTool"]

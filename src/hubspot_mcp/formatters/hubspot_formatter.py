@@ -1,6 +1,6 @@
 """Formatage des données HubSpot pour l'affichage."""
 
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 
 class HubSpotFormatter:
@@ -76,5 +76,37 @@ class HubSpotFormatter:
             result += f"  📅 Créée: {props.get('createdate', 'N/A')}\n"
             result += f"  👤 Propriétaire: {props.get('hubspot_owner_id', 'N/A')}\n"
             result += f"  🆔 ID: {deal.get('id')}\n\n"
+
+        return result
+
+    @staticmethod
+    def format_single_transaction(transaction: Optional[Dict[str, Any]]) -> str:
+        """Formate une transaction unique pour l'affichage."""
+        if not transaction:
+            return "🔍 **Transaction non trouvée**\n\nAucune transaction ne correspond au nom spécifié."
+        
+        props = transaction.get("properties", {})
+        amount = props.get("amount", "0")
+        
+        # Formatage du montant si disponible
+        if amount and amount != "0":
+            try:
+                amount_float = float(amount)
+                amount_formatted = f"{amount_float:,.2f} €"
+            except (ValueError, TypeError):
+                amount_formatted = f"{amount} €"
+        else:
+            amount_formatted = "N/A"
+
+        result = f"💰 **Transaction HubSpot**\n\n"
+        result += f"**{props.get('dealname', 'Transaction sans nom')}**\n"
+        result += f"  💰 Montant: {amount_formatted}\n"
+        result += f"  📊 Étape: {props.get('dealstage', 'N/A')}\n"
+        result += f"  🔄 Pipeline: {props.get('pipeline', 'N/A')}\n"
+        result += f"  📅 Date de clôture: {props.get('closedate', 'N/A')}\n"
+        result += f"  📅 Créée: {props.get('createdate', 'N/A')}\n"
+        result += f"  📅 Modifiée: {props.get('lastmodifieddate', 'N/A')}\n"
+        result += f"  👤 Propriétaire: {props.get('hubspot_owner_id', 'N/A')}\n"
+        result += f"  🆔 ID: {transaction.get('id')}\n"
 
         return result

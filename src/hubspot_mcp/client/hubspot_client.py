@@ -85,3 +85,39 @@ class HubSpotClient:
             response.raise_for_status()
             data = response.json()
             return data.get("results", [])
+
+    async def get_transaction_by_name(self, deal_name: str) -> Optional[Dict]:
+        """Récupère une transaction spécifique par son nom."""
+        url = f"{self.base_url}/crm/v3/objects/deals/search"
+
+        # Corps de la requête pour rechercher par nom de deal
+        search_body = {
+            "filterGroups": [
+                {
+                    "filters": [
+                        {
+                            "propertyName": "dealname",
+                            "operator": "EQ",
+                            "value": deal_name
+                        }
+                    ]
+                }
+            ],
+            "properties": [
+                "dealname", "amount", "dealstage", "pipeline", 
+                "closedate", "createdate", "lastmodifieddate", 
+                "hubspot_owner_id"
+            ],
+            "limit": 1
+        }
+
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                url, 
+                headers=self.headers, 
+                json=search_body
+            )
+            response.raise_for_status()
+            data = response.json()
+            results = data.get("results", [])
+            return results[0] if results else None
