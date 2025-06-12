@@ -10,7 +10,7 @@ from .base import BaseTool
 
 class CompaniesTool(BaseTool):
     """Outil pour lister les entreprises HubSpot."""
-    
+
     def get_tool_definition(self) -> types.Tool:
         """Retourne la définition de l'outil entreprises."""
         return types.Tool(
@@ -24,7 +24,7 @@ class CompaniesTool(BaseTool):
                         "description": "Nombre maximum d'entreprises à retourner (défaut: 100)",
                         "default": 100,
                         "minimum": 1,
-                        "maximum": 1000
+                        "maximum": 1000,
                     },
                     "filters": {
                         "type": "object",
@@ -32,26 +32,26 @@ class CompaniesTool(BaseTool):
                         "properties": {
                             "search": {
                                 "type": "string",
-                                "description": "Terme de recherche pour filtrer les entreprises"
+                                "description": "Terme de recherche pour filtrer les entreprises",
                             }
                         },
-                        "additionalProperties": False
-                    }
+                        "additionalProperties": False,
+                    },
                 },
-                "additionalProperties": False
-            }
+                "additionalProperties": False,
+            },
         )
-    
+
     async def execute(self, arguments: Dict[str, Any]) -> List[types.TextContent]:
         """Exécute la récupération des entreprises."""
         try:
             limit = arguments.get("limit", 100)
             filters = arguments.get("filters", {})
-            
+
             companies = await self.client.get_companies(limit=limit, filters=filters)
             formatted_result = HubSpotFormatter.format_companies(companies)
-            
+
             return [types.TextContent(type="text", text=formatted_result)]
-        
+
         except Exception as e:
-            return self.handle_error(e) 
+            return self.handle_error(e)

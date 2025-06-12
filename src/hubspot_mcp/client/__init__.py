@@ -2,4 +2,4 @@
 
 from .hubspot_client import HubSpotClient
 
-__all__ = ["HubSpotClient"] 
+__all__ = ["HubSpotClient"]

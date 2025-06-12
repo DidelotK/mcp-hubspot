@@ -10,7 +10,7 @@ from .base import BaseTool
 
 class ContactsTool(BaseTool):
     """Outil pour lister les contacts HubSpot."""
-    
+
     def get_tool_definition(self) -> types.Tool:
         """Retourne la définition de l'outil contacts."""
         return types.Tool(
@@ -24,7 +24,7 @@ class ContactsTool(BaseTool):
                         "description": "Nombre maximum de contacts à retourner (défaut: 100)",
                         "default": 100,
                         "minimum": 1,
-                        "maximum": 1000
+                        "maximum": 1000,
                     },
                     "filters": {
                         "type": "object",
@@ -32,26 +32,26 @@ class ContactsTool(BaseTool):
                         "properties": {
                             "search": {
                                 "type": "string",
-                                "description": "Terme de recherche pour filtrer les contacts"
+                                "description": "Terme de recherche pour filtrer les contacts",
                             }
                         },
-                        "additionalProperties": False
-                    }
+                        "additionalProperties": False,
+                    },
                 },
-                "additionalProperties": False
-            }
+                "additionalProperties": False,
+            },
         )
-    
+
     async def execute(self, arguments: Dict[str, Any]) -> List[types.TextContent]:
         """Exécute la récupération des contacts."""
         try:
             limit = arguments.get("limit", 100)
             filters = arguments.get("filters", {})
-            
+
             contacts = await self.client.get_contacts(limit=limit, filters=filters)
             formatted_result = HubSpotFormatter.format_contacts(contacts)
-            
+
             return [types.TextContent(type="text", text=formatted_result)]
-        
+
         except Exception as e:
-            return self.handle_error(e) 
+            return self.handle_error(e)

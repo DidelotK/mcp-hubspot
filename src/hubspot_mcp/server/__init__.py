@@ -2,4 +2,4 @@
 
 from .handlers import MCPHandlers
 
-__all__ = ["MCPHandlers"] 
+__all__ = ["MCPHandlers"]

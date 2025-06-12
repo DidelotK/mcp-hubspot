@@ -2,4 +2,4 @@
 
 from .hubspot_formatter import HubSpotFormatter
 
-__all__ = ["HubSpotFormatter"] 
+__all__ = ["HubSpotFormatter"]
