@@ -142,4 +142,56 @@ def test_format_empty_lists():
     """Test du formatage avec des listes vides."""
     assert "📋 **Contacts HubSpot** (0 trouvés)" in HubSpotFormatter.format_contacts([])
     assert "🏢 **Entreprises HubSpot** (0 trouvées)" in HubSpotFormatter.format_companies([])
-    assert "💰 **Transactions HubSpot** (0 trouvées)" in HubSpotFormatter.format_deals([]) 
+    assert "💰 **Transactions HubSpot** (0 trouvées)" in HubSpotFormatter.format_deals([])
+
+
+def test_format_single_transaction():
+    """Test du formatage d'une transaction unique."""
+    transaction_data = {
+        "id": "500",
+        "properties": {
+            "dealname": "Contrat Premium",
+            "amount": "25000.00",
+            "dealstage": "proposal",
+            "pipeline": "enterprise",
+            "closedate": "2024-12-31",
+            "createdate": "2024-06-01T00:00:00Z",
+            "lastmodifieddate": "2024-06-12T12:00:00Z",
+            "hubspot_owner_id": "98765"
+        }
+    }
+    
+    result = HubSpotFormatter.format_single_transaction(transaction_data)
+    
+    assert "💰 **Transaction HubSpot**" in result
+    assert "**Contrat Premium**" in result
+    assert "25,000.00 €" in result
+    assert "proposal" in result
+    assert "enterprise" in result
+    assert "2024-12-31" in result
+    assert "🆔 ID: 500" in result
+
+
+def test_format_single_transaction_not_found():
+    """Test du formatage quand aucune transaction n'est trouvée."""
+    result = HubSpotFormatter.format_single_transaction(None)
+    
+    assert "🔍 **Transaction non trouvée**" in result
+    assert "Aucune transaction ne correspond au nom spécifié" in result
+
+
+def test_format_single_transaction_minimal_data():
+    """Test du formatage d'une transaction avec données minimales."""
+    transaction_data = {
+        "id": "600",
+        "properties": {
+            "dealname": "Deal Simple"
+        }
+    }
+    
+    result = HubSpotFormatter.format_single_transaction(transaction_data)
+    
+    assert "**Deal Simple**" in result
+    assert "💰 Montant: N/A" in result
+    assert "📊 Étape: N/A" in result
+    assert "🆔 ID: 600" in result 
