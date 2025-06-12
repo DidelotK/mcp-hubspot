@@ -27,6 +27,12 @@ uv run python main.py --mode stdio
 | **[Exemples](docs/examples.md)** | Cas d'usage et conversations types avec Claude |
 | **[Contribution](docs/contributing.md)** | Guide pour développer de nouveaux outils |
 
+## 🧪 Exemples pratiques
+
+| Exemple | Description |
+|---------|-------------|
+| **[Test basique](examples/basic/)** | Script Python pour tester le serveur MCP avec un client |
+
 ## 🛠️ Outils disponibles
 
 | Outil | Description |
