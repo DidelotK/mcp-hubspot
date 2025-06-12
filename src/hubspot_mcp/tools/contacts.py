@@ -1,4 +1,4 @@
-"""Outil MCP pour gérer les contacts HubSpot."""
+"""MCP tool to manage HubSpot contacts."""
 
 from typing import Any, Dict, List
 
@@ -9,30 +9,30 @@ from .base import BaseTool
 
 
 class ContactsTool(BaseTool):
-    """Outil pour lister les contacts HubSpot."""
+    """Tool to list HubSpot contacts."""
 
     def get_tool_definition(self) -> types.Tool:
-        """Retourne la définition de l'outil contacts."""
+        """Return the contacts tool definition."""
         return types.Tool(
             name="list_hubspot_contacts",
-            description="Liste les contacts HubSpot avec possibilité de filtrage",
+            description="Lists HubSpot contacts with optional filtering",
             inputSchema={
                 "type": "object",
                 "properties": {
                     "limit": {
                         "type": "integer",
-                        "description": "Nombre maximum de contacts à retourner (défaut: 100)",
+                        "description": "Maximum number of contacts to return (default: 100)",
                         "default": 100,
                         "minimum": 1,
                         "maximum": 1000,
                     },
                     "filters": {
                         "type": "object",
-                        "description": "Filtres optionnels pour la recherche",
+                        "description": "Optional filters for search",
                         "properties": {
                             "search": {
                                 "type": "string",
-                                "description": "Terme de recherche pour filtrer les contacts",
+                                "description": "Search term to filter contacts",
                             }
                         },
                         "additionalProperties": False,
@@ -43,7 +43,7 @@ class ContactsTool(BaseTool):
         )
 
     async def execute(self, arguments: Dict[str, Any]) -> List[types.TextContent]:
-        """Exécute la récupération des contacts."""
+        """Execute contacts retrieval."""
         try:
             limit = arguments.get("limit", 100)
             filters = arguments.get("filters", {})
