@@ -194,4 +194,87 @@ def test_format_single_transaction_minimal_data():
     assert "**Deal Simple**" in result
     assert "💰 Montant: N/A" in result
     assert "📊 Étape: N/A" in result
-    assert "🆔 ID: 600" in result 
+    assert "🆔 ID: 600" in result
+
+
+def test_format_contact_properties():
+    """Test du formatage des propriétés de contacts."""
+    properties_data = [
+        {
+            "name": "firstname",
+            "label": "Prénom",
+            "type": "string",
+            "fieldType": "text",
+            "groupName": "contactinformation",
+            "description": "Le prénom du contact"
+        },
+        {
+            "name": "email",
+            "label": "Adresse e-mail",
+            "type": "string",
+            "fieldType": "text",
+            "groupName": "contactinformation",
+            "description": "L'adresse e-mail du contact"
+        },
+        {
+            "name": "birthdate",
+            "label": "Date de naissance",
+            "type": "date",
+            "fieldType": "date",
+            "groupName": "demographic_information"
+        },
+        {
+            "name": "industry",
+            "label": "Secteur d'activité",
+            "type": "enumeration",
+            "fieldType": "select",
+            "groupName": "company_information",
+            "options": [
+                {"label": "Technologie", "value": "TECHNOLOGY"},
+                {"label": "Finance", "value": "FINANCE"},
+                {"label": "Santé", "value": "HEALTHCARE"}
+            ]
+        }
+    ]
+    
+    result = HubSpotFormatter.format_contact_properties(properties_data)
+    
+    assert "🔧 **Propriétés des Contacts HubSpot** (4 propriétés)" in result
+    assert "## 📁 contactinformation" in result
+    assert "## 📁 demographic_information" in result
+    assert "## 📁 company_information" in result
+    assert "**📧 Adresse e-mail**" in result
+    assert "**📅 Date de naissance**" in result
+    assert "**📋 Secteur d'activité**" in result
+    assert "`firstname`" in result
+    assert "`email`" in result
+    assert "Le prénom du contact" in result
+    assert "L'adresse e-mail du contact" in result
+    assert "Technologie, Finance, Santé" in result
+
+
+def test_format_contact_properties_empty():
+    """Test du formatage des propriétés de contacts avec liste vide."""
+    result = HubSpotFormatter.format_contact_properties([])
+    
+    assert "❌ **Aucune propriété trouvée**" in result
+    assert "Impossible de récupérer les propriétés des contacts" in result
+
+
+def test_format_contact_properties_minimal():
+    """Test du formatage des propriétés avec données minimales."""
+    properties_data = [
+        {
+            "name": "custom_field",
+            "label": "Champ personnalisé",
+            "type": "string",
+            "fieldType": "text"
+        }
+    ]
+    
+    result = HubSpotFormatter.format_contact_properties(properties_data)
+    
+    assert "🔧 **Propriétés des Contacts HubSpot** (1 propriétés)" in result
+    assert "## 📁 Autres" in result  # Groupe par défaut
+    assert "**📝 Champ personnalisé**" in result
+    assert "`custom_field`" in result 

@@ -41,6 +41,7 @@ uv run python main.py --mode stdio
 | `list_hubspot_companies` | Liste et filtre les entreprises HubSpot |
 | `list_hubspot_deals` | Liste et filtre les transactions HubSpot |
 | `get_transaction_by_name` | Recherche une transaction par nom exact |
+| `get_hubspot_contact_properties` | Récupère les propriétés des champs de contact avec types et descriptions |
 
 ## ⚡ Utilisation avec Claude
 
@@ -61,7 +62,7 @@ uv run pytest
 uv run pytest --cov=src --cov-report=html
 ```
 
-**Statut actuel :** ✅ 24 tests passés, 91% de couverture
+**Statut actuel :** ✅ 30 tests passés, 91% de couverture
 
 ## 📋 Prérequis
 

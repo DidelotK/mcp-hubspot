@@ -1,6 +1,6 @@
 # Référence API - Outils MCP
 
-Ce serveur MCP expose 4 outils pour interagir avec l'API HubSpot.
+Ce serveur MCP expose 5 outils pour interagir avec l'API HubSpot.
 
 ## list_hubspot_contacts
 
@@ -155,6 +155,75 @@ Récupère une transaction spécifique par son nom exact.
 
 Aucune transaction trouvée avec le nom: "Contrat Inexistant"
 ```
+
+## get_hubspot_contact_properties
+
+Récupère la liste des propriétés disponibles pour les contacts HubSpot avec leurs types et descriptions.
+
+### Paramètres
+
+Aucun paramètre requis.
+
+### Exemple d'utilisation
+
+```json
+{
+  "name": "get_hubspot_contact_properties",
+  "arguments": {}
+}
+```
+
+### Réponse
+
+```
+🔧 **Propriétés des Contacts HubSpot** (405 propriétés)
+
+## 📁 contactinformation
+
+**📧 Adresse e-mail**
+  🏷️ Nom: `email`
+  🔧 Type: string (text)
+  📝 Description: L'adresse e-mail du contact
+
+**📝 Prénom**
+  🏷️ Nom: `firstname`
+  🔧 Type: string (text)
+  📝 Description: Le prénom du contact
+
+**📝 Nom de famille**
+  🏷️ Nom: `lastname`
+  🔧 Type: string (text)
+  📝 Description: Le nom de famille du contact
+
+**📞 Numéro de téléphone**
+  🏷️ Nom: `phone`
+  🔧 Type: string (text)
+  📝 Description: Le numéro de téléphone principal du contact
+
+## 📁 demographic_information
+
+**📅 Date de naissance**
+  🏷️ Nom: `date_of_birth`
+  🔧 Type: date (date)
+  📝 Description: La date de naissance du contact
+
+## 📁 company_information
+
+**📋 Secteur d'activité**
+  🏷️ Nom: `industry`
+  🔧 Type: enumeration (select)
+  📝 Description: Le secteur d'activité de l'entreprise
+  📋 Options: Technologie, Finance, Santé, ... et 25 autres
+```
+
+### Utilité
+
+Cet outil est particulièrement utile pour :
+- **Découvrir les champs disponibles** dans HubSpot
+- **Comprendre les types de données** (text, date, select, etc.)
+- **Voir les options disponibles** pour les champs de sélection
+- **Planifier l'intégration** avec d'autres systèmes
+- **Déboguer les problèmes** de synchronisation de données
 
 ## Gestion des erreurs
 

@@ -121,3 +121,13 @@ class HubSpotClient:
             data = response.json()
             results = data.get("results", [])
             return results[0] if results else None
+
+    async def get_contact_properties(self) -> List[Dict]:
+        """Récupère la liste des propriétés disponibles pour les contacts."""
+        url = f"{self.base_url}/crm/v3/properties/contacts"
+
+        async with httpx.AsyncClient() as client:
+            response = await client.get(url, headers=self.headers)
+            response.raise_for_status()
+            data = response.json()
+            return data.get("results", [])

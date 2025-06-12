@@ -85,6 +85,44 @@ Une fois le serveur MCP configuré avec Claude Desktop, voici des exemples d'int
 
 *[Claude utilise l'outil `list_hubspot_deals` avec filters: {"amount_gte": 10000}]*
 
+---
+
+**Utilisateur :** *"Quelles sont les propriétés disponibles pour les contacts HubSpot ?"*
+
+**Claude :** *Je vais récupérer la liste des propriétés des contacts avec leurs types et descriptions.*
+
+*[Claude utilise l'outil `get_hubspot_contact_properties`]*
+
+**Résultat affiché :**
+```
+🔧 **Propriétés des Contacts HubSpot** (405 propriétés)
+
+## 📁 contactinformation
+
+**📧 Adresse e-mail**
+  🏷️ Nom: `email`
+  🔧 Type: string (text)
+  📝 Description: L'adresse e-mail du contact
+
+**📝 Prénom**
+  🏷️ Nom: `firstname`
+  🔧 Type: string (text)
+  📝 Description: Le prénom du contact
+
+**📞 Numéro de téléphone**
+  🏷️ Nom: `phone`
+  🔧 Type: string (text)
+  📝 Description: Le numéro de téléphone principal du contact
+
+## 📁 demographic_information
+
+**📅 Date de naissance**
+  🏷️ Nom: `date_of_birth`
+  🔧 Type: date (date)
+  📝 Description: La date de naissance du contact
+...
+```
+
 ## Commandes utiles pour Claude
 
 ### Recherche de contacts
@@ -105,6 +143,11 @@ Une fois le serveur MCP configuré avec Claude Desktop, voici des exemples d'int
 - *"Trouve les deals dans le pipeline 'enterprise'"*
 - *"Recherche le deal 'Projet X'"*
 - *"Montre les transactions fermées ce mois"*
+
+### Exploration des données
+- *"Quelles sont les propriétés disponibles pour les contacts ?"*
+- *"Montre-moi les champs de contact HubSpot"*
+- *"Liste les types de données des contacts"*
 
 ### Recherches combinées
 - *"Trouve tous les contacts de TechCorp et leurs transactions"*

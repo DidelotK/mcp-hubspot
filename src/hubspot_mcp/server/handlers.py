@@ -6,7 +6,7 @@ from typing import Any, Dict, List, Optional
 import mcp.types as types
 
 from ..client import HubSpotClient
-from ..tools import CompaniesTool, ContactsTool, DealsTool, TransactionByNameTool
+from ..tools import CompaniesTool, ContactsTool, ContactPropertiesTool, DealsTool, TransactionByNameTool
 
 logger = logging.getLogger(__name__)
 
@@ -20,6 +20,7 @@ class MCPHandlers:
         self.companies_tool = CompaniesTool(client)
         self.deals_tool = DealsTool(client)
         self.transaction_by_name_tool = TransactionByNameTool(client)
+        self.contact_properties_tool = ContactPropertiesTool(client)
 
         # Mappage des outils
         self.tools_map = {
@@ -27,6 +28,7 @@ class MCPHandlers:
             "list_hubspot_companies": self.companies_tool,
             "list_hubspot_deals": self.deals_tool,
             "get_transaction_by_name": self.transaction_by_name_tool,
+            "get_hubspot_contact_properties": self.contact_properties_tool,
         }
 
     async def handle_list_tools(self) -> List[types.Tool]:
