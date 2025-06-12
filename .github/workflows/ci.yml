@@ -30,7 +30,7 @@ jobs:
     
     - name: Install dependencies
       run: |
-        uv sync --dev
+        uv sync --dev --all-extras
     
     - name: Run code quality checks
       id: lint
@@ -67,15 +67,20 @@ jobs:
     
     - name: Install dependencies
       run: |
-        uv sync --dev
+        uv sync --dev --all-extras
+    
+    - name: Debug environment
+      run: |
+        uv run which python
+        uv run python -m pytest --version
     
     - name: Run tests
       run: |
-        uv run pytest --verbose --tb=short
+        uv run python -m pytest --verbose --tb=short
     
     - name: Run tests with coverage
       run: |
-        uv run pytest --cov=src --cov-report=xml --cov-report=term-missing
+        uv run python -m pytest --cov=src --cov-report=xml --cov-report=term-missing
     
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
