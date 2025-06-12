@@ -118,12 +118,157 @@ Propriétés retournées pour la transaction :
 
 ## Configuration
 
+### Configuration HubSpot
+
 Le serveur nécessite une clé API HubSpot valide. Vous pouvez obtenir cette clé depuis votre compte HubSpot :
 
 1. Connectez-vous à votre compte HubSpot
 2. Allez dans Paramètres > Intégrations > Clés API privées
 3. Créez une nouvelle clé API privée
 4. Définissez la variable d'environnement HUBSPOT_API_KEY
+
+### Intégration avec Claude Desktop
+
+Pour utiliser ce serveur MCP avec Claude Desktop, suivez ces étapes :
+
+#### 1. Configuration Claude Desktop
+
+Éditez le fichier de configuration Claude Desktop :
+
+**Sur macOS :**
+```bash
+~/Library/Application Support/Claude/claude_desktop_config.json
+```
+
+**Sur Windows :**
+```bash
+%APPDATA%\Claude\claude_desktop_config.json
+```
+
+**Sur Linux :**
+```bash
+~/.config/claude/claude_desktop_config.json
+```
+
+#### 2. Ajout du serveur MCP
+
+Ajoutez la configuration suivante dans le fichier JSON (ou copiez le fichier `claude_desktop_config.example.json` fourni) :
+
+```json
+{
+  "mcpServers": {
+    "hubspot": {
+      "command": "uv",
+      "args": [
+        "run", 
+        "python", 
+        "/chemin/vers/votre/projet/main.py",
+        "--mode", 
+        "stdio"
+      ],
+      "env": {
+        "HUBSPOT_API_KEY": "votre_cle_api_hubspot"
+      }
+    }
+  }
+}
+```
+
+#### 3. Configuration avec uv installé globalement
+
+Si vous avez installé le projet globalement avec uv :
+
+```json
+{
+  "mcpServers": {
+    "hubspot": {
+      "command": "hubspot-mcp-server",
+      "env": {
+        "HUBSPOT_API_KEY": "votre_cle_api_hubspot"
+      }
+    }
+  }
+}
+```
+
+#### 4. Redémarrage de Claude Desktop
+
+Après avoir modifié la configuration :
+1. Fermez complètement Claude Desktop
+2. Relancez l'application
+3. Les outils HubSpot seront disponibles dans Claude
+
+### Intégration avec d'autres clients MCP
+
+#### Mode SSE (Server-Sent Events)
+
+Pour intégrer avec d'autres clients MCP supportant SSE :
+
+1. **Démarrez le serveur en mode SSE :**
+```bash
+uv run python main.py --mode sse --host 127.0.0.1 --port 8080
+```
+
+2. **Connectez votre client MCP à :**
+```
+http://127.0.0.1:8080
+```
+
+#### Mode stdio
+
+Pour les clients supportant stdio :
+
+```bash
+uv run python main.py --mode stdio
+```
+
+Le serveur communiquera via stdin/stdout selon le protocole MCP.
+
+### Test de l'intégration
+
+Une fois configuré, vous pouvez tester les outils dans Claude en utilisant des phrases comme :
+
+- *"Liste les contacts HubSpot"*
+- *"Trouve-moi les entreprises dans le secteur technologique"*
+- *"Affiche toutes les transactions"*
+- *"Recherche la transaction nommée 'Contrat Premium'"*
+
+Claude utilisera automatiquement les outils MCP appropriés pour répondre à vos demandes.
+
+### Dépannage
+
+#### Problèmes courants
+
+**1. Claude ne voit pas les outils HubSpot**
+- Vérifiez que le fichier de configuration est dans le bon répertoire
+- Assurez-vous que la syntaxe JSON est correcte
+- Redémarrez complètement Claude Desktop
+- Vérifiez les logs de Claude Desktop pour les erreurs
+
+**2. Erreur "Clé API invalide"**
+- Vérifiez que votre clé API HubSpot est correcte
+- Assurez-vous que la clé a les permissions nécessaires (contacts, deals, companies)
+- Testez la clé avec l'API HubSpot directement
+
+**3. Serveur ne démarre pas**
+- Vérifiez que Python 3.12+ est installé
+- Assurez-vous que uv est installé : `pip install uv`
+- Vérifiez que toutes les dépendances sont installées : `uv sync`
+
+**4. En mode SSE, impossible de se connecter**
+- Vérifiez que le port 8080 n'est pas utilisé par un autre service
+- Testez avec un autre port : `--port 8081`
+- Vérifiez les permissions de firewall
+
+#### Logs et débogage
+
+Pour activer les logs détaillés :
+
+```bash
+export PYTHONPATH=/chemin/vers/projet
+export LOG_LEVEL=DEBUG
+uv run python main.py --mode stdio
+```
 
 ## Gestion des erreurs
 
@@ -163,6 +308,67 @@ Appel de l'outil list_hubspot_deals avec filters: {"search": "contrat"}
 
 Récupérer une transaction spécifique :
 Appel de l'outil get_transaction_by_name avec deal_name: "Nom Exact Du Deal"
+
+## Exemples d'utilisation avec Claude
+
+Une fois le serveur MCP configuré avec Claude Desktop, voici des exemples d'interactions :
+
+### Conversations d'exemple
+
+**Utilisateur :** *"Peux-tu me lister les 10 premiers contacts HubSpot ?"*
+
+**Claude :** *Je vais récupérer les 10 premiers contacts de votre HubSpot.*
+
+*[Claude utilise automatiquement l'outil `list_hubspot_contacts` avec limit: 10]*
+
+**Résultat affiché :**
+```
+📋 **Contacts HubSpot** (10 trouvés)
+
+**Jean Dupont**
+  📧 Email: jean.dupont@example.com
+  🏢 Entreprise: Acme Corp
+  📞 Téléphone: +33123456789
+  🆔 ID: 12345
+...
+```
+
+---
+
+**Utilisateur :** *"Trouve-moi la transaction 'Contrat Premium 2024'"*
+
+**Claude :** *Je recherche cette transaction spécifique dans votre HubSpot.*
+
+*[Claude utilise l'outil `get_transaction_by_name` avec deal_name: "Contrat Premium 2024"]*
+
+**Résultat affiché :**
+```
+💰 **Transaction HubSpot**
+
+**Contrat Premium 2024**
+  💰 Montant: 45,000.00 €
+  📊 Étape: proposal
+  🔄 Pipeline: enterprise
+  📅 Date de clôture: 2024-12-31
+  🆔 ID: 789012
+```
+
+---
+
+**Utilisateur :** *"Montre-moi les entreprises du secteur 'technology'"*
+
+**Claude :** *Je recherche les entreprises du secteur technologique.*
+
+*[Claude utilise l'outil `list_hubspot_companies` avec filters: {"search": "technology"}]*
+
+### Commandes utiles pour Claude
+
+- *"Liste tous mes contacts HubSpot"*
+- *"Trouve les entreprises françaises"*
+- *"Affiche les 20 dernières transactions"*
+- *"Recherche le deal 'Projet X'"*
+- *"Montre-moi les contacts de l'entreprise Acme"*
+- *"Quelles sont les transactions en cours ?"*
 
 ## Tests
 
