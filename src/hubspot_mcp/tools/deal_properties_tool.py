@@ -1,4 +1,4 @@
-"""MCP tool to retrieve HubSpot contact properties."""
+"""MCP tool to retrieve HubSpot deal properties."""
 
 from typing import Any, Dict, List
 
@@ -8,14 +8,14 @@ from ..formatters import HubSpotFormatter
 from .base import BaseTool
 
 
-class ContactPropertiesTool(BaseTool):
-    """Tool to retrieve HubSpot contact properties."""
+class DealPropertiesTool(BaseTool):
+    """Tool to retrieve HubSpot deal properties."""
 
     def get_tool_definition(self) -> types.Tool:
-        """Return the contact properties tool definition."""
+        """Return the deal properties tool definition."""
         return types.Tool(
-            name="get_hubspot_contact_properties",
-            description="Retrieves the list of available properties for HubSpot contacts with their types and descriptions",
+            name="get_hubspot_deal_properties",
+            description="Retrieves the list of available properties for HubSpot deals with their types and descriptions",
             inputSchema={
                 "type": "object",
                 "properties": {},
@@ -24,10 +24,10 @@ class ContactPropertiesTool(BaseTool):
         )
 
     async def execute(self, arguments: Dict[str, Any]) -> List[types.TextContent]:
-        """Execute contact properties retrieval."""
+        """Execute deal properties retrieval."""
         try:
-            properties = await self.client.get_contact_properties()
-            formatted_result = HubSpotFormatter.format_contact_properties(properties)
+            properties = await self.client.get_deal_properties()
+            formatted_result = HubSpotFormatter.format_deal_properties(properties)
 
             return [types.TextContent(type="text", text=formatted_result)]
 

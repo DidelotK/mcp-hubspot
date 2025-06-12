@@ -1,4 +1,4 @@
-"""Client pour interagir avec l'API HubSpot."""
+"""Client to interact with HubSpot API."""
 
 import logging
 from typing import Any, Dict, List, Optional
@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 
 class HubSpotClient:
-    """Client pour interagir avec l'API HubSpot."""
+    """Client to interact with HubSpot API."""
 
     def __init__(self, api_key: str):
         self.api_key = api_key
@@ -22,7 +22,7 @@ class HubSpotClient:
     async def get_contacts(
         self, limit: int = 100, filters: Optional[Dict] = None
     ) -> List[Dict]:
-        """Récupère la liste des contacts avec filtrage optionnel."""
+        """Retrieve the list of contacts with optional filtering."""
         url = f"{self.base_url}/crm/v3/objects/contacts"
 
         params = {
@@ -30,9 +30,9 @@ class HubSpotClient:
             "properties": "firstname,lastname,email,company,phone,createdate,lastmodifieddate",
         }
 
-        # Ajouter des filtres si fournis
+        # Add filters if provided
         if filters:
-            # HubSpot utilise des filtres complexes, on peut ajouter une recherche simple
+            # HubSpot uses complex filters, we can add simple search
             if "search" in filters:
                 params["search"] = filters["search"]
 
@@ -45,7 +45,7 @@ class HubSpotClient:
     async def get_companies(
         self, limit: int = 100, filters: Optional[Dict] = None
     ) -> List[Dict]:
-        """Récupère la liste des entreprises avec filtrage optionnel."""
+        """Retrieve the list of companies with optional filtering."""
         url = f"{self.base_url}/crm/v3/objects/companies"
 
         params = {
@@ -53,7 +53,7 @@ class HubSpotClient:
             "properties": "name,domain,city,state,country,industry,createdate,lastmodifieddate",
         }
 
-        # Ajouter des filtres si fournis
+        # Add filters if provided
         if filters:
             if "search" in filters:
                 params["search"] = filters["search"]
@@ -67,7 +67,7 @@ class HubSpotClient:
     async def get_deals(
         self, limit: int = 100, filters: Optional[Dict] = None
     ) -> List[Dict]:
-        """Récupère la liste des deals avec filtrage optionnel."""
+        """Retrieve the list of deals with optional filtering."""
         url = f"{self.base_url}/crm/v3/objects/deals"
 
         params = {
@@ -75,7 +75,7 @@ class HubSpotClient:
             "properties": "dealname,amount,dealstage,pipeline,closedate,createdate,lastmodifieddate,hubspot_owner_id",
         }
 
-        # Ajouter des filtres si fournis
+        # Add filters if provided
         if filters:
             if "search" in filters:
                 params["search"] = filters["search"]
@@ -86,11 +86,11 @@ class HubSpotClient:
             data = response.json()
             return data.get("results", [])
 
-    async def get_deal_by_name(self, deal_name: str) -> Optional[Dict]:
-        """Récupère un deal spécifique par son nom."""
+    async def get_transaction_by_name(self, deal_name: str) -> Optional[Dict]:
+        """Retrieve a specific transaction by its name."""
         url = f"{self.base_url}/crm/v3/objects/deals/search"
 
-        # Corps de la requête pour rechercher par nom de deal
+        # Request body to search by deal name
         search_body = {
             "filterGroups": [
                 {
@@ -124,7 +124,7 @@ class HubSpotClient:
             return results[0] if results else None
 
     async def get_contact_properties(self) -> List[Dict]:
-        """Récupère la liste des propriétés disponibles pour les contacts."""
+        """Retrieve the list of available properties for contacts."""
         url = f"{self.base_url}/crm/v3/properties/contacts"
 
         async with httpx.AsyncClient() as client:
@@ -134,7 +134,7 @@ class HubSpotClient:
             return data.get("results", [])
 
     async def get_company_properties(self) -> List[Dict]:
-        """Récupère la liste des propriétés disponibles pour les entreprises."""
+        """Retrieve the list of available properties for companies."""
         url = f"{self.base_url}/crm/v3/properties/companies"
 
         async with httpx.AsyncClient() as client:
@@ -143,11 +143,21 @@ class HubSpotClient:
             data = response.json()
             return data.get("results", [])
 
+    async def get_deal_properties(self) -> List[Dict]:
+        """Retrieve the list of available properties for deals."""
+        url = f"{self.base_url}/crm/v3/properties/deals"
+
+        async with httpx.AsyncClient() as client:
+            response = await client.get(url, headers=self.headers)
+            response.raise_for_status()
+            data = response.json()
+            return data.get("results", [])
+
     async def create_deal(self, deal_data: Dict[str, Any]) -> Dict[str, Any]:
-        """Crée un nouveau deal dans HubSpot."""
+        """Create a new deal in HubSpot."""
         url = f"{self.base_url}/crm/v3/objects/deals"
 
-        # Structure des données pour HubSpot
+        # Structure data for HubSpot
         payload = {"properties": deal_data}
 
         async with httpx.AsyncClient() as client:

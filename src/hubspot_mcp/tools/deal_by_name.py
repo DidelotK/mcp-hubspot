@@ -1,4 +1,4 @@
-"""Outil MCP pour récupérer un deal HubSpot par nom."""
+"""MCP tool to retrieve a HubSpot transaction by name."""
 
 from typing import Any, Dict, List
 
@@ -8,20 +8,21 @@ from ..formatters import HubSpotFormatter
 from .base import BaseTool
 
 
-class DealByNameTool(BaseTool):
-    """Outil pour récupérer un deal HubSpot par nom."""
+class TransactionByNameTool(BaseTool):
+    """Tool to retrieve a HubSpot transaction by name."""
 
     def get_tool_definition(self) -> types.Tool:
-        """Retourne la définition de l'outil deal par nom."""
+        """Return the transaction by name tool definition."""
         return types.Tool(
-            name="get_deal_by_name",
-            description="Récupère un deal HubSpot spécifique par son nom",
+            name="get_transaction_by_name",
+            description="Retrieves a specific HubSpot transaction by its name",
             inputSchema={
                 "type": "object",
                 "properties": {
                     "deal_name": {
                         "type": "string",
-                        "description": "Nom exact du deal à rechercher",
+                        "description": "Exact name of the transaction to search for",
+                        "minLength": 1,
                     }
                 },
                 "required": ["deal_name"],
@@ -30,7 +31,7 @@ class DealByNameTool(BaseTool):
         )
 
     async def execute(self, arguments: Dict[str, Any]) -> List[types.TextContent]:
-        """Exécute la récupération du deal par nom."""
+        """Execute transaction retrieval by name."""
         try:
             deal_name = arguments.get("deal_name")
 
@@ -38,11 +39,11 @@ class DealByNameTool(BaseTool):
                 return [
                     types.TextContent(
                         type="text",
-                        text="❌ **Erreur**: Le nom du deal est obligatoire.",
+                        text="❌ **Error**: Transaction name is required.",
                     )
                 ]
 
-            deal = await self.client.get_deal_by_name(deal_name)
+            deal = await self.client.get_transaction_by_name(deal_name)
             formatted_result = HubSpotFormatter.format_single_deal(deal)
 
             return [types.TextContent(type="text", text=formatted_result)]

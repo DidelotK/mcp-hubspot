@@ -1,4 +1,4 @@
-"""Tests pour les formatters HubSpot."""
+"""Tests for HubSpot formatters."""
 
 import pytest
 
@@ -6,7 +6,7 @@ from src.hubspot_mcp.formatters import HubSpotFormatter
 
 
 def test_format_contacts():
-    """Test du formatage des contacts."""
+    """Test contact formatting."""
     contacts_data = [
         {
             "id": "1",
@@ -31,7 +31,7 @@ def test_format_contacts():
 
     result = HubSpotFormatter.format_contacts(contacts_data)
 
-    assert "📋 **Contacts HubSpot** (2 trouvés)" in result
+    assert "📋 **HubSpot Contacts** (2 found)" in result
     assert "**Jean Dupont**" in result
     assert "jean.dupont@example.com" in result
     assert "Acme Corp" in result
@@ -42,7 +42,7 @@ def test_format_contacts():
 
 
 def test_format_companies():
-    """Test du formatage des entreprises."""
+    """Test company formatting."""
     companies_data = [
         {
             "id": "100",
@@ -61,7 +61,7 @@ def test_format_companies():
 
     result = HubSpotFormatter.format_companies(companies_data)
 
-    assert "🏢 **Entreprises HubSpot** (2 trouvées)" in result
+    assert "🏢 **HubSpot Companies** (2 found)" in result
     assert "**Tech Solutions**" in result
     assert "techsolutions.com" in result
     assert "Paris, Île-de-France, France" in result
@@ -72,7 +72,11 @@ def test_format_companies():
 
 
 def test_format_deals():
+<<<<<<< HEAD
     """Test du formatage des deals."""
+=======
+    """Test deal formatting."""
+>>>>>>> feat: add get_hubspot_deal_properties tool - Add new DealPropertiesTool to retrieve HubSpot deal properties - Add get_deal_properties method to HubSpotClient - Add format_deal_properties method to HubSpotFormatter - Register new tool in handlers and tools module - Add comprehensive tests for the new tool - Translate all remaining French text to English - Update test assertions to match English translations - All 35 tests passing with 89% coverage
     deals_data = [
         {
             "id": "200",
@@ -92,9 +96,13 @@ def test_format_deals():
 
     result = HubSpotFormatter.format_deals(deals_data)
 
+<<<<<<< HEAD
     assert "💰 **Deals HubSpot** (3 trouvés)" in result
+=======
+    assert "💰 **HubSpot Deals** (3 found)" in result
+>>>>>>> feat: add get_hubspot_deal_properties tool - Add new DealPropertiesTool to retrieve HubSpot deal properties - Add get_deal_properties method to HubSpotClient - Add format_deal_properties method to HubSpotFormatter - Register new tool in handlers and tools module - Add comprehensive tests for the new tool - Translate all remaining French text to English - Update test assertions to match English translations - All 35 tests passing with 89% coverage
     assert "**Gros contrat**" in result
-    assert "50,000.00 €" in result
+    assert "$50,000.00" in result
     assert "negotiation" in result
     assert "sales" in result
     assert "**Petit deal**" in result
@@ -105,7 +113,7 @@ def test_format_deals():
 
 
 def test_format_deals_with_invalid_amount():
-    """Test du formatage des deals avec montant invalide."""
+    """Test deal formatting with invalid amount."""
     deals_data = [
         {
             "id": "300",
@@ -119,10 +127,11 @@ def test_format_deals_with_invalid_amount():
     result = HubSpotFormatter.format_deals(deals_data)
 
     assert "**Deal avec montant invalide**" in result
-    assert "invalid_amount €" in result
+    assert "$invalid_amount" in result
 
 
 def test_format_empty_lists():
+<<<<<<< HEAD
     """Test du formatage avec des listes vides."""
     assert "📋 **Contacts HubSpot** (0 trouvés)" in HubSpotFormatter.format_contacts([])
     assert (
@@ -137,6 +146,17 @@ def test_format_empty_lists():
 def test_format_single_deal():
     """Test du formatage d'un deal unique."""
     deal_data = {
+=======
+    """Test formatting with empty lists."""
+    assert "📋 **HubSpot Contacts** (0 found)" in HubSpotFormatter.format_contacts([])
+    assert "🏢 **HubSpot Companies** (0 found)" in HubSpotFormatter.format_companies([])
+    assert "💰 **HubSpot Deals** (0 found)" in HubSpotFormatter.format_deals([])
+
+
+def test_format_single_transaction():
+    """Test single transaction formatting."""
+    transaction_data = {
+>>>>>>> feat: add get_hubspot_deal_properties tool - Add new DealPropertiesTool to retrieve HubSpot deal properties - Add get_deal_properties method to HubSpotClient - Add format_deal_properties method to HubSpotFormatter - Register new tool in handlers and tools module - Add comprehensive tests for the new tool - Translate all remaining French text to English - Update test assertions to match English translations - All 35 tests passing with 89% coverage
         "id": "500",
         "properties": {
             "dealname": "Contrat Premium",
@@ -152,15 +172,20 @@ def test_format_single_deal():
 
     result = HubSpotFormatter.format_single_deal(deal_data)
 
+<<<<<<< HEAD
     assert "💰 **Deal HubSpot**" in result
+=======
+    assert "💰 **HubSpot Transaction**" in result
+>>>>>>> feat: add get_hubspot_deal_properties tool - Add new DealPropertiesTool to retrieve HubSpot deal properties - Add get_deal_properties method to HubSpotClient - Add format_deal_properties method to HubSpotFormatter - Register new tool in handlers and tools module - Add comprehensive tests for the new tool - Translate all remaining French text to English - Update test assertions to match English translations - All 35 tests passing with 89% coverage
     assert "**Contrat Premium**" in result
-    assert "25,000.00 €" in result
+    assert "$25,000.00" in result
     assert "proposal" in result
     assert "enterprise" in result
     assert "2024-12-31" in result
     assert "🆔 ID: 500" in result
 
 
+<<<<<<< HEAD
 def test_format_single_deal_not_found():
     """Test du formatage quand aucun deal n'est trouvé."""
     result = HubSpotFormatter.format_single_deal(None)
@@ -172,17 +197,30 @@ def test_format_single_deal_not_found():
 def test_format_single_deal_minimal_data():
     """Test du formatage d'un deal avec données minimales."""
     deal_data = {"id": "600", "properties": {"dealname": "Deal Simple"}}
+=======
+def test_format_single_transaction_not_found():
+    """Test formatting when no transaction is found."""
+    result = HubSpotFormatter.format_single_transaction(None)
+
+    assert "🔍 **Transaction not found**" in result
+    assert "No transaction matches the specified name" in result
+
+
+def test_format_single_transaction_minimal_data():
+    """Test transaction formatting with minimal data."""
+    transaction_data = {"id": "600", "properties": {"dealname": "Deal Simple"}}
+>>>>>>> feat: add get_hubspot_deal_properties tool - Add new DealPropertiesTool to retrieve HubSpot deal properties - Add get_deal_properties method to HubSpotClient - Add format_deal_properties method to HubSpotFormatter - Register new tool in handlers and tools module - Add comprehensive tests for the new tool - Translate all remaining French text to English - Update test assertions to match English translations - All 35 tests passing with 89% coverage
 
     result = HubSpotFormatter.format_single_deal(deal_data)
 
     assert "**Deal Simple**" in result
-    assert "💰 Montant: N/A" in result
-    assert "📊 Étape: N/A" in result
+    assert "💰 Amount: N/A" in result
+    assert "📊 Stage: N/A" in result
     assert "🆔 ID: 600" in result
 
 
 def test_format_contact_properties():
-    """Test du formatage des propriétés de contacts."""
+    """Test contact properties formatting."""
     properties_data = [
         {
             "name": "firstname",
@@ -223,30 +261,29 @@ def test_format_contact_properties():
 
     result = HubSpotFormatter.format_contact_properties(properties_data)
 
-    assert "🔧 **Propriétés des Contacts HubSpot** (4 propriétés)" in result
+    assert "🔧 **HubSpot Contact Properties** (4 properties)" in result
     assert "## 📁 contactinformation" in result
-    assert "## 📁 demographic_information" in result
-    assert "## 📁 company_information" in result
-    assert "**📧 Adresse e-mail**" in result
-    assert "**📅 Date de naissance**" in result
-    assert "**📋 Secteur d'activité**" in result
+    assert "**📝 Prénom**" in result
     assert "`firstname`" in result
+    assert "**📧 Adresse e-mail**" in result
     assert "`email`" in result
-    assert "Le prénom du contact" in result
-    assert "L'adresse e-mail du contact" in result
+    assert "## 📁 demographic_information" in result
+    assert "**📅 Date de naissance**" in result
+    assert "## 📁 company_information" in result
+    assert "**📋 Secteur d'activité**" in result
     assert "Technologie, Finance, Santé" in result
 
 
 def test_format_contact_properties_empty():
-    """Test du formatage des propriétés de contacts avec liste vide."""
+    """Test contact properties formatting with empty list."""
     result = HubSpotFormatter.format_contact_properties([])
 
-    assert "❌ **Aucune propriété trouvée**" in result
-    assert "Impossible de récupérer les propriétés des contacts" in result
+    assert "❌ **No properties found**" in result
+    assert "Unable to retrieve contact properties" in result
 
 
 def test_format_contact_properties_minimal():
-    """Test du formatage des propriétés avec données minimales."""
+    """Test properties formatting with minimal data."""
     properties_data = [
         {
             "name": "custom_field",
@@ -258,8 +295,8 @@ def test_format_contact_properties_minimal():
 
     result = HubSpotFormatter.format_contact_properties(properties_data)
 
-    assert "🔧 **Propriétés des Contacts HubSpot** (1 propriétés)" in result
-    assert "## 📁 Autres" in result  # Groupe par défaut
+    assert "🔧 **HubSpot Contact Properties** (1 properties)" in result
+    assert "## 📁 Other" in result
     assert "**📝 Champ personnalisé**" in result
     assert "`custom_field`" in result
 

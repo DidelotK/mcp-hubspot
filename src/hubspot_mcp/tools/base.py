@@ -1,4 +1,4 @@
-"""Classe de base pour les outils MCP HubSpot."""
+"""Base class for HubSpot MCP tools."""
 
 import logging
 from abc import ABC, abstractmethod
@@ -13,27 +13,27 @@ logger = logging.getLogger(__name__)
 
 
 class BaseTool(ABC):
-    """Classe de base pour tous les outils HubSpot."""
+    """Base class for all HubSpot tools."""
 
     def __init__(self, client: HubSpotClient):
         self.client = client
 
     @abstractmethod
     def get_tool_definition(self) -> types.Tool:
-        """Retourne la définition de l'outil pour MCP."""
+        """Return the tool definition for MCP."""
         pass
 
     @abstractmethod
     async def execute(self, arguments: Dict[str, Any]) -> List[types.TextContent]:
-        """Exécute l'outil avec les arguments fournis."""
+        """Execute the tool with provided arguments."""
         pass
 
     def handle_error(self, error: Exception) -> List[types.TextContent]:
-        """Gère les erreurs de manière unifiée."""
+        """Handle errors in a unified way."""
         if isinstance(error, httpx.HTTPStatusError):
-            error_msg = f"Erreur API HubSpot ({error.response.status_code}): {error.response.text}"
+            error_msg = f"HubSpot API Error ({error.response.status_code}): {error.response.text}"
         else:
-            error_msg = f"Erreur inattendue: {str(error)}"
+            error_msg = f"Unexpected error: {str(error)}"
 
         logger.error(error_msg)
         return [types.TextContent(type="text", text=error_msg)]

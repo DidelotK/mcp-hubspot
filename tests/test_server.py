@@ -43,7 +43,7 @@ def test_handle_list_tools():
 
 
 def test_handle_call_tool_no_client():
-    # Test avec un client None
+    # Test with None client
     handlers = MCPHandlers(None)
     result = asyncio.run(handlers.handle_call_tool("list_hubspot_contacts", {}))
     assert isinstance(result, list)
@@ -94,7 +94,11 @@ def test_get_contacts_and_companies(monkeypatch):
 
 
 def test_get_deals(monkeypatch):
+<<<<<<< HEAD
     # Test spécifique pour les deals
+=======
+    # Specific test for deals/transactions
+>>>>>>> feat: add get_hubspot_deal_properties tool - Add new DealPropertiesTool to retrieve HubSpot deal properties - Add get_deal_properties method to HubSpotClient - Add format_deal_properties method to HubSpotFormatter - Register new tool in handlers and tools module - Add comprehensive tests for the new tool - Translate all remaining French text to English - Update test assertions to match English translations - All 35 tests passing with 89% coverage
     monkeypatch.setattr(httpx, "AsyncClient", DummyAsyncClient)
     client = HubSpotClient("testkey")
     deals = asyncio.run(client.get_deals(limit=5, filters={"search": "deal"}))
@@ -102,11 +106,43 @@ def test_get_deals(monkeypatch):
 
 
 def test_handle_call_tool_deals(monkeypatch):
-    # Test de l'appel du tool list_hubspot_deals
+    # Test calling the list_hubspot_deals tool
     monkeypatch.setattr(httpx, "AsyncClient", DummyAsyncClient)
     client = HubSpotClient("testkey")
     handlers = MCPHandlers(client)
     result = asyncio.run(handlers.handle_call_tool("list_hubspot_deals", {"limit": 10}))
     assert isinstance(result, list)
     assert isinstance(result[0], TextContent)
+<<<<<<< HEAD
     assert "Deals HubSpot" in result[0].text
+=======
+    assert "HubSpot Deals" in result[0].text
+
+
+def test_handle_list_tools_includes_properties():
+    client = HubSpotClient("test-key")
+    handlers = MCPHandlers(client)
+    tools = asyncio.run(handlers.handle_list_tools())
+    names = [tool.name for tool in tools]
+    assert "get_hubspot_contact_properties" in names
+    assert "get_hubspot_deal_properties" in names
+
+
+def test_get_deal_properties(monkeypatch):
+    # Test deal properties retrieval
+    monkeypatch.setattr(httpx, "AsyncClient", DummyAsyncClient)
+    client = HubSpotClient("testkey")
+    properties = asyncio.run(client.get_deal_properties())
+    assert properties == [{"id": "1", "properties": {"foo": "bar"}}]
+
+
+def test_handle_call_tool_deal_properties(monkeypatch):
+    # Test calling the get_hubspot_deal_properties tool
+    monkeypatch.setattr(httpx, "AsyncClient", DummyAsyncClient)
+    client = HubSpotClient("testkey")
+    handlers = MCPHandlers(client)
+    result = asyncio.run(handlers.handle_call_tool("get_hubspot_deal_properties", {}))
+    assert isinstance(result, list)
+    assert isinstance(result[0], TextContent)
+    assert "HubSpot Deal Properties" in result[0].text
+>>>>>>> feat: add get_hubspot_deal_properties tool - Add new DealPropertiesTool to retrieve HubSpot deal properties - Add get_deal_properties method to HubSpotClient - Add format_deal_properties method to HubSpotFormatter - Register new tool in handlers and tools module - Add comprehensive tests for the new tool - Translate all remaining French text to English - Update test assertions to match English translations - All 35 tests passing with 89% coverage
