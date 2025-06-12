@@ -1,5 +1,7 @@
 # Serveur MCP HubSpot
 
+> **Note** : La branche principale de ce projet est `main` (anciennement `master`).
+
 Ce serveur MCP permet d'interagir avec l'API HubSpot pour lister les contacts et entreprises avec des capacités de filtrage.
 
 ## Installation
@@ -141,8 +143,8 @@ Ce projet suit des standards stricts pour maintenir la qualité du code et la co
 
 1. **Cloner et installer** :
    ```bash
-   git clone <repo-url>
-   cd hubspot-mcp-server
+   git clone https://github.com/DidelotK/mcp-hubspot.git
+   cd mcp-hubspot
    uv sync --dev
    ```
 
