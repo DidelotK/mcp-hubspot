@@ -125,3 +125,53 @@ uv pip install -e '.[dev]'
 # Lancer les tests
 pytest
 ```
+
+## Conventions de Codage / Contribution
+
+Ce projet suit des standards stricts pour maintenir la qualité du code et la cohérence du développement.
+
+### 📋 Documentation des Conventions
+
+- **[🔧 Conventions de Commit](.cursor/rules/commit-conventions.md)** - Format semantic versioning obligatoire
+- **[🐍 Standards Python](.cursor/rules/python-standards.md)** - PEP 8, type hints, tests, etc.
+- **[🏗️ Structure du Projet](.cursor/rules/project-structure.md)** - Organisation des fichiers et dossiers
+- **[🔄 Workflow de Développement](.cursor/rules/development-workflow.md)** - Processus Git, CI/CD, branches
+
+### 🚀 Démarrage Rapide pour Contributeurs
+
+1. **Cloner et installer** :
+   ```bash
+   git clone <repo-url>
+   cd hubspot-mcp-server
+   uv sync --dev
+   ```
+
+2. **Créer une branche feature** :
+   ```bash
+   git checkout -b feat/description-fonctionnalite
+   ```
+
+3. **Développer avec tests** :
+   ```bash
+   # Lancer les tests en continu
+   uv run pytest --cov=src --cov-report=term-missing
+   ```
+
+4. **Commit avec format semantic** :
+   ```bash
+   git commit -m "feat: description de la nouvelle fonctionnalité"
+   ```
+
+5. **Push et créer une PR** - Le CI vérifiera automatiquement :
+   - Tests sur Python 3.12 et 3.13
+   - Couverture de code (minimum 80%)
+   - Respect des standards Python
+
+### ⚡ Règles Essentielles
+
+- ✅ **Format de commit** : `feat:`, `fix:`, `docs:`, `test:`, `refactor:`, `chore:`
+- ✅ **Tests obligatoires** pour toute nouvelle fonctionnalité
+- ✅ **Type hints** sur toutes les fonctions
+- ✅ **Couverture minimum** : 80%
+- ❌ **Jamais de commit direct** sur `main`
+- ❌ **Jamais de merge** sans tests qui passent
