@@ -2,7 +2,7 @@
 
 > **Note** : La branche principale de ce projet est `main` (anciennement `master`).
 
-Ce serveur MCP permet d'interagir avec l'API HubSpot pour lister les contacts et entreprises avec des capacités de filtrage.
+Ce serveur MCP permet d'interagir avec l'API HubSpot pour lister les contacts, entreprises et transactions (deals) avec des capacités de filtrage.
 
 ## Installation
 
@@ -78,6 +78,26 @@ Propriétés retournées pour chaque entreprise :
 - lastmodifieddate : Date de dernière modification
 - id : Identifiant unique
 
+### list_hubspot_deals
+
+Liste les transactions (deals) HubSpot avec possibilité de filtrage.
+
+Paramètres :
+- limit (optionnel) : Nombre maximum de transactions à retourner (défaut: 100, max: 1000)
+- filters (optionnel) : Objet contenant les filtres de recherche
+  - search : Terme de recherche pour filtrer les transactions
+
+Propriétés retournées pour chaque transaction :
+- dealname : Nom de la transaction
+- amount : Montant de la transaction (formaté en euros)
+- dealstage : Étape actuelle du pipeline
+- pipeline : Pipeline de vente associé
+- closedate : Date de clôture prévue
+- createdate : Date de création
+- lastmodifieddate : Date de dernière modification
+- hubspot_owner_id : Propriétaire de la transaction
+- id : Identifiant unique
+
 ## Configuration
 
 Le serveur nécessite une clé API HubSpot valide. Vous pouvez obtenir cette clé depuis votre compte HubSpot :
@@ -113,6 +133,15 @@ Appel de l'outil list_hubspot_companies sans paramètres
 
 Rechercher des entreprises par secteur :
 Appel de l'outil list_hubspot_companies avec filters: {"search": "technology"}
+
+Lister toutes les transactions :
+Appel de l'outil list_hubspot_deals sans paramètres
+
+Lister les 20 premières transactions :
+Appel de l'outil list_hubspot_deals avec limit: 20
+
+Rechercher des transactions par nom :
+Appel de l'outil list_hubspot_deals avec filters: {"search": "contrat"}
 
 ## Tests
 
