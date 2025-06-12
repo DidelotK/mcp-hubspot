@@ -1,5 +1,5 @@
-"""Module de configuration."""
+"""HubSpot MCP configuration module."""
 
-from .settings import Settings
+from .settings import HubSpotConfig
 
-__all__ = ["Settings"]
+__all__ = ["HubSpotConfig"]

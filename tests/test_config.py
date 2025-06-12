@@ -1,78 +1,33 @@
-"""Tests for HubSpot MCP configuration."""
+"""Tests for configuration module."""
 
 import os
 from unittest.mock import patch
 
 import pytest
 
-from src.hubspot_mcp.config.settings import Settings
+from src.hubspot_mcp.config.settings import HubSpotConfig
 
 
-def test_settings_init_with_api_key():
-    """Test settings initialization with API key."""
-    with patch.dict(os.environ, {"HUBSPOT_API_KEY": "test-api-key"}):
-        settings = Settings()
+class TestHubSpotConfig:
+    """Test HubSpot configuration."""
 
-        assert settings.hubspot_api_key == "test-api-key"
-        assert settings.server_name == "hubspot-mcp-server"
-        assert settings.server_version == "1.0.0"
-        assert settings.default_limit == 100
-        assert settings.max_limit == 1000
-        assert settings.hubspot_base_url == "https://api.hubapi.com"
+    def test_config_with_api_key(self):
+        """Test configuration with API key."""
+        with patch.dict(os.environ, {"HUBSPOT_API_KEY": "test_key"}):
+            config = HubSpotConfig()
+            assert config.api_key == "test_key"
+            assert config.validate() is True
+            assert config.get_missing_config() == []
 
+    def test_config_without_api_key(self):
+        """Test configuration without API key."""
+        with patch.dict(os.environ, {}, clear=True):
+            config = HubSpotConfig()
+            assert config.api_key is None
+            assert config.validate() is False
+            assert "HUBSPOT_API_KEY environment variable" in config.get_missing_config()
 
-def test_settings_init_without_api_key():
-    """Test settings initialization without API key."""
-    with patch.dict(os.environ, {}, clear=True):
-        settings = Settings()
-
-        assert settings.hubspot_api_key is None
-        assert settings.server_name == "hubspot-mcp-server"
-        assert settings.server_version == "1.0.0"
-        assert settings.default_limit == 100
-        assert settings.max_limit == 1000
-        assert settings.hubspot_base_url == "https://api.hubapi.com"
-
-
-def test_settings_validate_with_api_key():
-    """Test settings validation with API key."""
-    with patch.dict(os.environ, {"HUBSPOT_API_KEY": "test-api-key"}):
-        settings = Settings()
-
-        assert settings.validate() is True
-
-
-def test_settings_validate_without_api_key():
-    """Test settings validation without API key."""
-    with patch.dict(os.environ, {}, clear=True):
-        settings = Settings()
-
-        assert settings.validate() is False
-
-
-def test_settings_get_missing_config_with_api_key():
-    """Test get_missing_config with API key."""
-    with patch.dict(os.environ, {"HUBSPOT_API_KEY": "test-api-key"}):
-        settings = Settings()
-
-        missing = settings.get_missing_config()
-        assert missing == []
-
-
-def test_settings_get_missing_config_without_api_key():
-    """Test get_missing_config without API key."""
-    with patch.dict(os.environ, {}, clear=True):
-        settings = Settings()
-
-        missing = settings.get_missing_config()
-        assert missing == ["HUBSPOT_API_KEY"]
-
-
-def test_settings_with_empty_api_key():
-    """Test settings with empty API key."""
-    with patch.dict(os.environ, {"HUBSPOT_API_KEY": ""}):
-        settings = Settings()
-
-        assert settings.hubspot_api_key == ""
-        assert settings.validate() is False
-        assert settings.get_missing_config() == ["HUBSPOT_API_KEY"]
+    def test_base_url(self):
+        """Test base URL configuration."""
+        config = HubSpotConfig()
+        assert config.base_url == "https://api.hubapi.com"
