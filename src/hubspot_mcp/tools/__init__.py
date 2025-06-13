@@ -8,6 +8,7 @@ from .create_deal_tool import CreateDealTool
 from .deal_by_name_tool import DealByNameTool
 from .deal_properties_tool import DealPropertiesTool
 from .deals import DealsTool
+from .update_deal_tool import UpdateDealTool
 
 __all__ = [
     "ContactsTool",
@@ -18,4 +19,5 @@ __all__ = [
     "ContactPropertiesTool",
     "CompanyPropertiesTool",
     "DealPropertiesTool",
+    "UpdateDealTool",
 ]

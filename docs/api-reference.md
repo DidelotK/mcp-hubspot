@@ -345,6 +345,62 @@ No parameters required.
   📝 Description: Expected close date
 ```
 
+## update_deal
+
+Updates an existing deal in HubSpot.
+
+### Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `deal_id` | string | **Yes** | ID of the deal to update |
+| `properties` | object | **Yes** | Properties to update |
+
+The `properties` object can contain any of the following fields:
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `dealname` | string | Name of the deal |
+| `amount` | string | Deal amount |
+| `dealstage` | string | Deal stage |
+| `pipeline` | string | Deal pipeline |
+| `closedate` | string | Expected close date (YYYY-MM-DD) |
+| `hubspot_owner_id` | string | Deal owner ID |
+| `description` | string | Deal description |
+
+### Usage Example
+
+```json
+{
+  "name": "update_deal",
+  "arguments": {
+    "deal_id": "12345",
+    "properties": {
+      "dealname": "Updated Enterprise Contract",
+      "amount": "85000",
+      "dealstage": "contractsent",
+      "pipeline": "enterprise",
+      "closedate": "2024-12-31",
+      "description": "Updated enterprise deal for Q4"
+    }
+  }
+}
+```
+
+### Response
+
+```
+💰 **HubSpot Deal Updated**
+
+**Updated Enterprise Contract**
+  💰 Amount: $85,000.00
+  📊 Stage: contractsent
+  🔄 Pipeline: enterprise
+  📅 Close Date: 2024-12-31
+  📝 Description: Updated enterprise deal for Q4
+  🆔 ID: 12345
+```
+
 ## Error Handling
 
 All tools handle errors consistently:

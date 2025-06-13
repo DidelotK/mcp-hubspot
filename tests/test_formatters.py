@@ -819,3 +819,61 @@ def test_format_deal_properties_with_hubspot_field_names():
     assert (
         "📅 HubSpot Close Date" in result
     )  # date field type has priority over hs_closedate name
+
+
+def test_format_deal():
+    """Test formatting a single deal."""
+    deal = {
+        "id": "12345",
+        "properties": {
+            "dealname": "Enterprise Contract",
+            "amount": "75000",
+            "dealstage": "contractsent",
+            "pipeline": "enterprise",
+            "closedate": "2024-12-31",
+            "description": "Large enterprise deal for Q4",
+        },
+    }
+
+    result = HubSpotFormatter.format_deal(deal)
+
+    assert "💰 **HubSpot Deal Updated**" in result
+    assert "**Enterprise Contract**" in result
+    assert "💰 Amount: 75000" in result
+    assert "📊 Stage: contractsent" in result
+    assert "🔄 Pipeline: enterprise" in result
+    assert "📅 Close Date: 2024-12-31" in result
+    assert "📝 Description: Large enterprise deal for Q4" in result
+    assert "🆔 ID: 12345" in result
+
+
+def test_format_deal_missing_properties():
+    """Test formatting a deal with missing properties."""
+    deal = {"id": "12345", "properties": {"dealname": "Enterprise Contract"}}
+
+    result = HubSpotFormatter.format_deal(deal)
+
+    assert "💰 **HubSpot Deal Updated**" in result
+    assert "**Enterprise Contract**" in result
+    assert "💰 Amount: N/A" in result
+    assert "📊 Stage: N/A" in result
+    assert "🔄 Pipeline: N/A" in result
+    assert "📅 Close Date: N/A" in result
+    assert "📝 Description: N/A" in result
+    assert "🆔 ID: 12345" in result
+
+
+def test_format_deal_empty():
+    """Test formatting an empty deal."""
+    deal = {"id": "12345", "properties": {}}
+
+    result = HubSpotFormatter.format_deal(deal)
+
+    assert "💰 **HubSpot Deal Updated**" in result
+    assert "**Unnamed Deal**" in result
+    assert "💰 Amount: N/A" in result
+    assert "📊 Stage: N/A" in result
+    assert "🔄 Pipeline: N/A" in result
+    assert "📅 Close Date: N/A" in result
+    assert "📝 Description: N/A" in result
+    assert "🆔 ID: 12345" in result

@@ -16,6 +16,7 @@ from src.hubspot_mcp.tools import (
     DealByNameTool,
     DealPropertiesTool,
     DealsTool,
+    UpdateDealTool,
 )
 
 
@@ -59,6 +60,17 @@ class DummyAsyncClient:
             response = Response(200, text="")
             request = Request("POST", url)
             raise HTTPStatusError("Test error", request=request, response=response)
+        return DummyResponse(self.response_data)
+
+    async def patch(self, url, headers=None, json=None):
+        if self.raise_error:
+            from httpx import HTTPStatusError, Request, Response
+
+            response = Response(400, text="API error")
+            request = Request("PATCH", url)
+            raise HTTPStatusError(
+                "HubSpot API Error", request=request, response=response
+            )
         return DummyResponse(self.response_data)
 
 
@@ -948,3 +960,120 @@ async def test_create_deal_tool_with_no_amount():
         assert "Deal without Amount" in result[0].text
         # Should not include amount line when no amount is present
         assert "💰 Amount:" not in result[0].text
+
+
+@pytest.mark.asyncio
+async def test_update_deal_tool_success():
+    """Test successful deal update."""
+    test_data = {
+        "id": "12345",
+        "properties": {
+            "dealname": "Updated Enterprise Contract",
+            "amount": "85000",
+            "dealstage": "contractsent",
+            "pipeline": "enterprise",
+            "closedate": "2024-12-31",
+            "description": "Updated enterprise deal for Q4",
+        },
+    }
+
+    def mock_client(*args, **kwargs):
+        return DummyAsyncClient(response_data=test_data)
+
+    with patch("httpx.AsyncClient", mock_client):
+        client = HubSpotClient("test-key")
+        tool = UpdateDealTool(client)
+
+        result = await tool.execute(
+            {
+                "deal_id": "12345",
+                "properties": {
+                    "dealname": "Updated Enterprise Contract",
+                    "amount": "85000",
+                    "dealstage": "contractsent",
+                    "pipeline": "enterprise",
+                    "closedate": "2024-12-31",
+                    "description": "Updated enterprise deal for Q4",
+                },
+            }
+        )
+
+        assert isinstance(result, list)
+        assert len(result) == 1
+        assert "Updated Enterprise Contract" in result[0].text
+        assert "85000" in result[0].text
+        assert "contractsent" in result[0].text
+        assert "enterprise" in result[0].text
+        assert "2024-12-31" in result[0].text
+        assert "Updated enterprise deal for Q4" in result[0].text
+        assert "12345" in result[0].text
+
+
+@pytest.mark.asyncio
+async def test_update_deal_tool_missing_deal_id():
+    """Test deal update without deal_id."""
+    client = HubSpotClient("test-key")
+    tool = UpdateDealTool(client)
+
+    result = await tool.execute(
+        {"properties": {"dealname": "Updated Enterprise Contract"}}
+    )
+
+    assert isinstance(result, list)
+    assert len(result) == 1
+    assert "deal_id is required" in result[0].text
+
+
+@pytest.mark.asyncio
+async def test_update_deal_tool_missing_properties():
+    """Test deal update without properties."""
+    client = HubSpotClient("test-key")
+    tool = UpdateDealTool(client)
+
+    result = await tool.execute({"deal_id": "12345"})
+
+    assert isinstance(result, list)
+    assert len(result) == 1
+    assert "properties object is required" in result[0].text
+
+
+@pytest.mark.asyncio
+async def test_update_deal_tool_api_error():
+    """Test deal update with API error."""
+
+    def mock_client(*args, **kwargs):
+        return DummyAsyncClient(raise_error=True)
+
+    with patch("httpx.AsyncClient", mock_client):
+        client = HubSpotClient("test-key")
+        tool = UpdateDealTool(client)
+
+        result = await tool.execute(
+            {
+                "deal_id": "12345",
+                "properties": {"dealname": "Updated Enterprise Contract"},
+            }
+        )
+
+        assert isinstance(result, list)
+        assert len(result) == 1
+        assert "HubSpot API Error" in result[0].text
+
+
+def test_update_deal_tool_definition():
+    """Test update deal tool definition."""
+    client = HubSpotClient("test-key")
+    tool = UpdateDealTool(client)
+
+    definition = tool.get_tool_definition()
+
+    assert definition.name == "update_deal"
+    assert "Updates an existing deal in HubSpot" in definition.description
+    assert "deal_id" in definition.inputSchema["properties"]
+    assert "properties" in definition.inputSchema["properties"]
+    assert "deal_id" in definition.inputSchema["required"]
+    assert "properties" in definition.inputSchema["required"]
+    assert (
+        definition.inputSchema["properties"]["properties"]["additionalProperties"]
+        is True
+    )

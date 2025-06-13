@@ -164,3 +164,24 @@ class HubSpotClient:
             response = await client.post(url, headers=self.headers, json=payload)
             response.raise_for_status()
             return response.json()
+
+    async def update_deal(
+        self, deal_id: str, properties: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Updates a deal in HubSpot.
+
+        Args:
+            deal_id: The ID of the deal to update
+            properties: Dictionary of properties to update
+
+        Returns:
+            The updated deal data
+        """
+        url = f"{self.base_url}/crm/v3/objects/deals/{deal_id}"
+
+        data = {"properties": properties}
+
+        async with httpx.AsyncClient() as client:
+            response = await client.patch(url, headers=self.headers, json=data)
+            response.raise_for_status()
+            return response.json()
