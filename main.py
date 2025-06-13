@@ -17,6 +17,7 @@ import mcp.server.stdio
 import mcp.types as types
 from mcp.server import NotificationOptions, Server
 from mcp.server.models import InitializationOptions
+from mcp.server.sse import SseServerTransport
 
 from src.hubspot_mcp.client import HubSpotClient
 from src.hubspot_mcp.server import MCPHandlers
@@ -100,8 +101,8 @@ async def main():
             await server.run(read_stream, write_stream, server_options)
     else:  # SSE mode
         logger.info(f"Starting server in SSE mode on {args.host}:{args.port}")
-        async with mcp.server.sse.sse_server(args.host, args.port) as server_sse:
-            await server.run_sse(server_sse, server_options)
+        sse = SseServerTransport("/messages/")
+        await server.run_sse(sse, server_options)
 
 
 if __name__ == "__main__":
