@@ -1,14 +1,26 @@
 """Formatters for HubSpot data display."""
 
-from typing import Any, Dict, List, Optional
+import html
+from typing import Any, Dict, List, Optional, Union
 
 
 class HubSpotFormatter:
-    """Formatter for HubSpot data display."""
+    """Formatter for HubSpot data display.
+
+    This class provides static methods to format various HubSpot data types
+    (contacts, companies, deals, properties) into human-readable text.
+    """
 
     @staticmethod
     def format_contacts(contacts: List[Dict[str, Any]]) -> str:
-        """Format the contacts list for display."""
+        """Format the contacts list for display.
+
+        Args:
+            contacts: List of contact dictionaries from HubSpot API
+
+        Returns:
+            str: Formatted string representation of contacts
+        """
         result = f"👥 **HubSpot Contacts** ({len(contacts)} found)\n\n"
 
         for contact in contacts:
@@ -25,7 +37,14 @@ class HubSpotFormatter:
 
     @staticmethod
     def format_companies(companies: List[Dict[str, Any]]) -> str:
-        """Format the companies list for display."""
+        """Format the companies list for display.
+
+        Args:
+            companies: List of company dictionaries from HubSpot API
+
+        Returns:
+            str: Formatted string representation of companies
+        """
         result = f"🏢 **HubSpot Companies** ({len(companies)} found)\n\n"
 
         for company in companies:
@@ -44,7 +63,14 @@ class HubSpotFormatter:
 
     @staticmethod
     def format_deals(deals: List[Dict[str, Any]]) -> str:
-        """Format the deals list for display."""
+        """Format the deals list for display.
+
+        Args:
+            deals: List of deal dictionaries from HubSpot API
+
+        Returns:
+            str: Formatted string representation of deals
+        """
         result = f"💰 **HubSpot Deals** ({len(deals)} found)\n\n"
 
         for deal in deals:
@@ -74,7 +100,14 @@ class HubSpotFormatter:
 
     @staticmethod
     def format_single_deal(deal: Optional[Dict[str, Any]]) -> str:
-        """Format a single deal for display."""
+        """Format a single deal for display.
+
+        Args:
+            deal: Deal dictionary from HubSpot API or None if not found
+
+        Returns:
+            str: Formatted string representation of the deal
+        """
         if not deal:
             return "🔍 **Deal not found**\n\nNo deal matches the specified name."
 
@@ -106,7 +139,14 @@ class HubSpotFormatter:
 
     @staticmethod
     def format_contact_properties(properties: List[Dict[str, Any]]) -> str:
-        """Format the contact properties list for display."""
+        """Format the contact properties list for display.
+
+        Args:
+            properties: List of property dictionaries from HubSpot API
+
+        Returns:
+            str: Formatted string representation of contact properties
+        """
         if not properties:
             return (
                 "❌ **No properties found**\n\nUnable to retrieve contact properties."
@@ -115,7 +155,7 @@ class HubSpotFormatter:
         result = f"🔧 **HubSpot Contact Properties** ({len(properties)} properties)\n\n"
 
         # Group properties by group
-        grouped_properties = {}
+        grouped_properties: Dict[str, List[Dict[str, Any]]] = {}
         for prop in properties:
             group_name = prop.get("groupName", "Other")
             if group_name not in grouped_properties:
@@ -181,14 +221,21 @@ class HubSpotFormatter:
 
     @staticmethod
     def format_deal_properties(properties: List[Dict[str, Any]]) -> str:
-        """Format the deal properties list for display."""
+        """Format the deal properties list for display.
+
+        Args:
+            properties: List of property dictionaries from HubSpot API
+
+        Returns:
+            str: Formatted string representation of deal properties
+        """
         if not properties:
             return "❌ **No properties found**\n\nUnable to retrieve deal properties."
 
         result = f"🔧 **HubSpot Deal Properties** ({len(properties)} properties)\n\n"
 
         # Group properties by group
-        grouped_properties = {}
+        grouped_properties: Dict[str, List[Dict[str, Any]]] = {}
         for prop in properties:
             group_name = prop.get("groupName", "Other")
             if group_name not in grouped_properties:
@@ -258,7 +305,14 @@ class HubSpotFormatter:
 
     @staticmethod
     def format_company_properties(properties: List[Dict[str, Any]]) -> str:
-        """Format the company properties list for display."""
+        """Format the company properties list for display.
+
+        Args:
+            properties: List of property dictionaries from HubSpot API
+
+        Returns:
+            str: Formatted string representation of company properties
+        """
         if not properties:
             return (
                 "❌ **No properties found**\n\nUnable to retrieve company properties."
@@ -267,7 +321,7 @@ class HubSpotFormatter:
         result = f"🏢 **HubSpot Company Properties** ({len(properties)} properties)\n\n"
 
         # Group properties by group
-        grouped_properties = {}
+        grouped_properties: Dict[str, List[Dict[str, Any]]] = {}
         for prop in properties:
             group_name = prop.get("groupName", "Other")
             if group_name not in grouped_properties:
@@ -301,16 +355,10 @@ class HubSpotFormatter:
                     icon = "📎"
                 elif name in ["domain", "website"]:
                     icon = "🌐"
-                elif name in ["phone", "fax"]:
-                    icon = "📞"
-                elif name in ["city", "state", "country", "address"]:
-                    icon = "📍"
                 elif name in ["industry", "type"]:
                     icon = "🏭"
-                elif name in ["name", "description"]:
-                    icon = "🏢"
-                elif name in ["annualrevenue", "numberofemployees"]:
-                    icon = "💰"
+                elif name in ["city", "state", "country"]:
+                    icon = "📍"
 
                 result += f"**{icon} {label}**\n"
                 result += f"  🏷️ Name: `{name}`\n"
@@ -339,25 +387,51 @@ class HubSpotFormatter:
 
     @staticmethod
     def format_deal(deal: Dict[str, Any]) -> str:
-        """Formats a single deal for display.
+        """Format a single deal for display.
 
         Args:
-            deal: The deal data to format
+            deal: Deal dictionary from HubSpot API
 
         Returns:
-            Formatted string representation of the deal
+            str: Formatted string representation of the deal
         """
-        properties = deal.get("properties", {})
 
-        result = [
-            "💰 **HubSpot Deal Updated**\n",
-            f"**{properties.get('dealname', 'Unnamed Deal')}**",
-            f"  💰 Amount: {properties.get('amount', 'N/A')}",
-            f"  📊 Stage: {properties.get('dealstage', 'N/A')}",
-            f"  🔄 Pipeline: {properties.get('pipeline', 'N/A')}",
-            f"  📅 Close Date: {properties.get('closedate', 'N/A')}",
-            f"  📝 Description: {properties.get('description', 'N/A')}",
-            f"  🆔 ID: {deal.get('id', 'N/A')}",
-        ]
+        def clean(val: Any, default: str) -> str:
+            """Clean a value for display.
 
-        return "\n".join(result)
+            Args:
+                val: Value to clean
+                default: Default value if cleaning fails
+
+            Returns:
+                str: Cleaned value
+            """
+            if val is None:
+                return default
+            return str(val)
+
+        props = deal.get("properties", {})
+        amount = props.get("amount", "0")
+
+        # Format amount if available
+        if amount and amount != "0":
+            try:
+                amount_float = float(amount)
+                amount_formatted = f"${amount_float:,.2f}"
+            except (ValueError, TypeError):
+                amount_formatted = f"${amount}"
+        else:
+            amount_formatted = "N/A"
+
+        result = f"💰 **HubSpot Deal**\n\n"
+        result += f"**{clean(props.get('dealname'), 'Unnamed deal')}**\n"
+        result += f"  💰 Amount: {amount_formatted}\n"
+        result += f"  📊 Stage: {clean(props.get('dealstage'), 'N/A')}\n"
+        result += f"  🔄 Pipeline: {clean(props.get('pipeline'), 'N/A')}\n"
+        result += f"  📅 Close date: {clean(props.get('closedate'), 'N/A')}\n"
+        result += f"  📅 Created: {clean(props.get('createdate'), 'N/A')}\n"
+        result += f"  📅 Modified: {clean(props.get('lastmodifieddate'), 'N/A')}\n"
+        result += f"  👤 Owner: {clean(props.get('hubspot_owner_id'), 'N/A')}\n"
+        result += f"  🆔 ID: {clean(deal.get('id'), 'N/A')}\n"
+
+        return result

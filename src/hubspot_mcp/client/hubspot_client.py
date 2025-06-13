@@ -9,9 +9,18 @@ logger = logging.getLogger(__name__)
 
 
 class HubSpotClient:
-    """Client to interact with HubSpot API."""
+    """Client to interact with HubSpot API.
+
+    This class provides methods to interact with the HubSpot API, including
+    retrieving and managing contacts, companies, and deals.
+    """
 
     def __init__(self, api_key: str):
+        """Initialize the HubSpot client.
+
+        Args:
+            api_key: The HubSpot API key to use for authentication
+        """
         self.api_key = api_key
         self.base_url = "https://api.hubapi.com"
         self.headers = {
@@ -20,9 +29,20 @@ class HubSpotClient:
         }
 
     async def get_contacts(
-        self, limit: int = 100, filters: Optional[Dict] = None
-    ) -> List[Dict]:
-        """Retrieve the list of contacts with optional filtering."""
+        self, limit: int = 100, filters: Optional[Dict[str, Any]] = None
+    ) -> List[Dict[str, Any]]:
+        """Retrieve the list of contacts with optional filtering.
+
+        Args:
+            limit: Maximum number of contacts to retrieve
+            filters: Optional search filters
+
+        Returns:
+            List[Dict[str, Any]]: List of contact dictionaries
+
+        Raises:
+            httpx.HTTPStatusError: If the API request fails
+        """
         url = f"{self.base_url}/crm/v3/objects/contacts"
 
         params = {
@@ -43,9 +63,20 @@ class HubSpotClient:
             return data.get("results", [])
 
     async def get_companies(
-        self, limit: int = 100, filters: Optional[Dict] = None
-    ) -> List[Dict]:
-        """Retrieve the list of companies with optional filtering."""
+        self, limit: int = 100, filters: Optional[Dict[str, Any]] = None
+    ) -> List[Dict[str, Any]]:
+        """Retrieve the list of companies with optional filtering.
+
+        Args:
+            limit: Maximum number of companies to retrieve
+            filters: Optional search filters
+
+        Returns:
+            List[Dict[str, Any]]: List of company dictionaries
+
+        Raises:
+            httpx.HTTPStatusError: If the API request fails
+        """
         url = f"{self.base_url}/crm/v3/objects/companies"
 
         params = {
@@ -65,9 +96,20 @@ class HubSpotClient:
             return data.get("results", [])
 
     async def get_deals(
-        self, limit: int = 100, filters: Optional[Dict] = None
-    ) -> List[Dict]:
-        """Retrieve the list of deals with optional filtering."""
+        self, limit: int = 100, filters: Optional[Dict[str, Any]] = None
+    ) -> List[Dict[str, Any]]:
+        """Retrieve the list of deals with optional filtering.
+
+        Args:
+            limit: Maximum number of deals to retrieve
+            filters: Optional search filters
+
+        Returns:
+            List[Dict[str, Any]]: List of deal dictionaries
+
+        Raises:
+            httpx.HTTPStatusError: If the API request fails
+        """
         url = f"{self.base_url}/crm/v3/objects/deals"
 
         params = {
@@ -86,8 +128,18 @@ class HubSpotClient:
             data = response.json()
             return data.get("results", [])
 
-    async def get_deal_by_name(self, deal_name: str) -> Optional[Dict]:
-        """Retrieve a specific deal by its name."""
+    async def get_deal_by_name(self, deal_name: str) -> Optional[Dict[str, Any]]:
+        """Retrieve a specific deal by its name.
+
+        Args:
+            deal_name: The exact name of the deal to search for
+
+        Returns:
+            Optional[Dict[str, Any]]: Deal dictionary if found, None otherwise
+
+        Raises:
+            httpx.HTTPStatusError: If the API request fails
+        """
         url = f"{self.base_url}/crm/v3/objects/deals/search"
 
         # Request body to search by deal name
@@ -123,8 +175,15 @@ class HubSpotClient:
             results = data.get("results", [])
             return results[0] if results else None
 
-    async def get_contact_properties(self) -> List[Dict]:
-        """Retrieve the list of available properties for contacts."""
+    async def get_contact_properties(self) -> List[Dict[str, Any]]:
+        """Retrieve the list of available properties for contacts.
+
+        Returns:
+            List[Dict[str, Any]]: List of contact property dictionaries
+
+        Raises:
+            httpx.HTTPStatusError: If the API request fails
+        """
         url = f"{self.base_url}/crm/v3/properties/contacts"
 
         async with httpx.AsyncClient() as client:
@@ -133,8 +192,15 @@ class HubSpotClient:
             data = response.json()
             return data.get("results", [])
 
-    async def get_company_properties(self) -> List[Dict]:
-        """Retrieve the list of available properties for companies."""
+    async def get_company_properties(self) -> List[Dict[str, Any]]:
+        """Retrieve the list of available properties for companies.
+
+        Returns:
+            List[Dict[str, Any]]: List of company property dictionaries
+
+        Raises:
+            httpx.HTTPStatusError: If the API request fails
+        """
         url = f"{self.base_url}/crm/v3/properties/companies"
 
         async with httpx.AsyncClient() as client:
@@ -143,8 +209,15 @@ class HubSpotClient:
             data = response.json()
             return data.get("results", [])
 
-    async def get_deal_properties(self) -> List[Dict]:
-        """Retrieve the list of available properties for deals."""
+    async def get_deal_properties(self) -> List[Dict[str, Any]]:
+        """Retrieve the list of available properties for deals.
+
+        Returns:
+            List[Dict[str, Any]]: List of deal property dictionaries
+
+        Raises:
+            httpx.HTTPStatusError: If the API request fails
+        """
         url = f"{self.base_url}/crm/v3/properties/deals"
 
         async with httpx.AsyncClient() as client:
@@ -154,7 +227,17 @@ class HubSpotClient:
             return data.get("results", [])
 
     async def create_deal(self, deal_data: Dict[str, Any]) -> Dict[str, Any]:
-        """Create a new deal in HubSpot."""
+        """Create a new deal in HubSpot.
+
+        Args:
+            deal_data: Dictionary containing deal properties
+
+        Returns:
+            Dict[str, Any]: Created deal data
+
+        Raises:
+            httpx.HTTPStatusError: If the API request fails
+        """
         url = f"{self.base_url}/crm/v3/objects/deals"
 
         # Structure data for HubSpot
@@ -175,7 +258,10 @@ class HubSpotClient:
             properties: Dictionary of properties to update
 
         Returns:
-            The updated deal data
+            Dict[str, Any]: The updated deal data
+
+        Raises:
+            httpx.HTTPStatusError: If the API request fails
         """
         url = f"{self.base_url}/crm/v3/objects/deals/{deal_id}"
 

@@ -1,5 +1,8 @@
+"""Tests for HubSpot MCP server."""
+
 import asyncio
 import sys
+from typing import Any, Dict, List, Optional, Union
 
 import httpx
 import pytest
@@ -10,7 +13,15 @@ from src.hubspot_mcp.client import HubSpotClient
 from src.hubspot_mcp.server import MCPHandlers
 
 
-def test_parse_arguments_defaults(monkeypatch):
+def test_parse_arguments_defaults(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Test argument parsing with default values.
+
+    Tests that the argument parser correctly sets default values
+    when no arguments are provided.
+
+    Args:
+        monkeypatch: Pytest fixture for patching.
+    """
     monkeypatch.setattr(sys, "argv", ["main.py"])
     args = parse_arguments()
     assert args.mode == "stdio"
@@ -18,7 +29,15 @@ def test_parse_arguments_defaults(monkeypatch):
     assert args.port == 8080
 
 
-def test_parse_arguments_sse(monkeypatch):
+def test_parse_arguments_sse(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Test argument parsing with SSE mode.
+
+    Tests that the argument parser correctly handles SSE mode
+    and custom host/port values.
+
+    Args:
+        monkeypatch: Pytest fixture for patching.
+    """
     monkeypatch.setattr(
         sys,
         "argv",
@@ -30,11 +49,16 @@ def test_parse_arguments_sse(monkeypatch):
     assert args.port == 9090
 
 
-def test_handle_list_tools():
+def test_handle_list_tools() -> None:
+    """Test listing available tools.
+
+    Tests that the handler correctly lists all available HubSpot tools
+    with their expected names.
+    """
     client = HubSpotClient("test-key")
     handlers = MCPHandlers(client)
-    tools = asyncio.run(handlers.handle_list_tools())
-    names = [tool.name for tool in tools]
+    tools: List[Tool] = asyncio.run(handlers.handle_list_tools())
+    names: List[str] = [tool.name for tool in tools]
     assert "list_hubspot_contacts" in names
     assert "list_hubspot_companies" in names
     assert "list_hubspot_deals" in names
@@ -42,121 +66,231 @@ def test_handle_list_tools():
     assert "get_hubspot_company_properties" in names
 
 
-def test_handle_call_tool_no_client():
-    # Test with None client
+def test_handle_call_tool_no_client() -> None:
+    """Test tool execution without client.
+
+    Tests that the handler correctly handles the case when no client
+    is initialized.
+    """
     handlers = MCPHandlers(None)
-    result = asyncio.run(handlers.handle_call_tool("list_hubspot_contacts", {}))
+    result: List[TextContent] = asyncio.run(
+        handlers.handle_call_tool("list_hubspot_contacts", {})
+    )
     assert isinstance(result, list)
     assert isinstance(result[0], TextContent)
     assert "Error: HubSpot client not initialized" in result[0].text
 
 
 class DummyResponse:
-    def __init__(self, data=None):
+    """Mock response class for testing."""
+
+    def __init__(self, data: Optional[Dict[str, Any]] = None) -> None:
+        """Initialize the mock response.
+
+        Args:
+            data: Optional response data. Defaults to empty results.
+        """
         self._data = data or {"results": []}
         self.status_code = 200
         self.text = ""
 
-    def json(self):
+    def json(self) -> Dict[str, Any]:
+        """Return the mock response data.
+
+        Returns:
+            The mock response data as a dictionary.
+        """
         return self._data
 
-    def raise_for_status(self):
+    def raise_for_status(self) -> None:
+        """Mock method that does nothing."""
         pass
 
 
 class DummyAsyncClient:
-    def __init__(self, *args, **kwargs):
-        self.last_url = None
-        self.last_headers = None
-        self.last_params = None
+    """Mock async client for testing."""
 
-    async def __aenter__(self):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        """Initialize the mock async client.
+
+        Args:
+            *args: Variable length argument list.
+            **kwargs: Arbitrary keyword arguments.
+        """
+        self.last_url: Optional[str] = None
+        self.last_headers: Optional[Dict[str, str]] = None
+        self.last_params: Optional[Dict[str, Any]] = None
+
+    async def __aenter__(self) -> "DummyAsyncClient":
+        """Enter the async context.
+
+        Returns:
+            The mock client instance.
+        """
         return self
 
-    async def __aexit__(self, exc_type, exc, tb):
+    async def __aexit__(self, exc_type: Any, exc: Any, tb: Any) -> None:
+        """Exit the async context.
+
+        Args:
+            exc_type: The exception type.
+            exc: The exception instance.
+            tb: The traceback.
+        """
         pass
 
-    async def get(self, url, headers=None, params=None):
+    async def get(
+        self,
+        url: str,
+        headers: Optional[Dict[str, str]] = None,
+        params: Optional[Dict[str, Any]] = None,
+    ) -> DummyResponse:
+        """Mock GET request.
+
+        Args:
+            url: The request URL.
+            headers: Optional request headers.
+            params: Optional query parameters.
+
+        Returns:
+            A mock response.
+        """
         self.last_url = url
         self.last_headers = headers
         self.last_params = params
         return DummyResponse({"results": [{"id": "1", "properties": {"foo": "bar"}}]})
 
 
-def test_get_contacts_and_companies(monkeypatch):
-    # Patch AsyncClient to prevent real HTTP calls
+def test_get_contacts_and_companies(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Test contact and company retrieval.
+
+    Tests that the client correctly retrieves contacts and companies
+    with the provided filters.
+
+    Args:
+        monkeypatch: Pytest fixture for patching.
+    """
     monkeypatch.setattr(httpx, "AsyncClient", DummyAsyncClient)
     client = HubSpotClient("testkey")
-    contacts = asyncio.run(client.get_contacts(limit=2, filters={"search": "test"}))
+    contacts: List[Dict[str, Any]] = asyncio.run(
+        client.get_contacts(limit=2, filters={"search": "test"})
+    )
     assert contacts == [{"id": "1", "properties": {"foo": "bar"}}]
-    companies = asyncio.run(client.get_companies(limit=3, filters={"search": "alpha"}))
+    companies: List[Dict[str, Any]] = asyncio.run(
+        client.get_companies(limit=3, filters={"search": "alpha"})
+    )
     assert companies == [{"id": "1", "properties": {"foo": "bar"}}]
 
 
-def test_get_deals(monkeypatch):
-    # Specific test for deals
+def test_get_deals(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Test deal retrieval.
+
+    Tests that the client correctly retrieves deals with the provided filters.
+
+    Args:
+        monkeypatch: Pytest fixture for patching.
+    """
     monkeypatch.setattr(httpx, "AsyncClient", DummyAsyncClient)
     client = HubSpotClient("testkey")
-    deals = asyncio.run(client.get_deals(limit=5, filters={"search": "deal"}))
+    deals: List[Dict[str, Any]] = asyncio.run(
+        client.get_deals(limit=5, filters={"search": "deal"})
+    )
     assert deals == [{"id": "1", "properties": {"foo": "bar"}}]
 
 
-def test_handle_call_tool_deals(monkeypatch):
-    # Test calling the list_hubspot_deals tool
+def test_handle_call_tool_deals(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Test deal tool execution.
+
+    Tests that the handler correctly executes the list_hubspot_deals tool.
+
+    Args:
+        monkeypatch: Pytest fixture for patching.
+    """
     monkeypatch.setattr(httpx, "AsyncClient", DummyAsyncClient)
     client = HubSpotClient("testkey")
     handlers = MCPHandlers(client)
-    result = asyncio.run(handlers.handle_call_tool("list_hubspot_deals", {"limit": 10}))
+    result: List[TextContent] = asyncio.run(
+        handlers.handle_call_tool("list_hubspot_deals", {"limit": 10})
+    )
     assert isinstance(result, list)
     assert isinstance(result[0], TextContent)
     assert "HubSpot Deals" in result[0].text
 
 
-def test_handle_list_tools_includes_properties():
+def test_handle_list_tools_includes_properties() -> None:
+    """Test that property tools are included in the list.
+
+    Tests that the handler includes all property-related tools
+    in the list of available tools.
+    """
     client = HubSpotClient("test-key")
     handlers = MCPHandlers(client)
-    tools = asyncio.run(handlers.handle_list_tools())
-    names = [tool.name for tool in tools]
+    tools: List[Tool] = asyncio.run(handlers.handle_list_tools())
+    names: List[str] = [tool.name for tool in tools]
     assert "get_hubspot_contact_properties" in names
     assert "get_hubspot_deal_properties" in names
 
 
-def test_get_deal_properties(monkeypatch):
-    # Test deal properties retrieval
+def test_get_deal_properties(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Test deal properties retrieval.
+
+    Tests that the client correctly retrieves deal properties.
+
+    Args:
+        monkeypatch: Pytest fixture for patching.
+    """
     monkeypatch.setattr(httpx, "AsyncClient", DummyAsyncClient)
     client = HubSpotClient("testkey")
-    properties = asyncio.run(client.get_deal_properties())
+    properties: List[Dict[str, Any]] = asyncio.run(client.get_deal_properties())
     assert properties == [{"id": "1", "properties": {"foo": "bar"}}]
 
 
-def test_handle_call_tool_deal_properties(monkeypatch):
-    # Test calling the get_hubspot_deal_properties tool
+def test_handle_call_tool_deal_properties(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Test deal properties tool execution.
+
+    Tests that the handler correctly executes the get_hubspot_deal_properties tool.
+
+    Args:
+        monkeypatch: Pytest fixture for patching.
+    """
     monkeypatch.setattr(httpx, "AsyncClient", DummyAsyncClient)
     client = HubSpotClient("testkey")
     handlers = MCPHandlers(client)
-    result = asyncio.run(handlers.handle_call_tool("get_hubspot_deal_properties", {}))
+    result: List[TextContent] = asyncio.run(
+        handlers.handle_call_tool("get_hubspot_deal_properties", {})
+    )
     assert isinstance(result, list)
     assert isinstance(result[0], TextContent)
     assert "HubSpot Deal Properties" in result[0].text
 
 
-def test_handle_call_tool_unknown_tool():
-    """Test calling an unknown tool."""
+def test_handle_call_tool_unknown_tool() -> None:
+    """Test calling an unknown tool.
+
+    Tests that the handler correctly handles requests for unknown tools
+    by returning an appropriate error message.
+    """
     client = HubSpotClient("test-key")
     handlers = MCPHandlers(client)
-    result = asyncio.run(handlers.handle_call_tool("unknown_tool", {}))
+    result: List[TextContent] = asyncio.run(
+        handlers.handle_call_tool("unknown_tool", {})
+    )
     assert isinstance(result, list)
     assert isinstance(result[0], TextContent)
     assert "Unknown tool: unknown_tool" in result[0].text
 
 
-def test_handle_call_tool_with_arguments():
-    """Test calling tools with various arguments."""
+def test_handle_call_tool_with_arguments() -> None:
+    """Test calling tools with various arguments.
+
+    Tests that the handler correctly handles tool calls with different
+    types of arguments (limit, filters, etc.).
+    """
     client = HubSpotClient("test-key")
     handlers = MCPHandlers(client)
 
     # Test with limit argument
-    result = asyncio.run(
+    result: List[TextContent] = asyncio.run(
         handlers.handle_call_tool("list_hubspot_contacts", {"limit": 50})
     )
     assert isinstance(result, list)
@@ -172,16 +306,20 @@ def test_handle_call_tool_with_arguments():
     assert isinstance(result[0], TextContent)
 
 
-def test_handle_list_tools_count():
-    """Test that all expected tools are listed."""
+def test_handle_list_tools_count() -> None:
+    """Test that all expected tools are listed.
+
+    Tests that the handler lists exactly the expected number of tools
+    with their correct names.
+    """
     client = HubSpotClient("test-key")
     handlers = MCPHandlers(client)
-    tools = asyncio.run(handlers.handle_list_tools())
+    tools: List[Tool] = asyncio.run(handlers.handle_list_tools())
 
-    # Should have exactly 8 tools
-    assert len(tools) == 8
+    # Should have exactly 9 tools
+    assert len(tools) == 9
 
-    expected_tools = [
+    expected_tools: List[str] = [
         "list_hubspot_contacts",
         "list_hubspot_companies",
         "list_hubspot_deals",
@@ -192,6 +330,6 @@ def test_handle_list_tools_count():
         "get_hubspot_deal_properties",
     ]
 
-    tool_names = [tool.name for tool in tools]
+    tool_names: List[str] = [tool.name for tool in tools]
     for expected_tool in expected_tools:
         assert expected_tool in tool_names

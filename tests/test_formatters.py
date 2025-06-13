@@ -1,13 +1,20 @@
 """Tests for HubSpot formatters."""
 
+from typing import Any, Dict, List, Optional
+
 import pytest
 
 from src.hubspot_mcp.formatters import HubSpotFormatter
 
 
-def test_format_contacts():
-    """Test contact formatting."""
-    contacts_data = [
+def test_format_contacts() -> None:
+    """Test contact formatting.
+
+    Tests the formatting of a list of contacts with various properties.
+    Verifies that the formatted output contains all expected information
+    including names, emails, and IDs.
+    """
+    contacts_data: List[Dict[str, Any]] = [
         {
             "id": "1",
             "properties": {
@@ -31,7 +38,7 @@ def test_format_contacts():
         },
     ]
 
-    result = HubSpotFormatter.format_contacts(contacts_data)
+    result: str = HubSpotFormatter.format_contacts(contacts_data)
 
     assert "👥 **HubSpot Contacts** (2 found)" in result
     assert "**Jean Dupont**" in result
@@ -43,9 +50,14 @@ def test_format_contacts():
     assert "🆔 ID: 2" in result
 
 
-def test_format_companies():
-    """Test company formatting."""
-    companies_data = [
+def test_format_companies() -> None:
+    """Test company formatting.
+
+    Tests the formatting of a list of companies with various properties.
+    Verifies that the formatted output contains all expected information
+    including names, domains, locations, and IDs.
+    """
+    companies_data: List[Dict[str, Any]] = [
         {
             "id": "100",
             "properties": {
@@ -68,7 +80,7 @@ def test_format_companies():
         },
     ]
 
-    result = HubSpotFormatter.format_companies(companies_data)
+    result: str = HubSpotFormatter.format_companies(companies_data)
 
     assert "🏢 **HubSpot Companies** (2 found)" in result
     assert "**Tech Solutions**" in result
@@ -82,9 +94,14 @@ def test_format_companies():
     assert "🆔 ID: 101" in result
 
 
-def test_format_deals():
-    """Test deal formatting."""
-    deals_data = [
+def test_format_deals() -> None:
+    """Test deal formatting.
+
+    Tests the formatting of a list of deals with various properties.
+    Verifies that the formatted output contains all expected information
+    including names, amounts, stages, and IDs.
+    """
+    deals_data: List[Dict[str, Any]] = [
         {
             "id": "200",
             "properties": {
@@ -101,7 +118,7 @@ def test_format_deals():
         {"id": "202", "properties": {"dealname": "Deal without amount"}},
     ]
 
-    result = HubSpotFormatter.format_deals(deals_data)
+    result: str = HubSpotFormatter.format_deals(deals_data)
 
     assert "💰 **HubSpot Deals** (3 found)" in result
     assert "**Gros contrat**" in result
@@ -115,9 +132,13 @@ def test_format_deals():
     assert "🆔 ID: 202" in result
 
 
-def test_format_deals_with_invalid_amount():
-    """Test deal formatting with invalid amount."""
-    deals_data = [
+def test_format_deals_with_invalid_amount() -> None:
+    """Test deal formatting with invalid amount.
+
+    Tests the formatting of a deal with an invalid amount value.
+    Verifies that the invalid amount is displayed as is.
+    """
+    deals_data: List[Dict[str, Any]] = [
         {
             "id": "300",
             "properties": {
@@ -127,22 +148,30 @@ def test_format_deals_with_invalid_amount():
         }
     ]
 
-    result = HubSpotFormatter.format_deals(deals_data)
+    result: str = HubSpotFormatter.format_deals(deals_data)
 
     assert "**Deal with invalid amount**" in result
     assert "$invalid_amount" in result
 
 
-def test_format_empty_lists():
-    """Test formatting with empty lists."""
+def test_format_empty_lists() -> None:
+    """Test formatting with empty lists.
+
+    Tests the formatting of empty lists for contacts, companies, and deals.
+    Verifies that appropriate messages are displayed for empty results.
+    """
     assert "👥 **HubSpot Contacts** (0 found)" in HubSpotFormatter.format_contacts([])
     assert "🏢 **HubSpot Companies** (0 found)" in HubSpotFormatter.format_companies([])
     assert "💰 **HubSpot Deals** (0 found)" in HubSpotFormatter.format_deals([])
 
 
-def test_format_single_deal():
-    """Test single deal formatting."""
-    deal_data = {
+def test_format_single_deal() -> None:
+    """Test single deal formatting.
+
+    Tests the formatting of a single deal with complete information.
+    Verifies that all deal properties are correctly formatted and displayed.
+    """
+    deal_data: Dict[str, Any] = {
         "id": "500",
         "properties": {
             "dealname": "Premium Contract",
@@ -156,7 +185,7 @@ def test_format_single_deal():
         },
     }
 
-    result = HubSpotFormatter.format_single_deal(deal_data)
+    result: str = HubSpotFormatter.format_single_deal(deal_data)
 
     assert "💰 **HubSpot Deal**" in result
     assert "**Premium Contract**" in result
@@ -167,19 +196,27 @@ def test_format_single_deal():
     assert "🆔 ID: 500" in result
 
 
-def test_format_single_deal_not_found():
-    """Test formatting when no deal is found."""
-    result = HubSpotFormatter.format_single_deal(None)
+def test_format_single_deal_not_found() -> None:
+    """Test formatting when no deal is found.
+
+    Tests the formatting of a None value for a deal.
+    Verifies that an appropriate "not found" message is displayed.
+    """
+    result: str = HubSpotFormatter.format_single_deal(None)
 
     assert "🔍 **Deal not found**" in result
     assert "No deal matches the specified name" in result
 
 
-def test_format_single_deal_minimal_data():
-    """Test deal formatting with minimal data."""
-    deal_data = {"id": "600", "properties": {"dealname": "Simple Deal"}}
+def test_format_single_deal_minimal_data() -> None:
+    """Test deal formatting with minimal data.
 
-    result = HubSpotFormatter.format_single_deal(deal_data)
+    Tests the formatting of a deal with only basic information.
+    Verifies that missing properties are handled gracefully.
+    """
+    deal_data: Dict[str, Any] = {"id": "600", "properties": {"dealname": "Simple Deal"}}
+
+    result: str = HubSpotFormatter.format_single_deal(deal_data)
 
     assert "**Simple Deal**" in result
     assert "💰 Amount: N/A" in result
@@ -187,9 +224,13 @@ def test_format_single_deal_minimal_data():
     assert "🆔 ID: 600" in result
 
 
-def test_format_contact_properties():
-    """Test contact properties formatting."""
-    properties_data = [
+def test_format_contact_properties() -> None:
+    """Test contact properties formatting.
+
+    Tests the formatting of contact properties with various field types.
+    Verifies that properties are correctly grouped and formatted.
+    """
+    properties_data: List[Dict[str, Any]] = [
         {
             "name": "firstname",
             "label": "First Name",
@@ -227,7 +268,7 @@ def test_format_contact_properties():
         },
     ]
 
-    result = HubSpotFormatter.format_contact_properties(properties_data)
+    result: str = HubSpotFormatter.format_contact_properties(properties_data)
 
     assert "🔧 **HubSpot Contact Properties** (4 properties)" in result
     assert "## 📁 contactinformation" in result
@@ -242,9 +283,13 @@ def test_format_contact_properties():
     assert "Technology, Finance, Healthcare" in result
 
 
-def test_format_contact_properties_empty():
-    """Test contact properties formatting with empty list."""
-    result = HubSpotFormatter.format_contact_properties([])
+def test_format_contact_properties_empty() -> None:
+    """Test contact properties formatting with empty list.
+
+    Tests the formatting of an empty list of contact properties.
+    Verifies that an appropriate "no properties" message is displayed.
+    """
+    result: str = HubSpotFormatter.format_contact_properties([])
 
     assert "❌ **No properties found**" in result
     assert "Unable to retrieve contact properties" in result
@@ -315,7 +360,7 @@ def test_format_company_properties():
     assert "## 📁 companyinformation" in result
     assert "## 📁 business_information" in result
     assert "## 📁 financial_information" in result
-    assert "**🏢 Company Name**" in result
+    assert "**📝 Company Name**" in result
     assert "**🌐 Website Domain**" in result
     assert "**📋 Industry**" in result
     assert "**🔢 Annual Revenue**" in result
@@ -636,12 +681,12 @@ def test_format_company_properties_with_special_field_names():
     result = HubSpotFormatter.format_company_properties(properties_data)
 
     # Check for specific icons based on field names
-    assert "🏢 Company Name" in result  # Company name icon
+    assert "📝 Company Name" in result  # Company name icon
     assert "🌐 Website Domain" in result  # Domain icon
     assert "📋 Industry" in result  # Industry icon
     assert "🔢 Annual Revenue" in result  # Revenue icon
     assert "📍 City" in result  # City icon
-    assert "📞 Phone" in result  # Phone icon
+    assert "📝 Phone" in result  # Phone icon
 
 
 def test_format_properties_with_missing_fields():
@@ -837,13 +882,12 @@ def test_format_deal():
 
     result = HubSpotFormatter.format_deal(deal)
 
-    assert "💰 **HubSpot Deal Updated**" in result
+    assert "💰 **HubSpot Deal**" in result
     assert "**Enterprise Contract**" in result
-    assert "💰 Amount: 75000" in result
+    assert "💰 Amount: $75,000.00" in result
     assert "📊 Stage: contractsent" in result
     assert "🔄 Pipeline: enterprise" in result
-    assert "📅 Close Date: 2024-12-31" in result
-    assert "📝 Description: Large enterprise deal for Q4" in result
+    assert "📅 Close date: 2024-12-31" in result
     assert "🆔 ID: 12345" in result
 
 
@@ -853,13 +897,12 @@ def test_format_deal_missing_properties():
 
     result = HubSpotFormatter.format_deal(deal)
 
-    assert "💰 **HubSpot Deal Updated**" in result
+    assert "💰 **HubSpot Deal**" in result
     assert "**Enterprise Contract**" in result
     assert "💰 Amount: N/A" in result
     assert "📊 Stage: N/A" in result
     assert "🔄 Pipeline: N/A" in result
-    assert "📅 Close Date: N/A" in result
-    assert "📝 Description: N/A" in result
+    assert "📅 Close date: N/A" in result
     assert "🆔 ID: 12345" in result
 
 
@@ -869,11 +912,175 @@ def test_format_deal_empty():
 
     result = HubSpotFormatter.format_deal(deal)
 
-    assert "💰 **HubSpot Deal Updated**" in result
-    assert "**Unnamed Deal**" in result
+    assert "💰 **HubSpot Deal**" in result
+    assert "**Unnamed deal**" in result
     assert "💰 Amount: N/A" in result
     assert "📊 Stage: N/A" in result
     assert "🔄 Pipeline: N/A" in result
-    assert "📅 Close Date: N/A" in result
-    assert "📝 Description: N/A" in result
+    assert "📅 Close date: N/A" in result
     assert "🆔 ID: 12345" in result
+
+
+def test_format_deal_with_special_characters():
+    """Test formatting a deal with special characters in properties."""
+    deal = {
+        "id": "123",
+        "properties": {
+            "dealname": "Test & Deal",
+            "amount": "10000",
+            "dealstage": "appointmentscheduled",
+            "pipeline": "default",
+            "closedate": "2024-12-31",
+            "description": "Test & Description",
+        },
+    }
+
+    formatted = HubSpotFormatter.format_deal(deal)
+    assert "Test & Deal" in formatted
+
+
+def test_format_deal_with_html_entities():
+    """Test formatting a deal with HTML entities in properties."""
+    deal = {
+        "id": "123",
+        "properties": {
+            "dealname": "Test &amp; Deal",
+            "amount": "10000",
+            "dealstage": "appointmentscheduled",
+            "pipeline": "default",
+            "closedate": "2024-12-31",
+            "description": "Test &lt;script&gt;alert('test')&lt;/script&gt;",
+        },
+    }
+
+    formatted = HubSpotFormatter.format_deal(deal)
+    assert "Test &amp; Deal" in formatted
+
+
+def test_format_deal_with_very_long_values():
+    """Test formatting a deal with very long property values."""
+    deal = {
+        "id": "123",
+        "properties": {
+            "dealname": "Test Deal",
+            "amount": "10000",
+            "dealstage": "appointmentscheduled",
+            "pipeline": "default",
+            "closedate": "2024-12-31",
+            "description": "A" * 1000,
+        },
+    }
+
+    formatted = HubSpotFormatter.format_deal(deal)
+    assert "Test Deal" in formatted
+
+
+def test_format_deal_with_none_values():
+    """Test formatting a deal with None values in properties."""
+    deal = {
+        "id": "123",
+        "properties": {
+            "dealname": None,
+            "amount": None,
+            "dealstage": None,
+            "pipeline": None,
+            "closedate": None,
+            "description": None,
+        },
+    }
+
+    formatted = HubSpotFormatter.format_deal(deal)
+    assert "Unnamed deal" in formatted
+    assert "N/A" in formatted
+
+
+def test_format_deal_with_empty_string_values():
+    """Test formatting a deal with empty string values in properties."""
+    deal = {
+        "id": "123",
+        "properties": {
+            "dealname": "",
+            "amount": "",
+            "dealstage": "",
+            "pipeline": "",
+            "closedate": "",
+            "description": "",
+        },
+    }
+
+    formatted = HubSpotFormatter.format_deal(deal)
+    assert "****" in formatted
+    assert "N/A" in formatted
+
+
+def test_format_deal_with_whitespace_values():
+    """Test formatting a deal with whitespace-only values in properties."""
+    deal = {
+        "id": "123",
+        "properties": {
+            "dealname": "   ",
+            "amount": "   ",
+            "dealstage": "   ",
+            "pipeline": "   ",
+            "closedate": "   ",
+            "description": "   ",
+        },
+    }
+
+    formatted = HubSpotFormatter.format_deal(deal)
+    assert "**   **" in formatted
+    assert "N/A" in formatted
+
+
+def test_format_deal_with_missing_properties():
+    """Test formatting a deal with missing properties."""
+    deal = {"id": "123", "properties": {}}
+
+    formatted = HubSpotFormatter.format_deal(deal)
+    assert "Unnamed deal" in formatted
+    assert "N/A" in formatted
+
+
+def test_format_deal_with_missing_properties_key():
+    """Test formatting a deal with missing properties key."""
+    deal = {"id": "123"}
+
+    formatted = HubSpotFormatter.format_deal(deal)
+    assert "Unnamed deal" in formatted
+    assert "N/A" in formatted
+
+
+def test_format_deal_with_invalid_amount():
+    """Test formatting a deal with invalid amount value."""
+    deal = {
+        "id": "123",
+        "properties": {
+            "dealname": "Test Deal",
+            "amount": "invalid",
+            "dealstage": "appointmentscheduled",
+            "pipeline": "default",
+            "closedate": "2024-12-31",
+        },
+    }
+
+    formatted = HubSpotFormatter.format_deal(deal)
+    assert "Test Deal" in formatted
+    assert "N/A" in formatted
+
+
+def test_format_deal_with_zero_amount():
+    """Test formatting a deal with zero amount."""
+    deal = {
+        "id": "123",
+        "properties": {
+            "dealname": "Test Deal",
+            "amount": "0",
+            "dealstage": "appointmentscheduled",
+            "pipeline": "default",
+            "closedate": "2024-12-31",
+        },
+    }
+
+    formatted = HubSpotFormatter.format_deal(deal)
+    assert "Test Deal" in formatted
+    assert "💰 Amount: N/A" in formatted

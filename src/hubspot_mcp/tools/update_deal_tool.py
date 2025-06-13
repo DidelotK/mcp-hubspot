@@ -1,6 +1,6 @@
 """MCP tool to update HubSpot deals."""
 
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 import mcp.types as types
 
@@ -12,7 +12,11 @@ class UpdateDealTool(BaseTool):
     """Tool to update HubSpot deals."""
 
     def get_tool_definition(self) -> types.Tool:
-        """Return the update deal tool definition."""
+        """Return the update deal tool definition.
+
+        Returns:
+            types.Tool: The tool definition for updating deals
+        """
         return types.Tool(
             name="update_deal",
             description="Updates an existing deal in HubSpot",
@@ -65,10 +69,17 @@ class UpdateDealTool(BaseTool):
         )
 
     async def execute(self, arguments: Dict[str, Any]) -> List[types.TextContent]:
-        """Execute deal update."""
+        """Execute deal update.
+
+        Args:
+            arguments: Dictionary containing deal_id and properties to update
+
+        Returns:
+            List[types.TextContent]: List containing the formatted result or error message
+        """
         try:
-            deal_id = arguments.get("deal_id")
-            properties = arguments.get("properties", {})
+            deal_id: Optional[str] = arguments.get("deal_id")
+            properties: Dict[str, Any] = arguments.get("properties", {})
 
             if not deal_id:
                 return [

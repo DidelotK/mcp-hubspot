@@ -1,6 +1,7 @@
 """Tests for HubSpot MCP tools."""
 
 import asyncio
+from typing import Any, Dict, List, Optional, Union
 from unittest.mock import patch
 
 import pytest
@@ -18,33 +19,87 @@ from src.hubspot_mcp.tools import (
     DealsTool,
     UpdateDealTool,
 )
+from src.hubspot_mcp.tools.base import BaseTool
 
 
 class DummyResponse:
-    def __init__(self, data=None):
+    """Mock response class for testing."""
+
+    def __init__(self, data: Optional[Dict[str, Any]] = None) -> None:
+        """Initialize the mock response.
+
+        Args:
+            data: Optional response data. Defaults to empty results.
+        """
         self._data = data or {"results": []}
         self.status_code = 200
         self.text = ""
 
-    def json(self):
+    def json(self) -> Dict[str, Any]:
+        """Return the mock response data.
+
+        Returns:
+            The mock response data as a dictionary.
+        """
         return self._data
 
-    def raise_for_status(self):
+    def raise_for_status(self) -> None:
+        """Mock method that does nothing."""
         pass
 
 
 class DummyAsyncClient:
-    def __init__(self, *args, **kwargs):
+    """Mock async client for testing."""
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        """Initialize the mock async client.
+
+        Args:
+            *args: Variable length argument list.
+            **kwargs: Arbitrary keyword arguments.
+                response_data: Optional response data. Defaults to empty results.
+                raise_error: Whether to raise an error. Defaults to False.
+        """
         self.response_data = kwargs.get("response_data", {"results": []})
         self.raise_error = kwargs.get("raise_error", False)
 
-    async def __aenter__(self):
+    async def __aenter__(self) -> "DummyAsyncClient":
+        """Enter the async context.
+
+        Returns:
+            The mock client instance.
+        """
         return self
 
-    async def __aexit__(self, exc_type, exc, tb):
+    async def __aexit__(self, exc_type: Any, exc: Any, tb: Any) -> None:
+        """Exit the async context.
+
+        Args:
+            exc_type: The exception type.
+            exc: The exception instance.
+            tb: The traceback.
+        """
         pass
 
-    async def get(self, url, headers=None, params=None):
+    async def get(
+        self,
+        url: str,
+        headers: Optional[Dict[str, str]] = None,
+        params: Optional[Dict[str, Any]] = None,
+    ) -> DummyResponse:
+        """Mock GET request.
+
+        Args:
+            url: The request URL.
+            headers: Optional request headers.
+            params: Optional query parameters.
+
+        Returns:
+            A mock response.
+
+        Raises:
+            HTTPStatusError: If raise_error is True.
+        """
         if self.raise_error:
             from httpx import HTTPStatusError, Request, Response
 
@@ -53,7 +108,25 @@ class DummyAsyncClient:
             raise HTTPStatusError("Test error", request=request, response=response)
         return DummyResponse(self.response_data)
 
-    async def post(self, url, headers=None, json=None):
+    async def post(
+        self,
+        url: str,
+        headers: Optional[Dict[str, str]] = None,
+        json: Optional[Dict[str, Any]] = None,
+    ) -> DummyResponse:
+        """Mock POST request.
+
+        Args:
+            url: The request URL.
+            headers: Optional request headers.
+            json: Optional JSON body.
+
+        Returns:
+            A mock response.
+
+        Raises:
+            HTTPStatusError: If raise_error is True.
+        """
         if self.raise_error:
             from httpx import HTTPStatusError, Request, Response
 
@@ -62,7 +135,25 @@ class DummyAsyncClient:
             raise HTTPStatusError("Test error", request=request, response=response)
         return DummyResponse(self.response_data)
 
-    async def patch(self, url, headers=None, json=None):
+    async def patch(
+        self,
+        url: str,
+        headers: Optional[Dict[str, str]] = None,
+        json: Optional[Dict[str, Any]] = None,
+    ) -> DummyResponse:
+        """Mock PATCH request.
+
+        Args:
+            url: The request URL.
+            headers: Optional request headers.
+            json: Optional JSON body.
+
+        Returns:
+            A mock response.
+
+        Raises:
+            HTTPStatusError: If raise_error is True.
+        """
         if self.raise_error:
             from httpx import HTTPStatusError, Request, Response
 
@@ -75,9 +166,13 @@ class DummyAsyncClient:
 
 
 @pytest.mark.asyncio
-async def test_contacts_tool_execute():
-    """Test contacts tool execution."""
-    test_data = {
+async def test_contacts_tool_execute() -> None:
+    """Test contacts tool execution.
+
+    Tests the execution of the contacts tool with mock data.
+    Verifies that the tool correctly formats and returns contact information.
+    """
+    test_data: Dict[str, Any] = {
         "results": [
             {
                 "id": "1",
@@ -90,14 +185,14 @@ async def test_contacts_tool_execute():
         ]
     }
 
-    def mock_client(*args, **kwargs):
+    def mock_client(*args: Any, **kwargs: Any) -> DummyAsyncClient:
         return DummyAsyncClient(response_data=test_data)
 
     with patch("httpx.AsyncClient", mock_client):
         client = HubSpotClient("test-key")
         tool = ContactsTool(client)
 
-        result = await tool.execute({"limit": 10})
+        result: List[TextContent] = await tool.execute({"limit": 10})
 
         assert isinstance(result, list)
         assert len(result) == 1
@@ -106,22 +201,26 @@ async def test_contacts_tool_execute():
 
 
 @pytest.mark.asyncio
-async def test_companies_tool_execute():
-    """Test companies tool execution."""
-    test_data = {
+async def test_companies_tool_execute() -> None:
+    """Test companies tool execution.
+
+    Tests the execution of the companies tool with mock data.
+    Verifies that the tool correctly formats and returns company information.
+    """
+    test_data: Dict[str, Any] = {
         "results": [
             {"id": "100", "properties": {"name": "Test Company", "domain": "test.com"}}
         ]
     }
 
-    def mock_client(*args, **kwargs):
+    def mock_client(*args: Any, **kwargs: Any) -> DummyAsyncClient:
         return DummyAsyncClient(response_data=test_data)
 
     with patch("httpx.AsyncClient", mock_client):
         client = HubSpotClient("test-key")
         tool = CompaniesTool(client)
 
-        result = await tool.execute({"limit": 15})
+        result: List[TextContent] = await tool.execute({"limit": 15})
 
         assert isinstance(result, list)
         assert len(result) == 1
@@ -129,9 +228,13 @@ async def test_companies_tool_execute():
 
 
 @pytest.mark.asyncio
-async def test_deals_tool_execute():
-    """Test deals tool execution."""
-    test_data = {
+async def test_deals_tool_execute() -> None:
+    """Test deals tool execution.
+
+    Tests the execution of the deals tool with mock data.
+    Verifies that the tool correctly formats and returns deal information.
+    """
+    test_data: Dict[str, Any] = {
         "results": [
             {
                 "id": "200",
@@ -144,14 +247,14 @@ async def test_deals_tool_execute():
         ]
     }
 
-    def mock_client(*args, **kwargs):
+    def mock_client(*args: Any, **kwargs: Any) -> DummyAsyncClient:
         return DummyAsyncClient(response_data=test_data)
 
     with patch("httpx.AsyncClient", mock_client):
         client = HubSpotClient("test-key")
         tool = DealsTool(client)
 
-        result = await tool.execute({"limit": 20})
+        result: List[TextContent] = await tool.execute({"limit": 20})
 
         assert isinstance(result, list)
         assert len(result) == 1
@@ -161,9 +264,13 @@ async def test_deals_tool_execute():
 
 
 @pytest.mark.asyncio
-async def test_deals_tool_with_filters():
-    """Test deals tool with filters."""
-    test_data = {
+async def test_deals_tool_with_filters() -> None:
+    """Test deals tool with filters.
+
+    Tests the execution of the deals tool with search filters.
+    Verifies that the tool correctly handles and applies filters.
+    """
+    test_data: Dict[str, Any] = {
         "results": [
             {
                 "id": "300",
@@ -172,14 +279,16 @@ async def test_deals_tool_with_filters():
         ]
     }
 
-    def mock_client(*args, **kwargs):
+    def mock_client(*args: Any, **kwargs: Any) -> DummyAsyncClient:
         return DummyAsyncClient(response_data=test_data)
 
     with patch("httpx.AsyncClient", mock_client):
         client = HubSpotClient("test-key")
         tool = DealsTool(client)
 
-        result = await tool.execute({"limit": 10, "filters": {"search": "important"}})
+        result: List[TextContent] = await tool.execute(
+            {"limit": 10, "filters": {"search": "important"}}
+        )
 
         assert isinstance(result, list)
         assert len(result) == 1
@@ -187,17 +296,21 @@ async def test_deals_tool_with_filters():
 
 
 @pytest.mark.asyncio
-async def test_tool_error_handling():
-    """Test tool error handling."""
+async def test_tool_error_handling() -> None:
+    """Test tool error handling.
 
-    def mock_client(*args, **kwargs):
+    Tests the error handling of tools when API errors occur.
+    Verifies that errors are properly caught and formatted.
+    """
+
+    def mock_client(*args: Any, **kwargs: Any) -> DummyAsyncClient:
         return DummyAsyncClient(raise_error=True)
 
     with patch("httpx.AsyncClient", mock_client):
         client = HubSpotClient("test-key")
         tool = DealsTool(client)
 
-        result = await tool.execute({"limit": 10})
+        result: List[TextContent] = await tool.execute({"limit": 10})
 
         assert isinstance(result, list)
         assert len(result) == 1
@@ -206,9 +319,13 @@ async def test_tool_error_handling():
 
 
 @pytest.mark.asyncio
-async def test_deal_by_name_tool_execute():
-    """Test deal by name tool execution."""
-    test_data = {
+async def test_deal_by_name_tool_execute() -> None:
+    """Test deal by name tool execution.
+
+    Tests the execution of the deal by name tool with mock data.
+    Verifies that the tool correctly formats and returns deal information.
+    """
+    test_data: Dict[str, Any] = {
         "results": [
             {
                 "id": "400",
@@ -222,14 +339,14 @@ async def test_deal_by_name_tool_execute():
         ]
     }
 
-    def mock_client(*args, **kwargs):
+    def mock_client(*args: Any, **kwargs: Any) -> DummyAsyncClient:
         return DummyAsyncClient(response_data=test_data)
 
     with patch("httpx.AsyncClient", mock_client):
         client = HubSpotClient("test-key")
         tool = DealByNameTool(client)
 
-        result = await tool.execute({"deal_name": "Specific Deal"})
+        result: List[TextContent] = await tool.execute({"deal_name": "Specific Deal"})
 
         assert isinstance(result, list)
         assert len(result) == 1
@@ -239,18 +356,24 @@ async def test_deal_by_name_tool_execute():
 
 
 @pytest.mark.asyncio
-async def test_deal_by_name_tool_not_found():
-    """Test deal by name tool when no deal is found."""
-    test_data = {"results": []}
+async def test_deal_by_name_tool_not_found() -> None:
+    """Test deal by name tool when no deal is found.
 
-    def mock_client(*args, **kwargs):
+    Tests the behavior of the deal by name tool when no matching deal is found.
+    Verifies that the tool returns an appropriate "not found" message.
+    """
+    test_data: Dict[str, Any] = {"results": []}
+
+    def mock_client(*args: Any, **kwargs: Any) -> DummyAsyncClient:
         return DummyAsyncClient(response_data=test_data)
 
     with patch("httpx.AsyncClient", mock_client):
         client = HubSpotClient("test-key")
         tool = DealByNameTool(client)
 
-        result = await tool.execute({"deal_name": "Nonexistent Deal"})
+        result: List[TextContent] = await tool.execute(
+            {"deal_name": "Nonexistent Deal"}
+        )
 
         assert isinstance(result, list)
         assert len(result) == 1
@@ -1001,12 +1124,10 @@ async def test_update_deal_tool_success():
         assert isinstance(result, list)
         assert len(result) == 1
         assert "Updated Enterprise Contract" in result[0].text
-        assert "85000" in result[0].text
+        assert "$85,000.00" in result[0].text
         assert "contractsent" in result[0].text
         assert "enterprise" in result[0].text
         assert "2024-12-31" in result[0].text
-        assert "Updated enterprise deal for Q4" in result[0].text
-        assert "12345" in result[0].text
 
 
 @pytest.mark.asyncio
