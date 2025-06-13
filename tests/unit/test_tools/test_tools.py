@@ -441,6 +441,9 @@ async def test_contact_properties_tool_execute():
 @pytest.mark.asyncio
 async def test_contact_properties_tool_empty():
     """Test contact properties tool with empty response."""
+    from hubspot_mcp.tools.base import BaseTool
+
+    BaseTool.clear_cache()
     test_data = {"results": []}
 
     def mock_client(*args, **kwargs):
@@ -460,6 +463,9 @@ async def test_contact_properties_tool_empty():
 @pytest.mark.asyncio
 async def test_contact_properties_tool_error():
     """Test contact properties tool error handling."""
+    from hubspot_mcp.tools.base import BaseTool
+
+    BaseTool.clear_cache()
 
     def mock_client(*args, **kwargs):
         return DummyAsyncClient(raise_error=True)
@@ -520,6 +526,9 @@ async def test_deal_properties_tool_execute():
 @pytest.mark.asyncio
 async def test_deal_properties_tool_empty():
     """Test deal properties tool with empty response."""
+    from hubspot_mcp.tools.base import BaseTool
+
+    BaseTool.clear_cache()
     test_data = {"results": []}
 
     def mock_client(*args, **kwargs):
@@ -717,6 +726,9 @@ async def test_company_properties_tool_execute():
 @pytest.mark.asyncio
 async def test_company_properties_tool_empty():
     """Test company properties tool with empty response."""
+    from hubspot_mcp.tools.base import BaseTool
+
+    BaseTool.clear_cache()
     test_data = {"results": []}
 
     def mock_client(*args, **kwargs):
@@ -736,6 +748,9 @@ async def test_company_properties_tool_empty():
 @pytest.mark.asyncio
 async def test_company_properties_tool_error():
     """Test company properties tool error handling."""
+    from hubspot_mcp.tools.base import BaseTool
+
+    BaseTool.clear_cache()
 
     def mock_client(*args, **kwargs):
         return DummyAsyncClient(raise_error=True)
@@ -894,6 +909,9 @@ async def test_create_deal_tool_with_all_fields():
 @pytest.mark.asyncio
 async def test_deal_properties_tool_error():
     """Test deal properties tool error handling."""
+    from hubspot_mcp.tools.base import BaseTool
+
+    BaseTool.clear_cache()
 
     def mock_client(*args, **kwargs):
         return DummyAsyncClient(raise_error=True)
@@ -927,6 +945,9 @@ def test_deal_properties_tool_definition():
 @pytest.mark.asyncio
 async def test_contacts_tool_error_handling():
     """Test contacts tool error handling."""
+    from hubspot_mcp.tools.base import BaseTool
+
+    BaseTool.clear_cache()
 
     def mock_client(*args, **kwargs):
         return DummyAsyncClient(raise_error=True)
@@ -945,6 +966,9 @@ async def test_contacts_tool_error_handling():
 @pytest.mark.asyncio
 async def test_companies_tool_error_handling():
     """Test companies tool error handling."""
+    from hubspot_mcp.tools.base import BaseTool
+
+    BaseTool.clear_cache()
 
     def mock_client(*args, **kwargs):
         return DummyAsyncClient(raise_error=True)
@@ -963,6 +987,9 @@ async def test_companies_tool_error_handling():
 @pytest.mark.asyncio
 async def test_deal_by_name_tool_error_handling():
     """Test deal by name tool error handling."""
+    from hubspot_mcp.tools.base import BaseTool
+
+    BaseTool.clear_cache()
 
     def mock_client(*args, **kwargs):
         return DummyAsyncClient(raise_error=True)
@@ -1310,6 +1337,9 @@ async def test_search_deals_tool_execute():
 @pytest.mark.asyncio
 async def test_search_deals_tool_error_handling():
     """Test search deals tool handles API errors."""
+    from hubspot_mcp.tools.base import BaseTool
+
+    BaseTool.clear_cache()
 
     def mock_client(*args: Any, **kwargs: Any) -> DummyAsyncClient:  # type: ignore[name-defined]
         return DummyAsyncClient(raise_error=True)

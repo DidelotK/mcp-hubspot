@@ -15,7 +15,7 @@ class DealPropertiesTool(BaseTool):
         """Return the deal properties tool definition."""
         return types.Tool(
             name="get_hubspot_deal_properties",
-            description="Retrieves the list of available properties for HubSpot deals with their types and descriptions",
+            description="Retrieves the list of available properties for HubSpot deals",
             inputSchema={
                 "type": "object",
                 "properties": {},
@@ -26,7 +26,8 @@ class DealPropertiesTool(BaseTool):
     async def execute(self, arguments: Dict[str, Any]) -> List[types.TextContent]:
         """Execute deal properties retrieval."""
         try:
-            properties = await self.client.get_deal_properties()
+            # Use cached client call instead of direct client call
+            properties = await self._cached_client_call("get_deal_properties")
             formatted_result = HubSpotFormatter.format_deal_properties(properties)
 
             return [types.TextContent(type="text", text=formatted_result)]

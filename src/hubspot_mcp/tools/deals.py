@@ -41,7 +41,10 @@ class DealsTool(BaseTool):
             limit = arguments.get("limit", 100)
             after = arguments.get("after")
 
-            deals = await self.client.get_deals(limit=limit, after=after)
+            # Use cached client call instead of direct client call
+            deals = await self._cached_client_call(
+                "get_deals", limit=limit, after=after
+            )
             formatted_result = HubSpotFormatter.format_deals(deals)
 
             return [types.TextContent(type="text", text=formatted_result)]

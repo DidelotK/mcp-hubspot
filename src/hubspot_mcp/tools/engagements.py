@@ -43,7 +43,10 @@ class EngagementsTool(BaseTool):
             limit = arguments.get("limit", 100)
             after = arguments.get("after")
 
-            engagements = await self.client.get_engagements(limit=limit, after=after)
+            # Use cached client call instead of direct client call
+            engagements = await self._cached_client_call(
+                "get_engagements", limit=limit, after=after
+            )
             formatted_result = HubSpotFormatter.format_engagements(engagements)
 
             return [types.TextContent(type="text", text=formatted_result)]
