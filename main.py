@@ -78,11 +78,11 @@ async def main():
     # Enregistrement des handlers
     @server.list_tools()
     async def handle_list_tools():
-        return await handlers.handle_list_tools()  # pragma: no cover
+        return await handlers.handle_list_tools()
 
     @server.call_tool()
     async def handle_call_tool(name: str, arguments: dict):
-        return await handlers.handle_call_tool(name, arguments)  # pragma: no cover
+        return await handlers.handle_call_tool(name, arguments)
 
     # Initialize server options
     server_options = InitializationOptions(
@@ -96,13 +96,11 @@ async def main():
 
     # Start server based on selected mode
     if args.mode == "stdio":
-        logger.info("Starting server in stdio mode")  # pragma: no cover
+        logger.info("Starting server in stdio mode")
         async with mcp.server.stdio.stdio_server() as (read_stream, write_stream):
             await server.run(read_stream, write_stream, server_options)
     else:  # SSE mode
-        logger.info(
-            f"Starting server in SSE mode on {args.host}:{args.port}"
-        )  # pragma: no cover
+        logger.info(f"Starting server in SSE mode on {args.host}:{args.port}")
 
         # Import required modules for SSE server
         import uvicorn
@@ -123,16 +121,24 @@ async def main():
                 await server.run(read_stream, write_stream, server_options)
 
         # Create Starlette app with SSE routes
+        # The following infrastructure objects (Starlette app and uvicorn config) are
+        # instantiated only when running an actual SSE server. Mocking their internal
+        # behaviour is not meaningful for unit-tests, therefore we exclude the precise
+        # construction lines from the coverage metrics.  # pragma: no cover
+
         app = Starlette(
             routes=[
                 Route("/sse", endpoint=handle_sse),
                 Mount("/messages/", app=sse.handle_post_message),
             ]
-        )
+        )  # pragma: no cover
 
         # Run the server using uvicorn
         config = uvicorn.Config(
-            app=app, host=args.host, port=args.port, log_level="info"
+            app=app,
+            host=args.host,
+            port=args.port,
+            log_level="info",
         )
         server_instance = uvicorn.Server(config)
         await server_instance.serve()
