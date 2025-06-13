@@ -29,4 +29,4 @@ async def test_engagements_tool_execute_returns_formatted_text():
 
     assert len(result) == 1
     assert "Follow-up call" in result[0].text
-    mock_client.get_engagements.assert_called_once_with(limit=10, filters={})
+    mock_client.get_engagements.assert_called_once_with(limit=10, after=None)

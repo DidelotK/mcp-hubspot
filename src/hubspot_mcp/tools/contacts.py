@@ -15,27 +15,20 @@ class ContactsTool(BaseTool):
         """Return the contacts tool definition."""
         return types.Tool(
             name="list_hubspot_contacts",
-            description="Lists HubSpot contacts with optional filtering",
+            description="Lists HubSpot contacts with pagination support",
             inputSchema={
                 "type": "object",
                 "properties": {
                     "limit": {
                         "type": "integer",
-                        "description": "Maximum number of contacts to return (default: 100)",
+                        "description": "Maximum number of contacts to return (default: 100, max: 100)",
                         "default": 100,
                         "minimum": 1,
-                        "maximum": 1000,
+                        "maximum": 100,
                     },
-                    "filters": {
-                        "type": "object",
-                        "description": "Optional filters for search",
-                        "properties": {
-                            "search": {
-                                "type": "string",
-                                "description": "Search term to filter contacts",
-                            }
-                        },
-                        "additionalProperties": False,
+                    "after": {
+                        "type": "string",
+                        "description": "Pagination cursor to get the next set of results",
                     },
                 },
                 "additionalProperties": False,
@@ -46,9 +39,9 @@ class ContactsTool(BaseTool):
         """Execute contacts retrieval."""
         try:
             limit = arguments.get("limit", 100)
-            filters = arguments.get("filters", {})
+            after = arguments.get("after")
 
-            contacts = await self.client.get_contacts(limit=limit, filters=filters)
+            contacts = await self.client.get_contacts(limit=limit, after=after)
             formatted_result = HubSpotFormatter.format_contacts(contacts)
 
             return [types.TextContent(type="text", text=formatted_result)]

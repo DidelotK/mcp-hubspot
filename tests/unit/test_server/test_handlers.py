@@ -174,11 +174,11 @@ def test_get_contacts_and_companies(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(httpx, "AsyncClient", DummyAsyncClient)
     client = HubSpotClient("testkey")
     contacts: List[Dict[str, Any]] = asyncio.run(
-        client.get_contacts(limit=2, filters={"search": "test"})
+        client.get_contacts(limit=2, after="cursor123")
     )
     assert contacts == [{"id": "1", "properties": {"foo": "bar"}}]
     companies: List[Dict[str, Any]] = asyncio.run(
-        client.get_companies(limit=3, filters={"search": "alpha"})
+        client.get_companies(limit=3, after="cursor456")
     )
     assert companies == [{"id": "1", "properties": {"foo": "bar"}}]
 

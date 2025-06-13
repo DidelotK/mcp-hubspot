@@ -15,27 +15,20 @@ class CompaniesTool(BaseTool):
         """Return the companies tool definition."""
         return types.Tool(
             name="list_hubspot_companies",
-            description="Lists HubSpot companies with optional filtering",
+            description="Lists HubSpot companies with pagination support",
             inputSchema={
                 "type": "object",
                 "properties": {
                     "limit": {
                         "type": "integer",
-                        "description": "Maximum number of companies to return (default: 100)",
+                        "description": "Maximum number of companies to return (default: 100, max: 100)",
                         "default": 100,
                         "minimum": 1,
-                        "maximum": 1000,
+                        "maximum": 100,
                     },
-                    "filters": {
-                        "type": "object",
-                        "description": "Optional filters for search",
-                        "properties": {
-                            "search": {
-                                "type": "string",
-                                "description": "Search term to filter companies",
-                            }
-                        },
-                        "additionalProperties": False,
+                    "after": {
+                        "type": "string",
+                        "description": "Pagination cursor to get the next set of results",
                     },
                 },
                 "additionalProperties": False,
@@ -46,9 +39,9 @@ class CompaniesTool(BaseTool):
         """Execute companies retrieval."""
         try:
             limit = arguments.get("limit", 100)
-            filters = arguments.get("filters", {})
+            after = arguments.get("after")
 
-            companies = await self.client.get_companies(limit=limit, filters=filters)
+            companies = await self.client.get_companies(limit=limit, after=after)
             formatted_result = HubSpotFormatter.format_companies(companies)
 
             return [types.TextContent(type="text", text=formatted_result)]

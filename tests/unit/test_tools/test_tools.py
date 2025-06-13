@@ -563,9 +563,9 @@ def test_tools_definitions():
 
     # Check input schemas
     assert "limit" in contacts_def.inputSchema["properties"]
-    assert "filters" in contacts_def.inputSchema["properties"]
+    assert "after" in contacts_def.inputSchema["properties"]
     assert "limit" in companies_def.inputSchema["properties"]
-    assert "filters" in companies_def.inputSchema["properties"]
+    assert "after" in companies_def.inputSchema["properties"]
     assert "limit" in deals_def.inputSchema["properties"]
     assert "after" in deals_def.inputSchema["properties"]
     assert "deal_name" in deal_def.inputSchema["properties"]

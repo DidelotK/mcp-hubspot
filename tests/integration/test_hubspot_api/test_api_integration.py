@@ -168,7 +168,7 @@ class TestToolAPIIntegration:
 
         # Assert
         assert len(result) == 1  # Should return formatted result
-        mock_hubspot_client.get_contacts.assert_called_once_with(limit=5, filters={})
+        mock_hubspot_client.get_contacts.assert_called_once_with(limit=5, after=None)
 
     @pytest.mark.asyncio
     async def test_companies_tool_with_api_client(self, mock_hubspot_client):
@@ -181,7 +181,7 @@ class TestToolAPIIntegration:
 
         # Assert
         assert len(result) == 1  # Should return formatted result
-        mock_hubspot_client.get_companies.assert_called_once_with(limit=10, filters={})
+        mock_hubspot_client.get_companies.assert_called_once_with(limit=10, after=None)
 
     @pytest.mark.asyncio
     async def test_deals_tool_with_api_client(self, mock_hubspot_client):
