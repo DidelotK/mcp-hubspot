@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Tests unitaires pour main.py
+Unit tests for main.py
 """
 
 import asyncio
@@ -15,17 +15,17 @@ from mcp.server.models import InitializationOptions
 from mcp.server.sse import SseServerTransport
 from mcp.server.stdio import stdio_server
 
-# Ajouter le répertoire racine au PYTHONPATH pour l'import de main
+# Add the root directory to PYTHONPATH for main import
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-# Import explicite du module main pour la couverture de code
-import main
-from src.hubspot_mcp.client import HubSpotClient
-from src.hubspot_mcp.server import MCPHandlers
+# Explicit import of main module for code coverage
+import main  # noqa: F401,E402
+from src.hubspot_mcp.client import HubSpotClient  # noqa: E402
+from src.hubspot_mcp.server import MCPHandlers  # noqa: E402
 
 
 def test_parse_arguments_default():
-    """Test du parsing des arguments avec les valeurs par défaut."""
+    """Test argument parsing with default values."""
     with patch("sys.argv", ["main.py"]):
         args = main.parse_arguments()
         assert args.mode == "stdio"
@@ -34,7 +34,7 @@ def test_parse_arguments_default():
 
 
 def test_parse_arguments_custom():
-    """Test du parsing des arguments avec des valeurs personnalisées."""
+    """Test argument parsing with custom values."""
     with patch(
         "sys.argv", ["main.py", "--mode", "sse", "--host", "0.0.0.0", "--port", "9000"]
     ):
@@ -46,21 +46,21 @@ def test_parse_arguments_custom():
 
 @pytest.mark.asyncio
 async def test_main_stdio_mode():
-    """Test du mode stdio."""
-    # Mock des dépendances
+    """Test stdio mode."""
+    # Mock dependencies
     mock_server = AsyncMock(spec=Server)
     mock_hubspot_client = MagicMock(spec=HubSpotClient)
     mock_handlers = AsyncMock(spec=MCPHandlers)
     mock_handlers.handle_list_tools = AsyncMock()
     mock_handlers.handle_call_tool = AsyncMock()
 
-    # Mock des streams stdio
+    # Mock stdio streams
     mock_read_stream = AsyncMock()
     mock_write_stream = AsyncMock()
     mock_stdio = AsyncMock()
     mock_stdio.__aenter__.return_value = (mock_read_stream, mock_write_stream)
 
-    # Mock de InitializationOptions
+    # Mock InitializationOptions
     mock_init_options = MagicMock(spec=InitializationOptions)
     mock_init_options.model_dump.return_value = {}
 
@@ -73,15 +73,15 @@ async def test_main_stdio_mode():
         patch("main.InitializationOptions", return_value=mock_init_options),
     ):
 
-        # Configuration des arguments
+        # Configure arguments
         mock_args = MagicMock()
         mock_args.mode = "stdio"
         mock_parse_args.return_value = mock_args
 
-        # Exécution du test
+        # Execute test
         await main.main()
 
-        # Vérifications
+        # Verifications
         mock_server.list_tools.assert_called_once()
         mock_server.call_tool.assert_called_once()
         mock_server.run.assert_called_once_with(
@@ -91,8 +91,8 @@ async def test_main_stdio_mode():
 
 @pytest.mark.asyncio
 async def test_main_sse_mode():
-    """Test du mode SSE."""
-    # Mock des dépendances
+    """Test SSE mode."""
+    # Mock dependencies
     mock_server = AsyncMock(spec=Server)
     mock_server.run_sse = AsyncMock()
     mock_hubspot_client = MagicMock(spec=HubSpotClient)
@@ -100,10 +100,10 @@ async def test_main_sse_mode():
     mock_handlers.handle_list_tools = AsyncMock()
     mock_handlers.handle_call_tool = AsyncMock()
 
-    # Mock du transport SSE (plus besoin de context manager)
+    # Mock SSE transport (no longer needs context manager)
     mock_sse = MagicMock(spec=SseServerTransport)
 
-    # Mock de InitializationOptions
+    # Mock InitializationOptions
     mock_init_options = MagicMock(spec=InitializationOptions)
     mock_init_options.model_dump.return_value = {}
 
@@ -116,17 +116,17 @@ async def test_main_sse_mode():
         patch("main.InitializationOptions", return_value=mock_init_options),
     ):
 
-        # Configuration des arguments
+        # Configure arguments
         mock_args = MagicMock()
         mock_args.mode = "sse"
         mock_args.host = "localhost"
         mock_args.port = 8080
         mock_parse_args.return_value = mock_args
 
-        # Exécution du test
+        # Execute test
         await main.main()
 
-        # Vérifications
+        # Verifications
         mock_server.list_tools.assert_called_once()
         mock_server.call_tool.assert_called_once()
         mock_server.run_sse.assert_called_once_with(mock_sse, mock_init_options)
@@ -134,31 +134,31 @@ async def test_main_sse_mode():
 
 @pytest.mark.asyncio
 async def test_main_keyboard_interrupt():
-    """Test de l'interruption par l'utilisateur sans lever KeyboardInterrupt réel."""
-    # On va patcher main() pour lever KeyboardInterrupt et vérifier le logger
+    """Test user interruption without raising actual KeyboardInterrupt."""
+    # We'll patch main() to raise KeyboardInterrupt and verify the logger
     with patch("main.logger") as mock_logger:
         with pytest.raises(KeyboardInterrupt):
             raise KeyboardInterrupt()
-        mock_logger.info.assert_not_called()  # Le logger n'est pas appelé ici, on vérifie juste que le test ne coupe pas
+        mock_logger.info.assert_not_called()  # Logger not called here, just verify test doesn't break
 
 
 @pytest.mark.asyncio
 async def test_main_general_exception():
-    """Test de la gestion des exceptions générales."""
-    # Mock des dépendances
+    """Test general exception handling."""
+    # Mock dependencies
     test_exception = Exception("Test error")
     mock_server = AsyncMock(spec=Server)
     mock_server.run.side_effect = test_exception
     mock_hubspot_client = MagicMock(spec=HubSpotClient)
     mock_handlers = AsyncMock(spec=MCPHandlers)
 
-    # Mock des streams stdio
+    # Mock stdio streams
     mock_read_stream = AsyncMock()
     mock_write_stream = AsyncMock()
     mock_stdio = AsyncMock()
     mock_stdio.__aenter__.return_value = (mock_read_stream, mock_write_stream)
 
-    # Mock de InitializationOptions
+    # Mock InitializationOptions
     mock_init_options = MagicMock(spec=InitializationOptions)
     mock_init_options.model_dump.return_value = {}
 
@@ -175,7 +175,7 @@ async def test_main_general_exception():
         mock_args.mode = "stdio"
         mock_parse_args.return_value = mock_args
 
-        # Exécution du test
+        # Execute test
         with pytest.raises(Exception) as exc_info:
             await main.main()
         assert str(exc_info.value) == "Test error"
@@ -183,14 +183,14 @@ async def test_main_general_exception():
 
 @pytest.mark.asyncio
 async def test_handle_list_tools():
-    """Test du handler list_tools."""
-    # Mock des dépendances
+    """Test the list_tools handler."""
+    # Mock dependencies
     mock_server = AsyncMock(spec=Server)
     mock_hubspot_client = MagicMock(spec=HubSpotClient)
     mock_handlers = AsyncMock(spec=MCPHandlers)
     mock_handlers.handle_list_tools = AsyncMock(return_value=["tool1", "tool2"])
 
-    # Mock de InitializationOptions
+    # Mock InitializationOptions
     mock_init_options = MagicMock(spec=InitializationOptions)
     mock_init_options.model_dump.return_value = {}
 
@@ -206,24 +206,24 @@ async def test_handle_list_tools():
         patch("main.InitializationOptions", return_value=mock_init_options),
     ):
 
-        # Exécution du test
+        # Execute test
         result = await fake_handler()
 
-        # Vérifications
+        # Verifications
         assert result == ["tool1", "tool2"]
         mock_handlers.handle_list_tools.assert_called_once()
 
 
 @pytest.mark.asyncio
 async def test_handle_call_tool():
-    """Test du handler call_tool."""
-    # Mock des dépendances
+    """Test the call_tool handler."""
+    # Mock dependencies
     mock_server = AsyncMock(spec=Server)
     mock_hubspot_client = MagicMock(spec=HubSpotClient)
     mock_handlers = AsyncMock(spec=MCPHandlers)
     mock_handlers.handle_call_tool = AsyncMock(return_value={"result": "test"})
 
-    # Mock de InitializationOptions
+    # Mock InitializationOptions
     mock_init_options = MagicMock(spec=InitializationOptions)
     mock_init_options.model_dump.return_value = {}
 
@@ -239,10 +239,10 @@ async def test_handle_call_tool():
         patch("main.InitializationOptions", return_value=mock_init_options),
     ):
 
-        # Exécution du test
+        # Execute test
         result = await fake_handler("test_tool", {"param": "value"})
 
-        # Vérifications
+        # Verifications
         assert result == {"result": "test"}
         mock_handlers.handle_call_tool.assert_called_once_with(
             "test_tool", {"param": "value"}
