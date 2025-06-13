@@ -1,6 +1,7 @@
 """Formatters for HubSpot data display."""
 
 import html
+import json
 from typing import Any, Dict, List, Optional, Union
 
 
@@ -33,7 +34,7 @@ class HubSpotFormatter:
             result += f"  📅 Modified: {props.get('lastmodifieddate', 'N/A')}\n"
             result += f"  🆔 ID: {contact.get('id')}\n\n"
 
-        return result
+        return result + HubSpotFormatter._raw_block(contacts)
 
     @staticmethod
     def format_companies(companies: List[Dict[str, Any]]) -> str:
@@ -59,7 +60,7 @@ class HubSpotFormatter:
             result += f"  📅 Modified: {props.get('lastmodifieddate', 'N/A')}\n"
             result += f"  🆔 ID: {company.get('id')}\n\n"
 
-        return result
+        return result + HubSpotFormatter._raw_block(companies)
 
     @staticmethod
     def format_deals(deals: List[Dict[str, Any]]) -> str:
@@ -96,7 +97,7 @@ class HubSpotFormatter:
             result += f"  👤 Owner: {props.get('hubspot_owner_id', 'N/A')}\n"
             result += f"  🆔 ID: {deal.get('id')}\n\n"
 
-        return result
+        return result + HubSpotFormatter._raw_block(deals)
 
     @staticmethod
     def format_single_deal(deal: Optional[Dict[str, Any]]) -> str:
@@ -466,4 +467,19 @@ class HubSpotFormatter:
             lines.append(f"  🗓️ Created: {props.get('createdate')}")
             lines.append(f"  🔄 Updated: {props.get('lastmodifieddate')}")
             lines.append(f"  🆔 ID: {eng.get('id')}\n")
-        return "\n".join(lines)
+        return "\n".join(lines) + HubSpotFormatter._raw_block(engagements)
+
+    # ---------------------------------------------------------------------
+    # Helpers
+    # ---------------------------------------------------------------------
+
+    @staticmethod
+    def _raw_block(data: Any) -> str:
+        """Return pretty-printed JSON block of *data*.
+
+        The raw payload is useful for debugging or advanced workflows. It is
+        appended below the human-readable section, wrapped in a fenced JSON
+        code-block so that rich chat UIs will render it collapsible.
+        """
+        json_str = json.dumps(data, indent=2, ensure_ascii=False)
+        return f"\n---\n```json\n{json_str}\n```"
