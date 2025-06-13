@@ -29,13 +29,18 @@ class HubSpotClient:
         }
 
     async def get_contacts(
-        self, limit: int = 100, after: Optional[str] = None
+        self,
+        limit: int = 100,
+        after: Optional[str] = None,
+        *,
+        extra_properties: Optional[List[str]] = None,
     ) -> List[Dict[str, Any]]:
         """Retrieve the list of contacts with pagination support.
 
         Args:
             limit: Maximum number of contacts to retrieve (max 100)
             after: Pagination cursor to get the next set of results
+            extra_properties: List of additional properties to include
 
         Returns:
             List[Dict[str, Any]]: List of contact dictionaries
@@ -45,9 +50,30 @@ class HubSpotClient:
         """
         url = f"{self.base_url}/crm/v3/objects/contacts"
 
+        default_props: List[str] = [
+            "firstname",
+            "lastname",
+            "email",
+            "company",
+            "phone",
+            "createdate",
+            "lastmodifieddate",
+        ]
+
+        # Merge and de-duplicate properties
+        if extra_properties:
+            default_props.extend(extra_properties)
+        # Preserve order but ensure uniqueness
+        seen: set[str] = set()
+        merged_props: List[str] = []
+        for prop in default_props:
+            if prop not in seen:
+                seen.add(prop)
+                merged_props.append(prop)
+
         params = {
             "limit": min(limit, 100),  # HubSpot caps at 100
-            "properties": "firstname,lastname,email,company,phone,createdate,lastmodifieddate",
+            "properties": ",".join(merged_props),
         }
 
         # Add pagination cursor if provided
@@ -61,13 +87,18 @@ class HubSpotClient:
             return data.get("results", [])
 
     async def get_companies(
-        self, limit: int = 100, after: Optional[str] = None
+        self,
+        limit: int = 100,
+        after: Optional[str] = None,
+        *,
+        extra_properties: Optional[List[str]] = None,
     ) -> List[Dict[str, Any]]:
         """Retrieve the list of companies with pagination support.
 
         Args:
             limit: Maximum number of companies to retrieve (max 100)
             after: Pagination cursor to get the next set of results
+            extra_properties: List of additional properties to include
 
         Returns:
             List[Dict[str, Any]]: List of company dictionaries
@@ -77,9 +108,30 @@ class HubSpotClient:
         """
         url = f"{self.base_url}/crm/v3/objects/companies"
 
+        default_props: List[str] = [
+            "name",
+            "domain",
+            "city",
+            "state",
+            "country",
+            "industry",
+            "createdate",
+            "lastmodifieddate",
+        ]
+
+        if extra_properties:
+            default_props.extend(extra_properties)
+
+        seen: set[str] = set()
+        merged_props: List[str] = []
+        for prop in default_props:
+            if prop not in seen:
+                seen.add(prop)
+                merged_props.append(prop)
+
         params = {
             "limit": min(limit, 100),  # HubSpot caps at 100
-            "properties": "name,domain,city,state,country,industry,createdate,lastmodifieddate",
+            "properties": ",".join(merged_props),
         }
 
         # Add pagination cursor if provided
@@ -93,13 +145,18 @@ class HubSpotClient:
             return data.get("results", [])
 
     async def get_deals(
-        self, limit: int = 100, after: Optional[str] = None
+        self,
+        limit: int = 100,
+        after: Optional[str] = None,
+        *,
+        extra_properties: Optional[List[str]] = None,
     ) -> List[Dict[str, Any]]:
         """Retrieve the list of deals with pagination support.
 
         Args:
             limit: Maximum number of deals to retrieve (max 100)
             after: Pagination cursor to get the next set of results
+            extra_properties: List of additional properties to include
 
         Returns:
             List[Dict[str, Any]]: List of deal dictionaries
@@ -109,9 +166,30 @@ class HubSpotClient:
         """
         url = f"{self.base_url}/crm/v3/objects/deals"
 
+        default_props: List[str] = [
+            "dealname",
+            "amount",
+            "dealstage",
+            "pipeline",
+            "closedate",
+            "createdate",
+            "lastmodifieddate",
+            "hubspot_owner_id",
+        ]
+
+        if extra_properties:
+            default_props.extend(extra_properties)
+
+        seen: set[str] = set()
+        merged_props: List[str] = []
+        for prop in default_props:
+            if prop not in seen:
+                seen.add(prop)
+                merged_props.append(prop)
+
         params = {
             "limit": min(limit, 100),  # HubSpot caps at 100
-            "properties": "dealname,amount,dealstage,pipeline,closedate,createdate,lastmodifieddate,hubspot_owner_id",
+            "properties": ",".join(merged_props),
         }
 
         # Add pagination cursor if provided
@@ -269,13 +347,18 @@ class HubSpotClient:
             return response.json()
 
     async def get_engagements(
-        self, limit: int = 100, after: Optional[str] = None
+        self,
+        limit: int = 100,
+        after: Optional[str] = None,
+        *,
+        extra_properties: Optional[List[str]] = None,
     ) -> List[Dict[str, Any]]:
         """Retrieve the list of engagements with pagination support.
 
         Args:
             limit: Maximum number of engagements to retrieve (max 100)
             after: Pagination cursor to get the next set of results
+            extra_properties: List of additional properties to include
 
         Returns:
             List[Dict[str, Any]]: List of engagement dictionaries
@@ -285,9 +368,26 @@ class HubSpotClient:
         """
         url = f"{self.base_url}/crm/v3/objects/engagements"
 
+        default_props: List[str] = [
+            "engagement_type",
+            "subject",
+            "createdate",
+            "lastmodifieddate",
+        ]
+
+        if extra_properties:
+            default_props.extend(extra_properties)
+
+        seen: set[str] = set()
+        merged_props: List[str] = []
+        for prop in default_props:
+            if prop not in seen:
+                seen.add(prop)
+                merged_props.append(prop)
+
         params = {
             "limit": min(limit, 100),  # HubSpot caps at 100
-            "properties": "engagement_type,subject,createdate,lastmodifieddate",
+            "properties": ",".join(merged_props),
         }
 
         # Add pagination cursor if provided
@@ -305,7 +405,11 @@ class HubSpotClient:
     # ------------------------------------------------------------------
 
     async def search_deals(
-        self, *, limit: int = 100, filters: Optional[Dict[str, Any]] = None
+        self,
+        *,
+        limit: int = 100,
+        filters: Optional[Dict[str, Any]] = None,
+        extra_properties: Optional[List[str]] = None,
     ) -> List[Dict[str, Any]]:
         """Search deals using the CRM Search API.
 
@@ -325,6 +429,7 @@ class HubSpotClient:
                 * ``owner_id`` – exact match on *hubspot_owner_id*.
                 * ``dealstage`` – exact match on *dealstage*.
                 * ``pipeline`` – exact match on *pipeline*.
+            extra_properties: List of additional properties to include
 
         Returns:
             A list of deal objects matching the criteria.
@@ -370,18 +475,31 @@ class HubSpotClient:
                 {"filters": [{"propertyName": "id", "operator": "GT", "value": 0}]}
             )
 
+        properties_list: List[str] = [
+            "dealname",
+            "amount",
+            "dealstage",
+            "pipeline",
+            "closedate",
+            "createdate",
+            "lastmodifieddate",
+            "hubspot_owner_id",
+        ]
+
+        if extra_properties:
+            properties_list.extend(extra_properties)
+
+        # Deduplicate while preserving order
+        seen: set[str] = set()
+        unique_props: List[str] = []
+        for prop in properties_list:
+            if prop not in seen:
+                seen.add(prop)
+                unique_props.append(prop)
+
         search_body = {
             "filterGroups": filter_groups,
-            "properties": [
-                "dealname",
-                "amount",
-                "dealstage",
-                "pipeline",
-                "closedate",
-                "createdate",
-                "lastmodifieddate",
-                "hubspot_owner_id",
-            ],
+            "properties": unique_props,
             "limit": min(limit, 100),
         }
 
