@@ -19,8 +19,8 @@ from mcp.server import NotificationOptions, Server
 from mcp.server.models import InitializationOptions
 from mcp.server.sse import SseServerTransport
 
-from src.hubspot_mcp.client import HubSpotClient
-from src.hubspot_mcp.server import MCPHandlers
+from hubspot_mcp.client import HubSpotClient
+from hubspot_mcp.server import MCPHandlers
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
