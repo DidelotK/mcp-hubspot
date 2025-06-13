@@ -544,4 +544,37 @@ Retrieves the list of HubSpot engagements (calls, emails, tasks, etc.).
   ️ Created: 2024-01-01T09:00:00Z
   🔄 Updated: 2024-01-01T10:00:00Z
   🆔 ID: 123456
-``` 
+```
+
+## Response format
+
+Every tool returns **two complementary payloads**:
+
+1. **Human-friendly Markdown** – formatted summary like the examples below.
+2. **Raw JSON** – full data from HubSpot, embedded in a fenced `json` block directly after the Markdown.
+
+Example:
+
+```text
+💰 **HubSpot Deals** (1 found)
+
+**Premium Contract 2024**
+  💰 Amount: €45,000.00
+  📊 Stage: proposal
+  🆔 ID: 789012
+
+```json
+[
+  {
+    "id": "789012",
+    "properties": {
+      "dealname": "Premium Contract 2024",
+      "amount": "45000",
+      "dealstage": "proposal",
+      ...
+    }
+  }
+]
+```
+
+This dual output lets you scan results quickly while still having the complete record for programmatic use. 
