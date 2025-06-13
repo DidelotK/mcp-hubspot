@@ -17,6 +17,7 @@ globs:
 - **Snake_case**: Variable and function names in snake_case
 - **PascalCase**: Class names in PascalCase
 - **English naming**: Use English names for variables, functions, and classes
+- **Lint ignore comments only as last resort**: Disabling linter rules (e.g., `# noqa`, `pylint: disable=...`) must be used **only when absolutely necessary**, and each occurrence must include a clear, documented justification.
 
 ## Testing Standards
 
