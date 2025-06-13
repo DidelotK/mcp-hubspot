@@ -267,17 +267,17 @@ async def test_deals_tool_execute() -> None:
 
 
 @pytest.mark.asyncio
-async def test_deals_tool_with_filters() -> None:
-    """Test deals tool with filters.
+async def test_deals_tool_with_pagination() -> None:
+    """Test deals tool with pagination.
 
-    Tests the execution of the deals tool with search filters.
-    Verifies that the tool correctly handles and applies filters.
+    Tests the execution of the deals tool with pagination cursor.
+    Verifies that the tool correctly handles pagination parameters.
     """
     test_data: Dict[str, Any] = {
         "results": [
             {
                 "id": "300",
-                "properties": {"dealname": "Filtered Deal", "amount": "2500.50"},
+                "properties": {"dealname": "Paginated Deal", "amount": "2500.50"},
             }
         ]
     }
@@ -290,12 +290,12 @@ async def test_deals_tool_with_filters() -> None:
         tool = DealsTool(client)
 
         result: List[TextContent] = await tool.execute(
-            {"limit": 10, "filters": {"search": "important"}}
+            {"limit": 10, "after": "cursor123"}
         )
 
         assert isinstance(result, list)
         assert len(result) == 1
-        assert "Filtered Deal" in result[0].text
+        assert "Paginated Deal" in result[0].text
 
 
 @pytest.mark.asyncio
@@ -567,7 +567,7 @@ def test_tools_definitions():
     assert "limit" in companies_def.inputSchema["properties"]
     assert "filters" in companies_def.inputSchema["properties"]
     assert "limit" in deals_def.inputSchema["properties"]
-    assert "filters" in deals_def.inputSchema["properties"]
+    assert "after" in deals_def.inputSchema["properties"]
     assert "deal_name" in deal_def.inputSchema["properties"]
     assert deal_def.inputSchema["required"] == ["deal_name"]
     assert (
