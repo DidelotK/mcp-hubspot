@@ -15,27 +15,20 @@ class EngagementsTool(BaseTool):
         """Return the engagements tool definition."""
         return types.Tool(
             name="list_hubspot_engagements",
-            description="Lists HubSpot engagements with optional filtering",
+            description="Lists HubSpot engagements with pagination support",
             inputSchema={
                 "type": "object",
                 "properties": {
                     "limit": {
                         "type": "integer",
-                        "description": "Maximum number of engagements to return (default: 100)",
+                        "description": "Maximum number of engagements to return (default: 100, max: 100)",
                         "default": 100,
                         "minimum": 1,
-                        "maximum": 1000,
+                        "maximum": 100,
                     },
-                    "filters": {
-                        "type": "object",
-                        "description": "Optional filters for search",
-                        "properties": {
-                            "search": {
-                                "type": "string",
-                                "description": "Search term to filter engagements",
-                            }
-                        },
-                        "additionalProperties": False,
+                    "after": {
+                        "type": "string",
+                        "description": "Pagination cursor to get the next set of results",
                     },
                 },
                 "additionalProperties": False,
@@ -48,11 +41,9 @@ class EngagementsTool(BaseTool):
         """Execute engagements retrieval."""
         try:
             limit = arguments.get("limit", 100)
-            filters = arguments.get("filters", {})
+            after = arguments.get("after")
 
-            engagements = await self.client.get_engagements(
-                limit=limit, filters=filters
-            )
+            engagements = await self.client.get_engagements(limit=limit, after=after)
             formatted_result = HubSpotFormatter.format_engagements(engagements)
 
             return [types.TextContent(type="text", text=formatted_result)]

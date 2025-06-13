@@ -29,13 +29,13 @@ class HubSpotClient:
         }
 
     async def get_contacts(
-        self, limit: int = 100, filters: Optional[Dict[str, Any]] = None
+        self, limit: int = 100, after: Optional[str] = None
     ) -> List[Dict[str, Any]]:
-        """Retrieve the list of contacts with optional filtering.
+        """Retrieve the list of contacts with pagination support.
 
         Args:
-            limit: Maximum number of contacts to retrieve
-            filters: Optional search filters
+            limit: Maximum number of contacts to retrieve (max 100)
+            after: Pagination cursor to get the next set of results
 
         Returns:
             List[Dict[str, Any]]: List of contact dictionaries
@@ -46,15 +46,13 @@ class HubSpotClient:
         url = f"{self.base_url}/crm/v3/objects/contacts"
 
         params = {
-            "limit": limit,
+            "limit": min(limit, 100),  # HubSpot caps at 100
             "properties": "firstname,lastname,email,company,phone,createdate,lastmodifieddate",
         }
 
-        # Add filters if provided
-        if filters:
-            # HubSpot uses complex filters, we can add simple search
-            if "search" in filters:
-                params["search"] = filters["search"]
+        # Add pagination cursor if provided
+        if after:
+            params["after"] = after
 
         async with httpx.AsyncClient() as client:
             response = await client.get(url, headers=self.headers, params=params)
@@ -63,13 +61,13 @@ class HubSpotClient:
             return data.get("results", [])
 
     async def get_companies(
-        self, limit: int = 100, filters: Optional[Dict[str, Any]] = None
+        self, limit: int = 100, after: Optional[str] = None
     ) -> List[Dict[str, Any]]:
-        """Retrieve the list of companies with optional filtering.
+        """Retrieve the list of companies with pagination support.
 
         Args:
-            limit: Maximum number of companies to retrieve
-            filters: Optional search filters
+            limit: Maximum number of companies to retrieve (max 100)
+            after: Pagination cursor to get the next set of results
 
         Returns:
             List[Dict[str, Any]]: List of company dictionaries
@@ -80,14 +78,13 @@ class HubSpotClient:
         url = f"{self.base_url}/crm/v3/objects/companies"
 
         params = {
-            "limit": limit,
+            "limit": min(limit, 100),  # HubSpot caps at 100
             "properties": "name,domain,city,state,country,industry,createdate,lastmodifieddate",
         }
 
-        # Add filters if provided
-        if filters:
-            if "search" in filters:
-                params["search"] = filters["search"]
+        # Add pagination cursor if provided
+        if after:
+            params["after"] = after
 
         async with httpx.AsyncClient() as client:
             response = await client.get(url, headers=self.headers, params=params)
@@ -272,13 +269,13 @@ class HubSpotClient:
             return response.json()
 
     async def get_engagements(
-        self, limit: int = 100, filters: Optional[Dict[str, Any]] = None
+        self, limit: int = 100, after: Optional[str] = None
     ) -> List[Dict[str, Any]]:
-        """Retrieve the list of engagements with optional filtering.
+        """Retrieve the list of engagements with pagination support.
 
         Args:
-            limit: Maximum number of engagements to retrieve
-            filters: Optional search filters
+            limit: Maximum number of engagements to retrieve (max 100)
+            after: Pagination cursor to get the next set of results
 
         Returns:
             List[Dict[str, Any]]: List of engagement dictionaries
@@ -289,12 +286,13 @@ class HubSpotClient:
         url = f"{self.base_url}/crm/v3/objects/engagements"
 
         params = {
-            "limit": limit,
+            "limit": min(limit, 100),  # HubSpot caps at 100
             "properties": "engagement_type,subject,createdate,lastmodifieddate",
         }
 
-        if filters and "search" in filters:
-            params["search"] = filters["search"]
+        # Add pagination cursor if provided
+        if after:
+            params["after"] = after
 
         async with httpx.AsyncClient() as client:
             response = await client.get(url, headers=self.headers, params=params)

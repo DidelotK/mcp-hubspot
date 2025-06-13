@@ -4,14 +4,14 @@ This MCP server exposes 11 tools to interact with the HubSpot API.
 
 ## list_hubspot_contacts
 
-Retrieves the list of HubSpot contacts.
+Retrieves the list of HubSpot contacts with pagination support.
 
 ### Parameters
 
 | Parameter | Type | Required | Description | Default |
 |-----------|------|----------|-------------|---------|
-| `limit` | integer | No | Maximum number of contacts to retrieve | 100 |
-| `filters` | object | No | Search filters | {} |
+| `limit` | integer | No | Maximum number of contacts to retrieve (max 100) | 100 |
+| `after` | string | No | Pagination cursor to get the next set of results | - |
 
 ### Usage Example
 
@@ -20,9 +20,7 @@ Retrieves the list of HubSpot contacts.
   "name": "list_hubspot_contacts",
   "arguments": {
     "limit": 10,
-    "filters": {
-      "search": "jean"
-    }
+    "after": "cursor123"
   }
 }
 ```
@@ -41,14 +39,14 @@ Retrieves the list of HubSpot contacts.
 
 ## list_hubspot_companies
 
-Retrieves the list of HubSpot companies.
+Retrieves the list of HubSpot companies with pagination support.
 
 ### Parameters
 
 | Parameter | Type | Required | Description | Default |
 |-----------|------|----------|-------------|---------|
-| `limit` | integer | No | Maximum number of companies to retrieve | 100 |
-| `filters` | object | No | Search filters | {} |
+| `limit` | integer | No | Maximum number of companies to retrieve (max 100) | 100 |
+| `after` | string | No | Pagination cursor to get the next set of results | - |
 
 ### Usage Example
 
@@ -57,9 +55,7 @@ Retrieves the list of HubSpot companies.
   "name": "list_hubspot_companies",
   "arguments": {
     "limit": 5,
-    "filters": {
-      "search": "technology"
-    }
+    "after": "cursor456"
   }
 }
 ```
@@ -509,14 +505,14 @@ These tools are particularly useful for:
 
 ## list_hubspot_engagements
 
-Retrieves the list of HubSpot engagements (calls, emails, tasks, etc.).
+Retrieves the list of HubSpot engagements (calls, emails, tasks, etc.) with pagination support.
 
 ### Parameters
 
 | Parameter | Type | Required | Description | Default |
 |-----------|------|----------|-------------|---------|
-| `limit` | integer | No | Maximum number of engagements to retrieve | 100 |
-| `filters` | object | No | Search filters (supports `search`) | {} |
+| `limit` | integer | No | Maximum number of engagements to retrieve (max 100) | 100 |
+| `after` | string | No | Pagination cursor to get the next set of results | - |
 
 ### Usage Example
 
@@ -525,9 +521,7 @@ Retrieves the list of HubSpot engagements (calls, emails, tasks, etc.).
   "name": "list_hubspot_engagements",
   "arguments": {
     "limit": 15,
-    "filters": {
-      "search": "call"
-    }
+    "after": "cursor789"
   }
 }
 ```

@@ -73,8 +73,8 @@ async def test_get_engagements_error(client: HubSpotClient) -> None:
 
 
 @pytest.mark.asyncio
-async def test_get_engagements_with_search_filter(client: HubSpotClient) -> None:
-    """Ensure search filter is forwarded as query param."""
+async def test_get_engagements_with_pagination(client: HubSpotClient) -> None:
+    """Ensure pagination cursor is forwarded as query param."""
     response_mock = Mock(spec=httpx.Response)
     response_mock.json.return_value = {"results": []}
     response_mock.raise_for_status = Mock()
@@ -82,8 +82,8 @@ async def test_get_engagements_with_search_filter(client: HubSpotClient) -> None
     with patch("httpx.AsyncClient.get", new_callable=AsyncMock) as mock_get:
         mock_get.return_value = response_mock
 
-        await client.get_engagements(limit=20, filters={"search": "call"})
+        await client.get_engagements(limit=20, after="cursor789")
 
         called_params = mock_get.call_args.kwargs["params"]
-        assert called_params["search"] == "call"
+        assert called_params["after"] == "cursor789"
         assert called_params["limit"] == 20
