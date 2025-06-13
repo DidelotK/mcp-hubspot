@@ -271,3 +271,34 @@ class HubSpotClient:
             response = await client.patch(url, headers=self.headers, json=data)
             response.raise_for_status()
             return response.json()
+
+    async def get_engagements(
+        self, limit: int = 100, filters: Optional[Dict[str, Any]] = None
+    ) -> List[Dict[str, Any]]:
+        """Retrieve the list of engagements with optional filtering.
+
+        Args:
+            limit: Maximum number of engagements to retrieve
+            filters: Optional search filters
+
+        Returns:
+            List[Dict[str, Any]]: List of engagement dictionaries
+
+        Raises:
+            httpx.HTTPStatusError: If the API request fails
+        """
+        url = f"{self.base_url}/crm/v3/objects/engagements"
+
+        params = {
+            "limit": limit,
+            "properties": "engagement_type,subject,createdate,lastmodifieddate",
+        }
+
+        if filters and "search" in filters:
+            params["search"] = filters["search"]
+
+        async with httpx.AsyncClient() as client:
+            response = await client.get(url, headers=self.headers, params=params)
+            response.raise_for_status()
+            data = response.json()
+            return data.get("results", [])

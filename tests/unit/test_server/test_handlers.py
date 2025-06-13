@@ -317,8 +317,8 @@ def test_handle_list_tools_count() -> None:
     handlers = MCPHandlers(client)
     tools: List[Tool] = asyncio.run(handlers.handle_list_tools())
 
-    # Should have exactly 9 tools
-    assert len(tools) == 9
+    # Should have exactly 10 tools
+    assert len(tools) == 10
 
     expected_tools: List[str] = [
         "list_hubspot_contacts",
@@ -329,6 +329,7 @@ def test_handle_list_tools_count() -> None:
         "get_hubspot_contact_properties",
         "get_hubspot_company_properties",
         "get_hubspot_deal_properties",
+        "list_hubspot_engagements",
     ]
 
     tool_names: List[str] = [tool.name for tool in tools]

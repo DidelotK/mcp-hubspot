@@ -15,6 +15,7 @@ from ..tools import (
     DealByNameTool,
     DealPropertiesTool,
     DealsTool,
+    EngagementsTool,
     UpdateDealTool,
 )
 
@@ -44,6 +45,7 @@ class MCPHandlers:
         self.company_properties_tool = CompanyPropertiesTool(client)
         self.deal_properties_tool = DealPropertiesTool(client)
         self.update_deal_tool = UpdateDealTool(client)
+        self.engagements_tool = EngagementsTool(client)
 
         # Tools mapping
         self.tools_map: Dict[str, Any] = {
@@ -51,6 +53,7 @@ class MCPHandlers:
             "list_hubspot_companies": self.companies_tool,
             "list_hubspot_deals": self.deals_tool,
             "create_deal": self.create_deal_tool,
+            "list_hubspot_engagements": self.engagements_tool,
             "get_deal_by_name": self.deal_by_name_tool,
             "get_hubspot_contact_properties": self.contact_properties_tool,
             "get_hubspot_company_properties": self.company_properties_tool,

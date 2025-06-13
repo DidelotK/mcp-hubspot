@@ -435,3 +435,17 @@ class HubSpotFormatter:
         result += f"  🆔 ID: {clean(deal.get('id'), 'N/A')}\n"
 
         return result
+
+    @staticmethod
+    def format_engagements(engagements: List[Dict[str, Any]]) -> str:
+        """Formats a list of HubSpot engagements for display."""
+        lines: List[str] = []
+        lines.append(f"📞 **HubSpot Engagements** ({len(engagements)} found)\n")
+        for eng in engagements:
+            props = eng.get("properties", {})
+            lines.append(f"**{props.get('subject', 'No subject')}**")
+            lines.append(f"  🔖 Type: {props.get('engagement_type', 'N/A')}")
+            lines.append(f"  🗓️ Created: {props.get('createdate')}")
+            lines.append(f"  🔄 Updated: {props.get('lastmodifieddate')}")
+            lines.append(f"  🆔 ID: {eng.get('id')}\n")
+        return "\n".join(lines)
