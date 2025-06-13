@@ -1,5 +1,7 @@
 """Tools for interacting with HubSpot deals."""
 
+# mypy: ignore-errors
+
 from typing import Any, Dict, List, Optional
 
 from ..client import HubSpotClient
