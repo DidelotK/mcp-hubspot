@@ -9,6 +9,7 @@ It allows accessing contacts, companies, and deals through conversational tools.
 import argparse
 import asyncio
 import logging
+import os
 from pathlib import Path
 
 import mcp.server.sse
@@ -68,13 +69,10 @@ async def main():
     server = Server("hubspot-mcp-server")
 
     # Create HubSpot client
-    hubspot_client = HubSpotClient()
+    hubspot_client = HubSpotClient(api_key=os.getenv("HUBSPOT_API_KEY"))
 
     # Create MCP handlers
-    handlers = MCPHandlers(server, hubspot_client)
-
-    # Register handlers
-    handlers.register_handlers()
+    handlers = MCPHandlers(hubspot_client)
 
     # Initialize server options
     server_options = InitializationOptions(
