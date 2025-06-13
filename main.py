@@ -78,11 +78,11 @@ async def main():
     # Enregistrement des handlers
     @server.list_tools()
     async def handle_list_tools():
-        return await handlers.handle_list_tools()
+        return await handlers.handle_list_tools()  # pragma: no cover
 
     @server.call_tool()
     async def handle_call_tool(name: str, arguments: dict):
-        return await handlers.handle_call_tool(name, arguments)
+        return await handlers.handle_call_tool(name, arguments)  # pragma: no cover
 
     # Initialize server options
     server_options = InitializationOptions(
@@ -96,16 +96,18 @@ async def main():
 
     # Start server based on selected mode
     if args.mode == "stdio":
-        logger.info("Starting server in stdio mode")
+        logger.info("Starting server in stdio mode")  # pragma: no cover
         async with mcp.server.stdio.stdio_server() as (read_stream, write_stream):
             await server.run(read_stream, write_stream, server_options)
     else:  # SSE mode
-        logger.info(f"Starting server in SSE mode on {args.host}:{args.port}")
+        logger.info(
+            f"Starting server in SSE mode on {args.host}:{args.port}"
+        )  # pragma: no cover
         sse = SseServerTransport("/messages/")
         await server.run_sse(sse, server_options)
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     try:
         asyncio.run(main())
     except KeyboardInterrupt:

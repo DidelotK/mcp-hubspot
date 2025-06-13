@@ -34,11 +34,105 @@ globs:
 
 ## Best Practices
 - **Exceptions**: Catch specific exceptions
-- **Logging**: Use standard logging module with English messages
 - **Constants**: UPPER_CASE for constants
 - **Private**: Prefix with _ for private methods
 - **Magic methods**: Implement __str__ and __repr__ if relevant
 - **Documentation**: All comments and docstrings in English
+
+## Logging Management
+- **Framework**: Use Python's standard `logging` module exclusively
+- **Format**: Structured JSON logging for production environments
+- **Language**: All log messages must be in English
+- **No Print**: Absolutely no `print()` statements in final code
+
+### Log Format Standards
+- **Structure**: JSON format with consistent field names
+- **Required fields**: timestamp, level, message, module, function
+- **Optional fields**: user_id, session_id, request_id, execution_time
+- **Example format**:
+```json
+{
+  "timestamp": "2024-01-15T10:30:00.123Z",
+  "level": "INFO",
+  "message": "User authentication successful",
+  "module": "auth.services",
+  "function": "authenticate_user",
+  "user_id": "user_123",
+  "execution_time_ms": 45
+}
+```
+
+### Mandatory Log Levels
+- **DEBUG**: Detailed diagnostic information (development only)
+- **INFO**: General information about program execution
+- **WARNING**: Potentially harmful situations that should be noted
+- **ERROR**: Error events that allow the application to continue
+- **CRITICAL**: Serious errors that may cause the application to abort
+
+### AI Action Logging (Explainability & Traceability)
+- **AI Decision Logs**: Log all AI-driven decisions with reasoning
+- **Input/Output Tracking**: Log inputs and outputs for AI operations
+- **Model Information**: Include model version, parameters used
+- **Confidence Scores**: Log confidence levels when available
+- **Execution Path**: Track the decision-making process step by step
+
+#### AI Log Example:
+```python
+logger.info(
+    "AI decision executed",
+    extra={
+        "ai_model": "gpt-4",
+        "operation": "code_generation",
+        "input_tokens": 150,
+        "output_tokens": 75,
+        "confidence": 0.92,
+        "reasoning": "Generated based on user requirements and best practices",
+        "execution_time_ms": 1200
+    }
+)
+```
+
+### Logging Configuration
+```python
+import logging
+import json
+from datetime import datetime
+
+class JSONFormatter(logging.Formatter):
+    def format(self, record):
+        log_entry = {
+            "timestamp": datetime.utcnow().isoformat() + "Z",
+            "level": record.levelname,
+            "message": record.getMessage(),
+            "module": record.module,
+            "function": record.funcName,
+            "line": record.lineno
+        }
+        if hasattr(record, 'extra_data'):
+            log_entry.update(record.extra_data)
+        return json.dumps(log_entry)
+
+# Configure logger
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(message)s',
+    handlers=[
+        logging.StreamHandler()
+    ]
+)
+logger = logging.getLogger(__name__)
+logger.handlers[0].setFormatter(JSONFormatter())
+```
+
+### Strict Logging Rules
+- ❌ **NEVER** use `print()` statements in production code
+- ❌ **NEVER** log sensitive information (passwords, API keys, personal data)
+- ❌ **NEVER** use French or other languages in log messages
+- ❌ **NEVER** ignore logging configuration in CI/CD
+- ✅ **ALWAYS** use appropriate log levels
+- ✅ **ALWAYS** include context information in logs
+- ✅ **ALWAYS** log AI decisions for transparency
+- ✅ **ALWAYS** structure logs as JSON in production
 
 ## Recommended Tools
 - **black**: Automatic code formatting
