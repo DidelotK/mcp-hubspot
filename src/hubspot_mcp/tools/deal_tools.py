@@ -97,9 +97,10 @@ def get_deal_by_name(deal_name: str) -> Optional[Dict[str, Any]]:
         ],
         archived=False,
     )
-    if not api_response.results:
+    results = api_response.results
+    if not results:
         return None
-    return HubSpotFormatter.format_single_deal(api_response.results[0])
+    return HubSpotFormatter.format_single_deal(results[0])
 
 
 def get_hubspot_deal_properties() -> List[Dict[str, Any]]:
