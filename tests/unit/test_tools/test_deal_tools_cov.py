@@ -15,6 +15,8 @@ def test_get_deal_by_name_not_found_real_logic(monkeypatch):
     class DummyClient:
         crm = DummyCrm()
 
-    monkeypatch.setattr(deal_tools, "HubSpotClient", lambda: DummyClient())
+    monkeypatch.setattr(
+        deal_tools, "HubSpotClient", lambda *args, **kwargs: DummyClient()
+    )
     result = deal_tools.get_deal_by_name("NonExistentDeal")
     assert result is None

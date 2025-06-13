@@ -2,6 +2,7 @@
 
 # mypy: ignore-errors
 
+import os
 from typing import Any, Dict, List, Optional
 
 from ..client import HubSpotClient
@@ -10,7 +11,7 @@ from ..formatters.hubspot_formatter import HubSpotFormatter
 
 def list_hubspot_deals(
     limit: int = 100, filters: Optional[Dict[str, Any]] = None
-) -> List[Dict[str, Any]]:
+) -> List[str]:
     """List HubSpot deals with optional filters.
 
     Args:
@@ -20,7 +21,7 @@ def list_hubspot_deals(
     Returns:
         List of deals matching the criteria
     """
-    client = HubSpotClient()
+    client = HubSpotClient(api_key=os.getenv("HUBSPOT_API_KEY", ""))
     api_response = client.crm.deals.basic_api.get_page(
         limit=limit,
         properties=["dealname", "amount", "dealstage", "pipeline", "closedate"],
@@ -37,7 +38,7 @@ def create_deal(
     closedate: Optional[str] = None,
     hubspot_owner_id: Optional[str] = None,
     description: Optional[str] = None,
-) -> Dict[str, Any]:
+) -> str:
     """Create a new deal in HubSpot.
 
     Args:
@@ -52,7 +53,7 @@ def create_deal(
     Returns:
         Created deal information
     """
-    client = HubSpotClient()
+    client = HubSpotClient(api_key=os.getenv("HUBSPOT_API_KEY", ""))
     properties = {
         "dealname": dealname,
     }
@@ -73,7 +74,7 @@ def create_deal(
     return HubSpotFormatter.format_single_deal(api_response)
 
 
-def get_deal_by_name(deal_name: str) -> Optional[Dict[str, Any]]:
+def get_deal_by_name(deal_name: str) -> Optional[str]:
     """Get a specific deal by its exact name.
 
     Args:
@@ -82,7 +83,7 @@ def get_deal_by_name(deal_name: str) -> Optional[Dict[str, Any]]:
     Returns:
         Deal information if found, None otherwise
     """
-    client = HubSpotClient()
+    client = HubSpotClient(api_key=os.getenv("HUBSPOT_API_KEY", ""))
     api_response = client.crm.deals.basic_api.get_page(
         limit=1,
         properties=["dealname", "amount", "dealstage", "pipeline", "closedate"],
@@ -105,13 +106,13 @@ def get_deal_by_name(deal_name: str) -> Optional[Dict[str, Any]]:
     return HubSpotFormatter.format_single_deal(results[0])
 
 
-def get_hubspot_deal_properties() -> List[Dict[str, Any]]:
+def get_hubspot_deal_properties() -> str:
     """Get the list of available properties for HubSpot deals.
 
     Returns:
         List of deal properties with their types and descriptions
     """
-    client = HubSpotClient()
+    client = HubSpotClient(api_key=os.getenv("HUBSPOT_API_KEY", ""))
     api_response = client.crm.properties.core_api.get_all(
         object_type="deals",
         archived=False,
@@ -119,7 +120,7 @@ def get_hubspot_deal_properties() -> List[Dict[str, Any]]:
     return HubSpotFormatter.format_deal_properties(api_response)
 
 
-def update_deal(deal_id: str, properties: Dict[str, Any]) -> Dict[str, Any]:
+def update_deal(deal_id: str, properties: Dict[str, Any]) -> str:
     """Update an existing deal in HubSpot.
 
     Args:
@@ -129,7 +130,7 @@ def update_deal(deal_id: str, properties: Dict[str, Any]) -> Dict[str, Any]:
     Returns:
         Updated deal information
     """
-    client = HubSpotClient()
+    client = HubSpotClient(api_key=os.getenv("HUBSPOT_API_KEY", ""))
     api_response = client.crm.deals.basic_api.update(
         deal_id=deal_id,
         properties=properties,
