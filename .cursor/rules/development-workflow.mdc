@@ -1,3 +1,15 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+description: Development workflow, branching, and CI/CD rules for the project
+globs:
+  - ".github/workflows/**"
+  - "src/**"
+  - "tests/**"
+  - "pyproject.toml"
+
 # Development Workflow
 
 ## Development Process

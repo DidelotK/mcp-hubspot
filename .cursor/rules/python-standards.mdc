@@ -1,4 +1,14 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
 # Python Standards
+
+description: Python coding standards and best practices for the project
+globs:
+  - "src/**/*.py"
+  - "tests/**/*.py"
 
 ## Mandatory Coding Rules
 - **PEP 8**: Strictly follow Python style guide

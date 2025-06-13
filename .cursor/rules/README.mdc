@@ -3,6 +3,15 @@
 This folder contains development rules organized by topic for better maintainability.
 
 ## 📁 Rules Structure
+description: Index and summary of all Cursor rules files for the project
+globs:
+  - ".cursor/rules/*.mdc"
+
+# Cursor Rules Organization
+
+This folder contains development rules organized by topic for better maintainability.
+
+## 📁 Rules Structure
 
 ### 🔧 [commit-conventions.md](./commit-conventions.md)
 Strict conventions for semantic versioning commit messages

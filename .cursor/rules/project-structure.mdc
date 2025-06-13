@@ -1,13 +1,25 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
 # Project Structure
 
 ## Folder Organization
+
+description: Project folder organization, naming, and structure rules
+globs:
+  - "src/**"
+  - "tests/**"
+  - "pyproject.toml"
+  - "README.md"
+
 ```
 project/
 ├── .cursor/rules/          # Cursor rules (thematic organizations)
 ├── .github/workflows/      # GitHub Actions CI/CD
 ├── src/                    # Main source code
 ├── tests/                  # Unit tests
-├── rules/                  # Rules documentation
 ├── pyproject.toml          # Python configuration and dependencies
 ├── uv.lock                 # Dependencies lock file
 ├── pytest.ini             # pytest configuration
