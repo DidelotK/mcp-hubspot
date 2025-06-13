@@ -76,4 +76,8 @@ info:
     @echo "Python version: $(python --version)"
     @echo "UV version: $(uv --version)"
     @echo "Project dependencies:"
-    @uv tree 
+    @uv tree
+
+# Run the basic MCP client example (requires HUBSPOT_API_KEY env var)
+example-basic:
+    uv run python examples/basic/test_mcp_client.py 
