@@ -15,7 +15,7 @@ class CompanyPropertiesTool(BaseTool):
         """Return the company properties tool definition."""
         return types.Tool(
             name="get_hubspot_company_properties",
-            description="Retrieves the list of available properties for HubSpot companies with their types and descriptions",
+            description="Retrieves the list of available properties for HubSpot companies",
             inputSchema={
                 "type": "object",
                 "properties": {},
@@ -26,7 +26,8 @@ class CompanyPropertiesTool(BaseTool):
     async def execute(self, arguments: Dict[str, Any]) -> List[types.TextContent]:
         """Execute company properties retrieval."""
         try:
-            properties = await self.client.get_company_properties()
+            # Use cached client call instead of direct client call
+            properties = await self._cached_client_call("get_company_properties")
             formatted_result = HubSpotFormatter.format_company_properties(properties)
 
             return [types.TextContent(type="text", text=formatted_result)]

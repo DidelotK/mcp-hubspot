@@ -1,5 +1,6 @@
 """Module containing MCP tools for HubSpot."""
 
+from .cache_management_tool import CacheManagementTool
 from .companies import CompaniesTool
 from .company_properties_tool import CompanyPropertiesTool
 from .contact_properties_tool import ContactPropertiesTool
@@ -13,6 +14,7 @@ from .search_deals import SearchDealsTool
 from .update_deal_tool import UpdateDealTool
 
 __all__ = [
+    "CacheManagementTool",
     "ContactsTool",
     "CompaniesTool",
     "DealsTool",

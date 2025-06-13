@@ -15,7 +15,7 @@ class ContactPropertiesTool(BaseTool):
         """Return the contact properties tool definition."""
         return types.Tool(
             name="get_hubspot_contact_properties",
-            description="Retrieves the list of available properties for HubSpot contacts with their types and descriptions",
+            description="Retrieves the list of available properties for HubSpot contacts",
             inputSchema={
                 "type": "object",
                 "properties": {},
@@ -26,7 +26,8 @@ class ContactPropertiesTool(BaseTool):
     async def execute(self, arguments: Dict[str, Any]) -> List[types.TextContent]:
         """Execute contact properties retrieval."""
         try:
-            properties = await self.client.get_contact_properties()
+            # Use cached client call instead of direct client call
+            properties = await self._cached_client_call("get_contact_properties")
             formatted_result = HubSpotFormatter.format_contact_properties(properties)
 
             return [types.TextContent(type="text", text=formatted_result)]

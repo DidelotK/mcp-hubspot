@@ -4,11 +4,14 @@ from unittest.mock import AsyncMock, Mock
 
 import pytest
 
+from hubspot_mcp.tools.base import BaseTool
 from hubspot_mcp.tools.engagements import EngagementsTool
 
 
 @pytest.mark.asyncio
 async def test_engagements_tool_execute_returns_formatted_text():
+    BaseTool.clear_cache()
+
     mock_client = Mock()
     mock_client.get_engagements = AsyncMock(
         return_value=[
