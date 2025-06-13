@@ -24,6 +24,7 @@ uv run python main.py --mode stdio
 | **[Installation](docs/installation.md)** | Installation and configuration guide |
 | **[Integration](docs/integration.md)** | Configuration with Claude Desktop and other MCP clients |
 | **[API Reference](docs/api-reference.md)** | Complete documentation of the 11 available tools |
+| **[Cache System](docs/caching.md)** | How the shared TTL cache works and how to manage it |
 | **[Examples](docs/examples.md)** | Use cases and example conversations with Claude |
 | **[Contributing](docs/contributing.md)** | Guide for developing new tools |
 
@@ -49,6 +50,7 @@ uv run python main.py --mode stdio
 | `get_deal_by_name` | Search for a deal by exact name |
 | `get_hubspot_deal_properties` | Retrieve deal field properties with types and descriptions |
 | `list_hubspot_engagements` | List HubSpot engagements with pagination support |
+| `manage_hubspot_cache` | View statistics or clear the shared TTL cache |
 
 ## ⚡ Usage with Claude
 
@@ -98,3 +100,30 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [Usage Examples](docs/examples.md#example-conversations)
 - [Complete Tool Reference](docs/api-reference.md)
 - [Troubleshooting](docs/integration.md#troubleshooting)
+
+## 🗄️ Cache System
+
+The server uses a **shared in-memory TTL cache** (5-minute default) for all read-only HubSpot calls.  
+Benefits:
+
+* 🚀 Faster responses on repeated queries (cache hits)
+* 🔄 Automatic refresh every 5 minutes (configurable)
+* 🔐 Isolated by API key – no data leaks between accounts
+
+You can interact with the cache via the `manage_hubspot_cache` tool:
+
+```json
+{
+  "name": "manage_hubspot_cache",
+  "arguments": {"action": "info"}
+}
+```
+
+Actions:
+
+| Action | Description |
+|--------|-------------|
+| `info` | Show cache size, TTL, utilization and sample keys |
+| `clear` | Immediately empty the cache and fetch fresh data on next call |
+
+See full details in [docs/caching.md](docs/caching.md).
