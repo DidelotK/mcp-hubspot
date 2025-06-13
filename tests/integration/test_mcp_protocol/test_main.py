@@ -97,14 +97,19 @@ async def test_main_sse_mode():
     """Test SSE mode."""
     # Mock dependencies
     mock_server = AsyncMock(spec=Server)
-    mock_server.run_sse = AsyncMock()
     mock_hubspot_client = MagicMock(spec=HubSpotClient)
     mock_handlers = AsyncMock(spec=MCPHandlers)
     mock_handlers.handle_list_tools = AsyncMock()
     mock_handlers.handle_call_tool = AsyncMock()
 
-    # Mock SSE transport (no longer needs context manager)
+    # Mock SSE transport
     mock_sse = MagicMock(spec=SseServerTransport)
+
+    # Mock Starlette and uvicorn components
+    mock_starlette_app = MagicMock()
+    mock_uvicorn_config = MagicMock()
+    mock_uvicorn_server = AsyncMock()
+    mock_uvicorn_server.serve = AsyncMock()
 
     # Mock InitializationOptions
     mock_init_options = MagicMock(spec=InitializationOptions)
@@ -118,6 +123,10 @@ async def test_main_sse_mode():
         patch("main.parse_arguments") as mock_parse_args,
         patch("main.InitializationOptions", return_value=mock_init_options),
         patch("main.logger") as mock_logger,
+        # Mock the new SSE implementation components
+        patch("starlette.applications.Starlette", return_value=mock_starlette_app),
+        patch("uvicorn.Config", return_value=mock_uvicorn_config),
+        patch("uvicorn.Server", return_value=mock_uvicorn_server),
     ):
 
         # Configure arguments
@@ -133,7 +142,7 @@ async def test_main_sse_mode():
         # Verifications
         mock_server.list_tools.assert_called_once()
         mock_server.call_tool.assert_called_once()
-        mock_server.run_sse.assert_called_once_with(mock_sse, mock_init_options)
+        mock_uvicorn_server.serve.assert_called_once()
         # Verify logger was called with correct message
         mock_logger.info.assert_called_with(
             "Starting server in SSE mode on localhost:8080"
@@ -187,7 +196,6 @@ async def test_main_sse_mode_with_logger():
     """Test SSE mode with logger verification."""
     # Mock dependencies
     mock_server = AsyncMock(spec=Server)
-    mock_server.run_sse = AsyncMock()
     mock_hubspot_client = MagicMock(spec=HubSpotClient)
     mock_handlers = AsyncMock(spec=MCPHandlers)
     mock_handlers.handle_list_tools = AsyncMock()
@@ -195,6 +203,12 @@ async def test_main_sse_mode_with_logger():
 
     # Mock SSE transport
     mock_sse = MagicMock(spec=SseServerTransport)
+
+    # Mock Starlette and uvicorn components
+    mock_starlette_app = MagicMock()
+    mock_uvicorn_config = MagicMock()
+    mock_uvicorn_server = AsyncMock()
+    mock_uvicorn_server.serve = AsyncMock()
 
     # Mock InitializationOptions
     mock_init_options = MagicMock(spec=InitializationOptions)
@@ -208,6 +222,10 @@ async def test_main_sse_mode_with_logger():
         patch("main.parse_arguments") as mock_parse_args,
         patch("main.InitializationOptions", return_value=mock_init_options),
         patch("main.logger") as mock_logger,
+        # Mock the new SSE implementation components
+        patch("starlette.applications.Starlette", return_value=mock_starlette_app),
+        patch("uvicorn.Config", return_value=mock_uvicorn_config),
+        patch("uvicorn.Server", return_value=mock_uvicorn_server),
     ):
 
         # Configure arguments
