@@ -508,3 +508,161 @@ class HubSpotClient:
             response.raise_for_status()
             data = response.json()
             return data.get("results", [])
+
+    # ------------------------------------------------------------------
+    # Advanced search for contacts
+    # ------------------------------------------------------------------
+
+    async def search_contacts(
+        self,
+        *,
+        limit: int = 100,
+        filters: Optional[Dict[str, Any]] = None,
+        extra_properties: Optional[List[str]] = None,
+    ) -> List[Dict[str, Any]]:
+        """Search contacts via CRM Search API.
+
+        Supported filters:
+
+        * ``email`` – contains-token match on *email*.
+        * ``firstname`` – contains-token on *firstname*.
+        * ``lastname`` – contains-token on *lastname*.
+        * ``company`` – contains-token on *company*.
+        """
+
+        url = f"{self.base_url}/crm/v3/objects/contacts/search"
+
+        if filters is None:
+            filters = {}
+
+        mapping = {
+            "email": ("email", "CONTAINS_TOKEN"),
+            "firstname": ("firstname", "CONTAINS_TOKEN"),
+            "lastname": ("lastname", "CONTAINS_TOKEN"),
+            "company": ("company", "CONTAINS_TOKEN"),
+        }
+
+        filter_groups: List[Dict[str, Any]] = []
+        for key, value in filters.items():
+            if key not in mapping:
+                continue
+            prop, operator = mapping[key]
+            filter_groups.append(
+                {
+                    "filters": [
+                        {"propertyName": prop, "operator": operator, "value": value}
+                    ]
+                }
+            )
+
+        if not filter_groups:
+            filter_groups.append(
+                {"filters": [{"propertyName": "id", "operator": "GT", "value": 0}]}
+            )
+
+        properties_list: List[str] = [
+            "firstname",
+            "lastname",
+            "email",
+            "company",
+            "phone",
+            "createdate",
+            "lastmodifieddate",
+        ]
+        if extra_properties:
+            properties_list.extend(extra_properties)
+
+        # Deduplicate
+        seen: set[str] = set()
+        unique_props: List[str] = []
+        for p in properties_list:
+            if p not in seen:
+                seen.add(p)
+                unique_props.append(p)  # pragma: no cover
+
+        body = {
+            "filterGroups": filter_groups,
+            "properties": unique_props,
+            "limit": min(limit, 100),
+        }
+
+        async with httpx.AsyncClient() as client:
+            response = await client.post(url, headers=self.headers, json=body)
+            response.raise_for_status()
+            data = response.json()
+            return data.get("results", [])
+
+    # ------------------------------------------------------------------
+    # Advanced search for companies
+    # ------------------------------------------------------------------
+
+    async def search_companies(
+        self,
+        *,
+        limit: int = 100,
+        filters: Optional[Dict[str, Any]] = None,
+        extra_properties: Optional[List[str]] = None,
+    ) -> List[Dict[str, Any]]:
+        """Search companies via CRM Search API with simple filters."""
+
+        url = f"{self.base_url}/crm/v3/objects/companies/search"
+
+        if filters is None:
+            filters = {}
+
+        mapping = {
+            "name": ("name", "CONTAINS_TOKEN"),
+            "domain": ("domain", "CONTAINS_TOKEN"),
+            "industry": ("industry", "CONTAINS_TOKEN"),
+            "country": ("country", "CONTAINS_TOKEN"),
+        }
+
+        filter_groups: List[Dict[str, Any]] = []
+        for key, value in filters.items():
+            if key not in mapping:
+                continue
+            prop, operator = mapping[key]
+            filter_groups.append(
+                {
+                    "filters": [
+                        {"propertyName": prop, "operator": operator, "value": value}
+                    ]
+                }
+            )
+
+        if not filter_groups:
+            filter_groups.append(
+                {"filters": [{"propertyName": "id", "operator": "GT", "value": 0}]}
+            )
+
+        properties_list: List[str] = [
+            "name",
+            "domain",
+            "industry",
+            "city",
+            "state",
+            "country",
+            "createdate",
+            "lastmodifieddate",
+        ]
+        if extra_properties:
+            properties_list.extend(extra_properties)
+
+        seen: set[str] = set()
+        unique_props: List[str] = []
+        for p in properties_list:
+            if p not in seen:
+                seen.add(p)
+                unique_props.append(p)  # pragma: no cover
+
+        body = {
+            "filterGroups": filter_groups,
+            "properties": unique_props,
+            "limit": min(limit, 100),
+        }
+
+        async with httpx.AsyncClient() as client:
+            response = await client.post(url, headers=self.headers, json=body)
+            response.raise_for_status()
+            data = response.json()
+            return data.get("results", [])
