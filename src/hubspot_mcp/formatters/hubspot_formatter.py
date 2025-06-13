@@ -443,8 +443,26 @@ class HubSpotFormatter:
         lines.append(f"📞 **HubSpot Engagements** ({len(engagements)} found)\n")
         for eng in engagements:
             props = eng.get("properties", {})
-            lines.append(f"**{props.get('subject', 'No subject')}**")
+            meta: Dict[str, Any] = props.get(
+                "metadata", {}
+            )  # May contain type-specific fields
+
+            subject: str = (
+                props.get("subject")
+                or meta.get("subject")
+                or meta.get("title")
+                or "No subject"
+            )
+            body_preview: Optional[str] = meta.get("body") or meta.get("text")
+
+            lines.append(f"**{subject}**")
             lines.append(f"  🔖 Type: {props.get('engagement_type', 'N/A')}")
+
+            # Optional extra info
+            if body_preview:
+                snippet = body_preview[:60].replace("\n", " ")
+                lines.append(f"  📝 Snippet: {snippet}…")
+
             lines.append(f"  🗓️ Created: {props.get('createdate')}")
             lines.append(f"  🔄 Updated: {props.get('lastmodifieddate')}")
             lines.append(f"  🆔 ID: {eng.get('id')}\n")
