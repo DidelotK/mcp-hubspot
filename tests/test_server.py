@@ -3,6 +3,7 @@
 import asyncio
 import sys
 from typing import Any, Dict, List, Optional, Union
+from unittest.mock import AsyncMock, patch
 
 import httpx
 import pytest
@@ -333,3 +334,41 @@ def test_handle_list_tools_count() -> None:
     tool_names: List[str] = [tool.name for tool in tools]
     for expected_tool in expected_tools:
         assert expected_tool in tool_names
+
+
+def test_handle_call_tool_exception_handling() -> None:
+    """Test exception handling in tool execution.
+
+    Tests that the handler correctly handles exceptions raised during
+    tool execution by logging the error and returning an appropriate
+    error message to achieve 100% coverage.
+    """
+    client = HubSpotClient("test-key")
+    handlers = MCPHandlers(client)
+
+    # Create a mock tool that raises an exception
+    mock_tool = AsyncMock()
+    mock_tool.execute.side_effect = ValueError("Test exception for coverage")
+
+    # Replace the contacts tool with our mock
+    handlers.tools_map["list_hubspot_contacts"] = mock_tool
+
+    # Patch the logger to verify it's called
+    with patch("src.hubspot_mcp.server.handlers.logger") as mock_logger:
+        result: List[TextContent] = asyncio.run(
+            handlers.handle_call_tool("list_hubspot_contacts", {"limit": 10})
+        )
+
+        # Verify the error response
+        assert isinstance(result, list)
+        assert len(result) == 1
+        assert isinstance(result[0], TextContent)
+        assert (
+            "Error executing tool list_hubspot_contacts: Test exception for coverage"
+            in result[0].text
+        )
+
+        # Verify the logger was called with the error
+        mock_logger.error.assert_called_once_with(
+            "Error executing tool list_hubspot_contacts: Test exception for coverage"
+        )
