@@ -19,7 +19,7 @@ def test_format_engagements_returns_string():
     out = HubSpotFormatter.format_engagements(data)
     assert "Intro Email" in out
     assert "📞" in out
-    assert "Snippet" not in out  # No body provided
+    assert "```json" in out
 
 
 def test_format_engagements_includes_body_snippet():
