@@ -1,0 +1,554 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+description: Terraform Infrastructure as Code conventions, standards, and best practices
+globs:
+  - "*.tf"
+  - "*.tfvars"
+  - "*.tfvars.example"
+  - "terraform/**"
+  - "infrastructure/**"
+  - ".terraform/**"
+
+# Terraform Conventions - Infrastructure as Code
+
+## File Organization and Structure
+
+### Mandatory File Structure
+```
+infrastructure/
+├── environments/
+│   ├── dev/
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   │   ├── outputs.tf
+│   │   ├── terraform.tfvars
+│   │   └── backend.tf
+│   ├── staging/
+│   └── prod/
+├── modules/
+│   ├── networking/
+│   ├── compute/
+│   ├── storage/
+│   └── security/
+├── shared/
+│   ├── data.tf
+│   ├── locals.tf
+│   └── versions.tf
+└── scripts/
+    ├── plan.sh
+    ├── apply.sh
+    └── destroy.sh
+```
+
+### Required Files in Each Environment
+- **main.tf**: Main resource definitions
+- **variables.tf**: Input variable declarations
+- **outputs.tf**: Output value definitions
+- **backend.tf**: Backend configuration
+- **terraform.tfvars**: Environment-specific values
+- **versions.tf**: Provider version constraints
+
+## Naming Conventions
+
+### Resource Naming Standards
+- **Format**: `{environment}_{service}_{resource_type}_{purpose}`
+- **Example**: `prod_api_ec2_instance_web_server`
+- **Separator**: Use underscores (_) consistently
+- **Language**: All names must be in English
+
+### Variable Naming
+```hcl
+# ✅ Good: Descriptive, English, snake_case
+variable "database_instance_class" {
+  description = "RDS instance class for the database"
+  type        = string
+  default     = "db.t3.micro"
+}
+
+# ❌ Bad: Unclear, abbreviated
+variable "db_cls" {
+  type = string
+}
+```
+
+### Tag Naming Standards
+```hcl
+# Mandatory tags for all resources
+locals {
+  common_tags = {
+    Environment   = var.environment
+    Project       = var.project_name
+    ManagedBy     = "terraform"
+    Owner         = var.team_name
+    CostCenter    = var.cost_center
+    CreatedDate   = formatdate("YYYY-MM-DD", timestamp())
+    Repository    = var.repository_url
+  }
+}
+```
+
+## Code Quality Standards
+
+### Variable Declarations
+```hcl
+# ✅ Complete variable definition with all attributes
+variable "vpc_cidr_block" {
+  description = "CIDR block for the VPC network"
+  type        = string
+  default     = "10.0.0.0/16"
+  
+  validation {
+    condition     = can(cidrhost(var.vpc_cidr_block, 0))
+    error_message = "VPC CIDR block must be a valid IPv4 CIDR."
+  }
+}
+
+# ❌ Incomplete variable definition
+variable "vpc_cidr" {
+  type = string
+}
+```
+
+### Resource Definitions
+```hcl
+# ✅ Well-structured resource with proper naming and tags
+resource "aws_instance" "web_server" {
+  ami           = data.aws_ami.ubuntu.id
+  instance_type = var.instance_type
+  
+  vpc_security_group_ids = [aws_security_group.web_sg.id]
+  subnet_id              = aws_subnet.public_subnet.id
+  
+  user_data = base64encode(templatefile("${path.module}/user_data.sh", {
+    environment = var.environment
+  }))
+  
+  tags = merge(local.common_tags, {
+    Name = "${var.environment}-web-server"
+    Type = "web-server"
+  })
+  
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+```
+
+### Output Definitions
+```hcl
+# ✅ Comprehensive output with description and proper formatting
+output "vpc_id" {
+  description = "ID of the VPC created for the environment"
+  value       = aws_vpc.main.id
+  sensitive   = false
+}
+
+output "database_endpoint" {
+  description = "RDS instance endpoint for database connections"
+  value       = aws_db_instance.main.endpoint
+  sensitive   = true
+}
+```
+
+## Module Development Standards
+
+### Module Structure
+```
+modules/networking/
+├── main.tf          # Main resource definitions
+├── variables.tf     # Input variables
+├── outputs.tf       # Output values
+├── versions.tf      # Provider requirements
+├── README.md        # Module documentation
+└── examples/        # Usage examples
+    └── basic/
+        ├── main.tf
+        └── outputs.tf
+```
+
+### Module Documentation Requirements
+```hcl
+# Required header comment in main.tf
+/**
+ * # Networking Module
+ * 
+ * This module creates a VPC with public and private subnets,
+ * internet gateway, and NAT gateway for AWS infrastructure.
+ * 
+ * ## Features
+ * - VPC with configurable CIDR block
+ * - Public and private subnets across multiple AZs
+ * - Internet Gateway for public subnet access
+ * - NAT Gateway for private subnet outbound access
+ * - Route tables with proper routing configuration
+ * 
+ * ## Usage
+ * ```hcl
+ * module "networking" {
+ *   source = "./modules/networking"
+ *   
+ *   vpc_cidr_block     = "10.0.0.0/16"
+ *   availability_zones = ["us-west-2a", "us-west-2b"]
+ *   environment        = "production"
+ * }
+ * ```
+ */
+```
+
+## Security and Best Practices
+
+### Sensitive Data Management
+```hcl
+# ✅ Use variables for sensitive data
+variable "database_password" {
+  description = "Master password for the RDS instance"
+  type        = string
+  sensitive   = true
+}
+
+# ✅ Mark sensitive outputs
+output "database_password" {
+  description = "Database master password"
+  value       = random_password.db_password.result
+  sensitive   = true
+}
+
+# ❌ Never hardcode sensitive values
+resource "aws_db_instance" "bad_example" {
+  password = "hardcoded_password_123"  # Never do this
+}
+```
+
+### State Management
+```hcl
+# ✅ Always use remote backend for team environments
+terraform {
+  backend "s3" {
+    bucket         = "company-terraform-state"
+    key            = "environments/prod/terraform.tfstate"
+    region         = "us-west-2"
+    encrypt        = true
+    dynamodb_table = "terraform-state-locks"
+  }
+}
+```
+
+### Provider Version Constraints
+```hcl
+# ✅ Pin provider versions for stability
+terraform {
+  required_version = ">= 1.0"
+  
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+    random = {
+      source  = "hashicorp/random"
+      version = "~> 3.4"
+    }
+  }
+}
+```
+
+## Environment Management
+
+### Environment-Specific Configurations
+```hcl
+# environments/prod/terraform.tfvars
+environment         = "production"
+instance_type      = "t3.large"
+min_capacity       = 2
+max_capacity       = 10
+enable_monitoring  = true
+backup_retention   = 30
+
+# environments/dev/terraform.tfvars
+environment         = "development"
+instance_type      = "t3.micro"
+min_capacity       = 1
+max_capacity       = 2
+enable_monitoring  = false
+backup_retention   = 7
+```
+
+### Data Sources for Environment Discovery
+```hcl
+# ✅ Use data sources to discover existing resources
+data "aws_vpc" "existing" {
+  count = var.use_existing_vpc ? 1 : 0
+  
+  filter {
+    name   = "tag:Name"
+    values = ["${var.environment}-vpc"]
+  }
+}
+
+data "aws_ami" "ubuntu" {
+  most_recent = true
+  owners      = ["099720109477"] # Canonical
+  
+  filter {
+    name   = "name"
+    values = ["ubuntu/images/hvm-ssd/ubuntu-22.04-amd64-server-*"]
+  }
+}
+```
+
+## Testing and Validation
+
+### Input Validation
+```hcl
+# ✅ Add validation rules for critical variables
+variable "environment" {
+  description = "Environment name (dev, staging, prod)"
+  type        = string
+  
+  validation {
+    condition = contains(["dev", "staging", "prod"], var.environment)
+    error_message = "Environment must be one of: dev, staging, prod."
+  }
+}
+
+variable "instance_count" {
+  description = "Number of instances to create"
+  type        = number
+  default     = 1
+  
+  validation {
+    condition     = var.instance_count > 0 && var.instance_count <= 10
+    error_message = "Instance count must be between 1 and 10."
+  }
+}
+```
+
+### Resource Preconditions and Postconditions
+```hcl
+# ✅ Use lifecycle blocks for additional validation
+resource "aws_instance" "web" {
+  ami           = data.aws_ami.ubuntu.id
+  instance_type = var.instance_type
+  
+  lifecycle {
+    precondition {
+      condition     = data.aws_ami.ubuntu.architecture == "x86_64"
+      error_message = "AMI must be x86_64 architecture."
+    }
+    
+    postcondition {
+      condition     = self.instance_state == "running"
+      error_message = "Instance must be in running state after creation."
+    }
+  }
+}
+```
+
+## Documentation Standards
+
+### Inline Comments
+```hcl
+# Create VPC with DNS support enabled for proper service discovery
+resource "aws_vpc" "main" {
+  cidr_block           = var.vpc_cidr_block
+  enable_dns_hostnames = true  # Required for ELB DNS resolution
+  enable_dns_support   = true  # Required for Route53 private zones
+  
+  tags = merge(local.common_tags, {
+    Name = "${var.environment}-vpc"
+  })
+}
+
+# Internet Gateway allows outbound internet access from public subnets
+resource "aws_internet_gateway" "main" {
+  vpc_id = aws_vpc.main.id
+  
+  tags = merge(local.common_tags, {
+    Name = "${var.environment}-igw"
+  })
+}
+```
+
+### README.md Requirements for Modules
+```markdown
+# Module Name
+
+Brief description of what this module does.
+
+## Features
+
+- Feature 1
+- Feature 2
+- Feature 3
+
+## Usage
+
+```hcl
+module "example" {
+  source = "./modules/example"
+  
+  # Required variables
+  environment = "production"
+  
+  # Optional variables
+  instance_type = "t3.large"
+}
+```
+
+## Requirements
+
+| Name | Version |
+|------|---------|
+| terraform | >= 1.0 |
+| aws | ~> 5.0 |
+
+## Inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| environment | Environment name | `string` | n/a | yes |
+
+## Outputs
+
+| Name | Description |
+|------|-------------|
+| vpc_id | ID of the VPC |
+```
+
+## Automation and CI/CD
+
+### GitHub Actions Integration
+```yaml
+# .github/workflows/terraform.yml
+name: Terraform CI/CD
+
+on:
+  push:
+    branches: [main, develop]
+    paths: ['infrastructure/**']
+  pull_request:
+    paths: ['infrastructure/**']
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.6.0
+      
+      - name: Terraform Format Check
+        run: terraform fmt -check -recursive
+      
+      - name: Terraform Validate
+        run: terraform validate
+      
+      - name: Terraform Plan
+        run: terraform plan -out=tfplan
+        env:
+          TF_VAR_environment: ${{ github.ref_name }}
+      
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/main'
+        run: terraform apply tfplan
+```
+
+### Pre-commit Hooks
+```yaml
+# .pre-commit-config.yaml
+repos:
+  - repo: https://github.com/antonbabenko/pre-commit-terraform
+    rev: v1.83.5
+    hooks:
+      - id: terraform_fmt
+      - id: terraform_validate
+      - id: terraform_tflint
+      - id: terraform_docs
+      - id: terraform_checkov
+```
+
+## Strict Rules and Prohibitions
+
+### Mandatory Requirements
+- ✅ **ALWAYS** use semantic versioning for provider constraints
+- ✅ **ALWAYS** include comprehensive variable descriptions in English
+- ✅ **ALWAYS** use remote state backends for team environments
+- ✅ **ALWAYS** tag all resources with common tags
+- ✅ **ALWAYS** validate inputs with appropriate constraints
+- ✅ **ALWAYS** use data sources instead of hardcoded values
+- ✅ **ALWAYS** document modules with README.md files
+- ✅ **ALWAYS** use English for all naming, comments, and documentation
+
+### Strict Prohibitions
+- ❌ **NEVER** hardcode sensitive values in configuration files
+- ❌ **NEVER** use local state backends in team environments
+- ❌ **NEVER** commit `.terraform` directories or `.tfstate` files
+- ❌ **NEVER** use deprecated provider syntax or resources
+- ❌ **NEVER** create resources without proper tags
+- ❌ **NEVER** use French or other languages in code, comments, or documentation
+- ❌ **NEVER** skip input validation for critical variables
+- ❌ **NEVER** use wildcard version constraints (e.g., `version = "*"`)
+- ❌ **NEVER** apply changes without reviewing the plan first
+- ❌ **NEVER** share state files or sensitive outputs in version control
+
+## Development Workflow
+
+### Local Development Process
+1. **Setup**: Initialize terraform and download providers
+   ```bash
+   terraform init
+   ```
+
+2. **Format**: Format code before committing
+   ```bash
+   terraform fmt -recursive
+   ```
+
+3. **Validate**: Validate configuration syntax
+   ```bash
+   terraform validate
+   ```
+
+4. **Plan**: Review changes before applying
+   ```bash
+   terraform plan -out=tfplan
+   ```
+
+5. **Apply**: Apply changes with approval
+   ```bash
+   terraform apply tfplan
+   ```
+
+6. **Commit**: Use semantic commit messages
+   ```bash
+   git commit -m "feat: add RDS instance with automated backups"
+   ```
+
+### Environment Promotion
+1. **Development**: Test in dev environment first
+2. **Staging**: Promote to staging for integration testing
+3. **Production**: Apply to production with additional approvals
+4. **Rollback**: Maintain rollback procedures for each environment
+
+## Language Policy
+
+### English-Only Requirements
+- ✅ **ALWAYS** use English for resource names and descriptions
+- ✅ **ALWAYS** write comments and documentation in English
+- ✅ **ALWAYS** use English error messages and validation text
+- ✅ **ALWAYS** create English README files and module documentation
+- ✅ **ALWAYS** use English for variable names and descriptions
+- ✅ **ALWAYS** write commit messages in English following semantic versioning
+- ❌ **NEVER** use French, Spanish, or other languages in any Terraform code
+- ❌ **NEVER** create non-English documentation or comments
+- ❌ **NEVER** use non-English variable names or resource identifiers
+
+This ensures consistency, international collaboration, and professional standards across all infrastructure code.
