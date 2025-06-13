@@ -730,10 +730,14 @@ def test_format_deal_properties_with_special_field_names():
     assert "**🔢 HubSpot Deal Amount**" in result
     assert "**🏷️ Deal Name**" in result
     assert "**🏷️ HubSpot Deal Name**" in result
-    assert "**📊 Deal Stage**" in result
-    assert "**📊 HubSpot Deal Stage**" in result
-    assert "**🔄 Pipeline**" in result
-    assert "**🔄 HubSpot Pipeline**" in result
+    assert (
+        "**📋 Deal Stage**" in result
+    )  # select field type takes precedence over field name
+    assert "**📋 HubSpot Deal Stage**" in result
+    assert (
+        "**📋 Pipeline**" in result
+    )  # select field type takes precedence over field name
+    assert "**📋 HubSpot Pipeline**" in result
     assert "**📅 Close Date**" in result
     assert "**📅 HubSpot Close Date**" in result
     assert "**🔢 Revenue**" in result
@@ -837,6 +841,23 @@ def test_format_company_properties_with_special_field_names():
     assert "**☑️ Agreement**" in result
     assert "**📄 Notes**" in result
     assert "**📎 Attachment**" in result
+
+
+def test_format_company_properties_with_date_field_type():
+    """Test company properties with date field type to cover line 345."""
+    properties_data = [
+        {
+            "name": "founded_date",
+            "label": "Founded Date",
+            "type": "date",
+            "fieldType": "date",
+            "groupName": "company_information",
+        },
+    ]
+
+    result = HubSpotFormatter.format_company_properties(properties_data)
+
+    assert "**📅 Founded Date**" in result  # This hits line 345: icon = "📅"
 
 
 def test_format_properties_with_missing_fields():
