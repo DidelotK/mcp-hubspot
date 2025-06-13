@@ -24,9 +24,12 @@ For each new tool `{entity}` (e.g., contacts, companies, deals):
 """MCP tool for managing HubSpot {entity}."""
 
 from typing import Any, Dict, List
+
 import mcp.types as types
+
 from ..formatters import HubSpotFormatter
 from .base import BaseTool
+
 
 class {Entity}Tool(BaseTool):
     """Tool for listing HubSpot {entity}."""
@@ -243,4 +246,13 @@ Before considering a tool complete:
 - ✅ Usage examples in English
 - ✅ Tool descriptions in English
 
-This ensures consistency, international collaboration, and professional standards across the entire project. 
+This ensures consistency, international collaboration, and professional standards across the entire project.
+
+### Example Entities
+The conventions apply uniformly to any CRM entity such as **contacts**, **companies**, **deals**, and now **engagements**. For engagements, the mandatory naming becomes:
+
+- Tool file: `src/hubspot_mcp/tools/engagements.py`
+- Tool class: `EngagementsTool`
+- Client method: `get_engagements`
+- Formatter method: `format_engagements`
+- Tool name exposed to MCP: `list_hubspot_engagements` 
