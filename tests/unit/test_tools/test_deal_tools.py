@@ -34,7 +34,9 @@ def test_list_hubspot_deals(monkeypatch):
     mock_deals = MagicMock(basic_api=mock_basic_api)
     mock_crm = MagicMock(deals=mock_deals)
     mock_client = MagicMock(crm=mock_crm)
-    monkeypatch.setattr(deal_tools, "HubSpotClient", lambda: mock_client)
+    monkeypatch.setattr(
+        deal_tools, "HubSpotClient", lambda *args, **kwargs: mock_client
+    )
     monkeypatch.setattr(
         deal_tools.HubSpotFormatter,
         "format_single_deal",
@@ -60,7 +62,9 @@ def test_create_deal(monkeypatch):
     mock_deals = MagicMock(basic_api=mock_basic_api)
     mock_crm = MagicMock(deals=mock_deals)
     mock_client = MagicMock(crm=mock_crm)
-    monkeypatch.setattr(deal_tools, "HubSpotClient", lambda: mock_client)
+    monkeypatch.setattr(
+        deal_tools, "HubSpotClient", lambda *args, **kwargs: mock_client
+    )
     monkeypatch.setattr(
         deal_tools.HubSpotFormatter,
         "format_single_deal",
@@ -87,7 +91,9 @@ def test_get_deal_by_name_found(monkeypatch):
     mock_deals = MagicMock(basic_api=mock_basic_api)
     mock_crm = MagicMock(deals=mock_deals)
     mock_client = MagicMock(crm=mock_crm)
-    monkeypatch.setattr(deal_tools, "HubSpotClient", lambda: mock_client)
+    monkeypatch.setattr(
+        deal_tools, "HubSpotClient", lambda *args, **kwargs: mock_client
+    )
     monkeypatch.setattr(
         deal_tools.HubSpotFormatter,
         "format_single_deal",
@@ -106,7 +112,9 @@ def test_get_deal_by_name_not_found(monkeypatch):
     mock_deals = MagicMock(basic_api=mock_basic_api)
     mock_crm = MagicMock(deals=mock_deals)
     mock_client = MagicMock(crm=mock_crm)
-    monkeypatch.setattr(deal_tools, "HubSpotClient", lambda: mock_client)
+    monkeypatch.setattr(
+        deal_tools, "HubSpotClient", lambda *args, **kwargs: mock_client
+    )
     result = deal_tools.get_deal_by_name("NonExistentDeal")
     assert result is None
     mock_get_page.assert_called_once_with(
@@ -137,7 +145,9 @@ def test_get_hubspot_deal_properties(monkeypatch):
     mock_properties = MagicMock(core_api=mock_core_api)
     mock_crm = MagicMock(properties=mock_properties)
     mock_client = MagicMock(crm=mock_crm)
-    monkeypatch.setattr(deal_tools, "HubSpotClient", lambda: mock_client)
+    monkeypatch.setattr(
+        deal_tools, "HubSpotClient", lambda *args, **kwargs: mock_client
+    )
     monkeypatch.setattr(
         deal_tools.HubSpotFormatter, "format_deal_properties", lambda x: mock_props
     )
@@ -153,7 +163,9 @@ def test_update_deal(monkeypatch):
     mock_deals = MagicMock(basic_api=mock_basic_api)
     mock_crm = MagicMock(deals=mock_deals)
     mock_client = MagicMock(crm=mock_crm)
-    monkeypatch.setattr(deal_tools, "HubSpotClient", lambda: mock_client)
+    monkeypatch.setattr(
+        deal_tools, "HubSpotClient", lambda *args, **kwargs: mock_client
+    )
     monkeypatch.setattr(
         deal_tools.HubSpotFormatter,
         "format_single_deal",
@@ -181,6 +193,8 @@ def test_get_deal_by_name_not_found_real_logic(monkeypatch):
     class DummyClient:
         crm = DummyCrm()
 
-    monkeypatch.setattr(deal_tools, "HubSpotClient", lambda: DummyClient())
+    monkeypatch.setattr(
+        deal_tools, "HubSpotClient", lambda *args, **kwargs: DummyClient()
+    )
     result = deal_tools.get_deal_by_name("NonExistentDeal")
     assert result is None
