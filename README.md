@@ -65,7 +65,7 @@ Once configured, use natural language phrases:
 uv run pytest
 
 # Code coverage
-uv run pytest --cov=src --cov-report=html
+uv run pytest --cov=src --cov-report=term-missing
 ```
 
 **Current Status:** ✅ 79 tests passed, 96% coverage
