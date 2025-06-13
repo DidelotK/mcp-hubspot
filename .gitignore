@@ -178,3 +178,8 @@ Desktop.ini
 
 # uv
 # Note: uv.lock should be committed for reproducibility
+
+# FastAgent secrets and logs
+fastagent.secrets.yaml
+fastagent.jsonl
+*.jsonl

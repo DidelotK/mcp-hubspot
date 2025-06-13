@@ -1,0 +1,23 @@
+# FastAgent Configuration File for HubSpot Example
+
+# Default Model Configuration
+default_model: gpt-4.1-mini
+
+# Logging and Console Configuration
+logger:
+    level: "info"
+    progress_display: true
+    show_chat: true
+    show_tools: true
+    truncate_tools: true
+
+# MCP Servers
+mcp:
+    servers:
+        hubspot-agent:
+          command: "uv"
+          cwd: "../../"
+          args: ["run", "python", "main.py", "--mode", "stdio"]
+          env:
+            HUBSPOT_API_KEY: "${HUBSPOT_API_KEY}"
+            HUBSPOT_API_URL: "https://api.hubapi.com" 
