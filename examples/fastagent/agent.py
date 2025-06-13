@@ -11,8 +11,8 @@ fast = FastAgent("Sales Agent")
     name="agent",
     instruction="You are a helpful AI Agent",
     model="gpt-4.1",
-    use_history=True, 
-    servers=["hubspot-agent"], # Name of an MCP Server defined in fastagent.config.yaml
+    use_history=True,
+    servers=["hubspot-agent"],  # Name of an MCP Server defined in fastagent.config.yaml
     human_input=True,
 )
 async def main():
