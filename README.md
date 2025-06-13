@@ -39,16 +39,16 @@ uv run python main.py --mode stdio
 | Tool | Description |
 |-------|-------------|
 | `list_hubspot_contacts` | List and filter HubSpot contacts |
+| `get_hubspot_contact_properties` | Retrieve contact field properties with types and descriptions |
 | `list_hubspot_companies` | List and filter HubSpot companies |
+| `get_hubspot_company_properties` | Retrieve company field properties with types and descriptions |
 | `list_hubspot_deals` | List and filter HubSpot deals |
+| `search_hubspot_deals` | Advanced search for deals via HubSpot CRM Search API |
 | `create_deal` | Create a new deal in HubSpot |
 | `update_deal` | Update an existing deal in HubSpot |
 | `get_deal_by_name` | Search for a deal by exact name |
-| `get_hubspot_contact_properties` | Retrieve contact field properties with types and descriptions |
-| `get_hubspot_company_properties` | Retrieve company field properties with types and descriptions |
 | `get_hubspot_deal_properties` | Retrieve deal field properties with types and descriptions |
 | `list_hubspot_engagements` | List and filter HubSpot engagements |
-| `search_hubspot_deals` | Advanced search for deals via HubSpot CRM Search API |
 
 ## ⚡ Usage with Claude
 
