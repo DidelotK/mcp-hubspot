@@ -42,7 +42,10 @@ lint:
     uv run black --check src tests main.py
     uv run isort --check-only src tests main.py
     uv run flake8 src tests main.py
-    uv run mypy main.py --config-file mypy.ini
+
+# Run rigorous static type checking over the full codebase
+type-check:
+    uv run mypy src/hubspot_mcp main.py --config-file mypy.ini
 
 # Format code
 format:
@@ -60,7 +63,7 @@ clean:
     find . -type d -name "__pycache__" -exec rm -rf {} +
 
 # Run all quality checks (lint, test, security)
-check: lint test security
+check: lint type-check test security
 
 # Build the package
 build:
