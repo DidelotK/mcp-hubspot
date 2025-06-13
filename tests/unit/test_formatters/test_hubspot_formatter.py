@@ -4,7 +4,7 @@ from typing import Any, Dict, List, Optional
 
 import pytest
 
-from src.hubspot_mcp.formatters import HubSpotFormatter
+from hubspot_mcp.formatters import HubSpotFormatter
 
 
 def test_format_deal_complete():

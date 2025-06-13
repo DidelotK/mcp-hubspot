@@ -5,7 +5,7 @@ from unittest.mock import patch
 
 import pytest
 
-from src.hubspot_mcp.config.settings import HubSpotConfig
+from hubspot_mcp.config.settings import HubSpotConfig
 
 
 class TestHubSpotConfig:

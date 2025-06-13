@@ -4,7 +4,7 @@ from unittest.mock import AsyncMock, Mock, patch
 import httpx
 import pytest
 
-from src.hubspot_mcp.client.hubspot_client import HubSpotClient
+from hubspot_mcp.client.hubspot_client import HubSpotClient
 
 
 @pytest.fixture

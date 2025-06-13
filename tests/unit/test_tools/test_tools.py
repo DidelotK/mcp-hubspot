@@ -9,8 +9,8 @@ import pytest
 from httpx import HTTPStatusError
 from mcp.types import TextContent
 
-from src.hubspot_mcp.client import HubSpotClient
-from src.hubspot_mcp.tools import (
+from hubspot_mcp.client import HubSpotClient
+from hubspot_mcp.tools import (
     CompaniesTool,
     CompanyPropertiesTool,
     ContactPropertiesTool,
@@ -21,7 +21,7 @@ from src.hubspot_mcp.tools import (
     DealsTool,
     UpdateDealTool,
 )
-from src.hubspot_mcp.tools.base import BaseTool
+from hubspot_mcp.tools.base import BaseTool
 
 
 class DummyResponse:
