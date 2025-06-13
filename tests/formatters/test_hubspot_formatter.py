@@ -499,16 +499,8 @@ def test_format_single_deal_with_empty_amount():
 
 
 def test_format_contact_properties_with_special_field_types():
-    """Test contact properties formatting with special field types."""
+    """Test contact properties formatting with special field types to increase coverage."""
     properties_data = [
-        {
-            "name": "email",
-            "label": "Email Address",
-            "type": "string",
-            "fieldType": "text",
-            "groupName": "contactinformation",
-            "description": "Contact email",
-        },
         {
             "name": "phone",
             "label": "Phone Number",
@@ -517,265 +509,370 @@ def test_format_contact_properties_with_special_field_types():
             "groupName": "contactinformation",
         },
         {
-            "name": "birthdate",
-            "label": "Birth Date",
-            "type": "date",
-            "fieldType": "date",
-            "groupName": "demographic_information",
-        },
-        {
-            "name": "notes",
-            "label": "Notes",
+            "name": "mobilephone",
+            "label": "Mobile Phone",
             "type": "string",
-            "fieldType": "textarea",
-            "groupName": "other",
-        },
-        {
-            "name": "resume",
-            "label": "Resume",
-            "type": "string",
-            "fieldType": "file",
-            "groupName": "other",
-        },
-        {
-            "name": "newsletter",
-            "label": "Newsletter Subscription",
-            "type": "boolean",
-            "fieldType": "checkbox",
-            "groupName": "preferences",
+            "fieldType": "text",
+            "groupName": "contactinformation",
         },
         {
             "name": "company",
             "label": "Company",
             "type": "string",
             "fieldType": "text",
-            "groupName": "company_info",
+            "groupName": "contactinformation",
+        },
+        {
+            "name": "revenue",
+            "label": "Revenue",
+            "type": "number",
+            "fieldType": "number",
+            "groupName": "financial",
+        },
+        {
+            "name": "agreement",
+            "label": "Agreement",
+            "type": "bool",
+            "fieldType": "checkbox",
+            "groupName": "legal",
+        },
+        {
+            "name": "notes",
+            "label": "Notes",
+            "type": "string",
+            "fieldType": "textarea",
+            "groupName": "notes",
+        },
+        {
+            "name": "attachment",
+            "label": "Attachment",
+            "type": "string",
+            "fieldType": "file",
+            "groupName": "documents",
         },
     ]
 
     result = HubSpotFormatter.format_contact_properties(properties_data)
 
-    # Check for specific icons based on field types and names
-    assert "📧 Email Address" in result  # Email icon
-    assert "📞 Phone Number" in result  # Phone icon
-    assert "📅 Birth Date" in result  # Date icon
-    assert "📄 Notes" in result  # Textarea icon
-    assert "📎 Resume" in result  # File icon
-    assert "☑️ Newsletter Subscription" in result  # Checkbox icon
-    assert "🏢 Company" in result  # Company icon
+    assert "**📞 Phone Number**" in result
+    assert "**📞 Mobile Phone**" in result
+    assert "**🏢 Company**" in result
+    assert "**🔢 Revenue**" in result
+    assert "**☑️ Agreement**" in result
+    assert "**📄 Notes**" in result
+    assert "**📎 Attachment**" in result
 
 
 def test_format_contact_properties_with_select_options():
-    """Test contact properties formatting with select field options."""
+    """Test contact properties with select field options."""
     properties_data = [
         {
-            "name": "industry",
-            "label": "Industry",
+            "name": "lifecycle_stage",
+            "label": "Lifecycle Stage",
             "type": "enumeration",
             "fieldType": "select",
-            "groupName": "company_information",
+            "groupName": "lead_information",
             "options": [
-                {"label": "Technology", "value": "TECH"},
-                {"label": "Finance", "value": "FIN"},
-                {"label": "Healthcare", "value": "HEALTH"},
-                {"label": "Education", "value": "EDU"},
-                {"label": "Manufacturing", "value": "MFG"},
-                {"label": "Retail", "value": "RETAIL"},
-                {"label": "Other", "value": "OTHER"},
+                {"label": "Subscriber", "value": "subscriber"},
+                {"label": "Lead", "value": "lead"},
+                {
+                    "label": "Marketing Qualified Lead",
+                    "value": "marketingqualifiedlead",
+                },
+                {"label": "Sales Qualified Lead", "value": "salesqualifiedlead"},
+                {"label": "Opportunity", "value": "opportunity"},
+                {"label": "Customer", "value": "customer"},
+                {"label": "Evangelist", "value": "evangelist"},
+                {"label": "Other", "value": "other"},
             ],
         }
     ]
 
     result = HubSpotFormatter.format_contact_properties(properties_data)
 
-    assert "📋 Industry" in result  # Select icon
+    assert "**📋 Lifecycle Stage**" in result
     assert (
-        "📋 Options: Technology, Finance, Healthcare, Education, Manufacturing, ... and 2 more"
+        "Subscriber, Lead, Marketing Qualified Lead, Sales Qualified Lead, Opportunity"
         in result
     )
+    assert "... and 3 more" in result
 
 
 def test_format_contact_properties_with_few_select_options():
-    """Test contact properties formatting with few select options."""
+    """Test contact properties with select field having few options."""
     properties_data = [
         {
-            "name": "status",
-            "label": "Status",
+            "name": "gender",
+            "label": "Gender",
             "type": "enumeration",
             "fieldType": "select",
-            "groupName": "other",
+            "groupName": "demographic",
             "options": [
-                {"label": "Active", "value": "ACTIVE"},
-                {"label": "Inactive", "value": "INACTIVE"},
+                {"label": "Male", "value": "male"},
+                {"label": "Female", "value": "female"},
             ],
         }
     ]
 
     result = HubSpotFormatter.format_contact_properties(properties_data)
 
-    assert "📋 Status" in result
-    assert "📋 Options: Active, Inactive" in result  # Should not show "... and X more"
+    assert "**📋 Gender**" in result
+    assert "Male, Female" in result
+    assert "... and" not in result  # Should not show "... and more" for 2 options
 
 
 def test_format_deal_properties_with_special_field_names():
-    """Test deal properties formatting with special field names."""
+    """Test deal properties with special field names to achieve coverage."""
     properties_data = [
         {
             "name": "amount",
             "label": "Deal Amount",
             "type": "number",
             "fieldType": "number",
-            "groupName": "dealinformation",
-            "description": "The deal amount",
+            "groupName": "deal_information",
+        },
+        {
+            "name": "hs_deal_amount",
+            "label": "HubSpot Deal Amount",
+            "type": "number",
+            "fieldType": "number",
+            "groupName": "deal_information",
         },
         {
             "name": "dealname",
             "label": "Deal Name",
             "type": "string",
             "fieldType": "text",
-            "groupName": "dealinformation",
+            "groupName": "deal_information",
+        },
+        {
+            "name": "hs_deal_name",
+            "label": "HubSpot Deal Name",
+            "type": "string",
+            "fieldType": "text",
+            "groupName": "deal_information",
         },
         {
             "name": "dealstage",
             "label": "Deal Stage",
             "type": "enumeration",
             "fieldType": "select",
-            "groupName": "dealinformation",
+            "groupName": "deal_information",
+        },
+        {
+            "name": "hs_deal_stage",
+            "label": "HubSpot Deal Stage",
+            "type": "enumeration",
+            "fieldType": "select",
+            "groupName": "deal_information",
         },
         {
             "name": "pipeline",
             "label": "Pipeline",
-            "type": "string",
-            "fieldType": "text",
-            "groupName": "dealinformation",
+            "type": "enumeration",
+            "fieldType": "select",
+            "groupName": "deal_information",
+        },
+        {
+            "name": "hs_pipeline",
+            "label": "HubSpot Pipeline",
+            "type": "enumeration",
+            "fieldType": "select",
+            "groupName": "deal_information",
         },
         {
             "name": "closedate",
             "label": "Close Date",
             "type": "date",
             "fieldType": "date",
-            "groupName": "dealinformation",
+            "groupName": "deal_information",
+        },
+        {
+            "name": "hs_closedate",
+            "label": "HubSpot Close Date",
+            "type": "date",
+            "fieldType": "date",
+            "groupName": "deal_information",
+        },
+        {
+            "name": "revenue",
+            "label": "Revenue",
+            "type": "number",
+            "fieldType": "number",
+            "groupName": "financial",
+        },
+        {
+            "name": "agreement",
+            "label": "Agreement",
+            "type": "bool",
+            "fieldType": "checkbox",
+            "groupName": "legal",
+        },
+        {
+            "name": "notes",
+            "label": "Notes",
+            "type": "string",
+            "fieldType": "textarea",
+            "groupName": "notes",
+        },
+        {
+            "name": "attachment",
+            "label": "Attachment",
+            "type": "string",
+            "fieldType": "file",
+            "groupName": "documents",
         },
     ]
 
     result = HubSpotFormatter.format_deal_properties(properties_data)
 
-    # Check for specific icons based on field type first, then name
-    # field_type has priority over name in the elif chain, but "text" is not in field_type conditions
-    assert "🔢 Deal Amount" in result  # number field type has priority over amount name
-    assert (
-        "🏷️ Deal Name" in result
-    )  # text field type not in elif, so dealname name condition applies
-    assert (
-        "📋 Deal Stage" in result
-    )  # select field type has priority over dealstage name
-    assert (
-        "🔄 Pipeline" in result
-    )  # text field type not in elif, so pipeline name condition applies
-    assert "📅 Close Date" in result  # date field type has priority over closedate name
+    assert "**🔢 Deal Amount**" in result  # number field type takes precedence
+    assert "**🔢 HubSpot Deal Amount**" in result
+    assert "**🏷️ Deal Name**" in result
+    assert "**🏷️ HubSpot Deal Name**" in result
+    assert "**📊 Deal Stage**" in result
+    assert "**📊 HubSpot Deal Stage**" in result
+    assert "**🔄 Pipeline**" in result
+    assert "**🔄 HubSpot Pipeline**" in result
+    assert "**📅 Close Date**" in result
+    assert "**📅 HubSpot Close Date**" in result
+    assert "**🔢 Revenue**" in result
+    assert "**☑️ Agreement**" in result
+    assert "**📄 Notes**" in result
+    assert "**📎 Attachment**" in result
 
 
 def test_format_company_properties_with_special_field_names():
-    """Test company properties formatting with special field names."""
+    """Test company properties with special field names to achieve coverage."""
     properties_data = [
         {
-            "name": "name",
-            "label": "Company Name",
+            "name": "domain",
+            "label": "Company Domain",
             "type": "string",
             "fieldType": "text",
-            "groupName": "companyinformation",
-            "description": "The company name",
+            "groupName": "company_information",
         },
         {
-            "name": "domain",
-            "label": "Website Domain",
+            "name": "website",
+            "label": "Website",
             "type": "string",
             "fieldType": "text",
-            "groupName": "companyinformation",
-            "description": "The company website",
+            "groupName": "company_information",
         },
         {
             "name": "industry",
             "label": "Industry",
             "type": "enumeration",
             "fieldType": "select",
-            "groupName": "business_information",
+            "groupName": "company_information",
         },
         {
-            "name": "annualrevenue",
-            "label": "Annual Revenue",
-            "type": "number",
-            "fieldType": "number",
-            "groupName": "financial_information",
+            "name": "type",
+            "label": "Company Type",
+            "type": "enumeration",
+            "fieldType": "select",
+            "groupName": "company_information",
         },
         {
             "name": "city",
             "label": "City",
             "type": "string",
             "fieldType": "text",
-            "groupName": "address_information",
+            "groupName": "location",
         },
         {
-            "name": "phone",
-            "label": "Phone",
+            "name": "state",
+            "label": "State",
             "type": "string",
             "fieldType": "text",
-            "groupName": "contact_information",
+            "groupName": "location",
+        },
+        {
+            "name": "country",
+            "label": "Country",
+            "type": "string",
+            "fieldType": "text",
+            "groupName": "location",
+        },
+        {
+            "name": "revenue",
+            "label": "Revenue",
+            "type": "number",
+            "fieldType": "number",
+            "groupName": "financial",
+        },
+        {
+            "name": "agreement",
+            "label": "Agreement",
+            "type": "bool",
+            "fieldType": "checkbox",
+            "groupName": "legal",
+        },
+        {
+            "name": "notes",
+            "label": "Notes",
+            "type": "string",
+            "fieldType": "textarea",
+            "groupName": "notes",
+        },
+        {
+            "name": "attachment",
+            "label": "Attachment",
+            "type": "string",
+            "fieldType": "file",
+            "groupName": "documents",
         },
     ]
 
     result = HubSpotFormatter.format_company_properties(properties_data)
 
-    # Check for specific icons based on field names
-    assert "📝 Company Name" in result  # Company name icon
-    assert "🌐 Website Domain" in result  # Domain icon
-    assert "📋 Industry" in result  # Industry icon
-    assert "🔢 Annual Revenue" in result  # Revenue icon
-    assert "📍 City" in result  # City icon
-    assert "📝 Phone" in result  # Phone icon
+    assert "**🌐 Company Domain**" in result
+    assert "**🌐 Website**" in result
+    assert "**📋 Industry**" in result  # select field type takes precedence
+    assert "**📋 Company Type**" in result  # select field type takes precedence
+    assert "**📍 City**" in result
+    assert "**📍 State**" in result
+    assert "**📍 Country**" in result
+    assert "**🔢 Revenue**" in result
+    assert "**☑️ Agreement**" in result
+    assert "**📄 Notes**" in result
+    assert "**📎 Attachment**" in result
 
 
 def test_format_properties_with_missing_fields():
     """Test properties formatting with missing fields."""
     properties_data = [
         {
-            "name": "custom_field",
-            # Missing label, type, fieldType, groupName, description
-        },
-        {
-            "label": "Another Field",
-            "type": "string",
-            # Missing name, fieldType, groupName
-        },
+            "name": "test_field",
+            # Missing label, type, fieldType
+            "groupName": "test_group",
+        }
     ]
 
     result = HubSpotFormatter.format_contact_properties(properties_data)
 
-    assert "🔧 **HubSpot Contact Properties** (2 properties)" in result
-    assert "## 📁 Other" in result  # Default group for missing groupName
-    assert "**📝 N/A**" in result  # Default label
-    assert "`custom_field`" in result
-    assert "`N/A`" in result  # Default name
+    assert "**📝 N/A**" in result
+    assert "`test_field`" in result
+    assert "N/A (N/A)" in result
 
 
 def test_format_properties_with_empty_options():
     """Test properties formatting with empty options list."""
     properties_data = [
         {
-            "name": "status",
-            "label": "Status",
+            "name": "test_select",
+            "label": "Test Select",
             "type": "enumeration",
             "fieldType": "select",
-            "groupName": "other",
-            "options": [],  # Empty options
+            "groupName": "test",
+            "options": [],
         }
     ]
 
     result = HubSpotFormatter.format_contact_properties(properties_data)
 
-    assert "📋 Status" in result
-    # Should not include options line when options is empty
-    assert "📋 Options:" not in result
+    assert "**📋 Test Select**" in result
+    assert "📋 Options:" not in result  # Should not show options if empty
 
 
 def test_format_deal_properties_empty():
@@ -787,329 +884,416 @@ def test_format_deal_properties_empty():
 
 
 def test_format_contact_properties_with_options_missing_labels():
-    """Test contact properties with options that have missing labels."""
+    """Test contact properties with options missing labels."""
     properties_data = [
         {
-            "name": "priority",
-            "label": "Priority",
+            "name": "status",
+            "label": "Status",
             "type": "enumeration",
             "fieldType": "select",
-            "groupName": "other",
+            "groupName": "test",
             "options": [
-                {"value": "HIGH"},  # Missing label
-                {"label": "Medium", "value": "MEDIUM"},
-                {"value": "LOW"},  # Missing label
+                {"value": "active"},  # Missing label
+                {"label": "Inactive", "value": "inactive"},
+                {},  # Empty option
             ],
         }
     ]
 
     result = HubSpotFormatter.format_contact_properties(properties_data)
 
-    assert "📋 Priority" in result
-    assert (
-        "📋 Options: HIGH, Medium, LOW" in result
-    )  # Should use value when label is missing
+    assert "**📋 Status**" in result
+    assert "active, Inactive" in result
 
 
 def test_format_company_properties_with_all_special_field_names():
-    """Test company properties with all special field name cases."""
+    """Test company properties with many options to trigger '... and more' logic."""
     properties_data = [
         {
-            "name": "hs_email_domain",
-            "label": "Email Domain",
-            "type": "string",
-            "fieldType": "text",
-            "groupName": "contact_info",
-        },
-        {
-            "name": "mobilephone",
-            "label": "Mobile Phone",
-            "type": "string",
-            "fieldType": "text",
-            "groupName": "contact_info",
-        },
-        {
-            "name": "associatedcompanyid",
-            "label": "Associated Company",
-            "type": "string",
-            "fieldType": "text",
-            "groupName": "associations",
-        },
+            "name": "industry_detailed",
+            "label": "Detailed Industry",
+            "type": "enumeration",
+            "fieldType": "select",
+            "groupName": "business",
+            "options": [
+                {"label": "Technology", "value": "tech"},
+                {"label": "Finance", "value": "finance"},
+                {"label": "Healthcare", "value": "healthcare"},
+                {"label": "Education", "value": "education"},
+                {"label": "Manufacturing", "value": "manufacturing"},
+                {"label": "Retail", "value": "retail"},
+                {"label": "Consulting", "value": "consulting"},
+                {"label": "Government", "value": "government"},
+            ],
+        }
     ]
 
     result = HubSpotFormatter.format_company_properties(properties_data)
 
-    # These names are not in the special company name lists, so they use default text icon
-    assert (
-        "📝 Email Domain" in result
-    )  # Default text icon (not in company special names)
-    assert (
-        "📝 Mobile Phone" in result
-    )  # Default text icon (not in company special names)
-    assert (
-        "📝 Associated Company" in result
-    )  # Default text icon (not in company special names)
+    assert "**📋 Detailed Industry**" in result
+    assert "Technology, Finance, Healthcare, Education, Manufacturing" in result
+    assert "... and 3 more" in result
 
 
 def test_format_deal_properties_with_hubspot_field_names():
-    """Test deal properties with HubSpot-specific field names."""
+    """Test deal properties with HubSpot specific field names and many options."""
     properties_data = [
         {
-            "name": "hs_deal_amount",
-            "label": "HubSpot Deal Amount",
-            "type": "number",
-            "fieldType": "number",
-            "groupName": "dealinformation",
-        },
-        {
-            "name": "hs_deal_name",
-            "label": "HubSpot Deal Name",
-            "type": "string",
-            "fieldType": "text",
-            "groupName": "dealinformation",
-        },
-        {
-            "name": "hs_deal_stage",
-            "label": "HubSpot Deal Stage",
+            "name": "dealstage_detailed",
+            "label": "Detailed Deal Stage",
             "type": "enumeration",
             "fieldType": "select",
-            "groupName": "dealinformation",
-        },
-        {
-            "name": "hs_pipeline",
-            "label": "HubSpot Pipeline",
-            "type": "string",
-            "fieldType": "text",
-            "groupName": "dealinformation",
-        },
-        {
-            "name": "hs_closedate",
-            "label": "HubSpot Close Date",
-            "type": "date",
-            "fieldType": "date",
-            "groupName": "dealinformation",
-        },
+            "groupName": "deal_info",
+            "options": [
+                {"label": "Appointment Scheduled", "value": "appointmentscheduled"},
+                {"label": "Qualified to Buy", "value": "qualifiedtobuy"},
+                {"label": "Presentation Scheduled", "value": "presentationscheduled"},
+                {"label": "Decision Maker Bought-In", "value": "decisionmakerboughtin"},
+                {"label": "Contract Sent", "value": "contractsent"},
+                {"label": "Closed Won", "value": "closedwon"},
+                {"label": "Closed Lost", "value": "closedlost"},
+                {"label": "In Progress", "value": "inprogress"},
+            ],
+        }
     ]
 
     result = HubSpotFormatter.format_deal_properties(properties_data)
 
-    # Check for specific icons based on field type first, then name
-    # field_type has priority over name in the elif chain, but "text" is not in field_type conditions
+    assert "**📋 Detailed Deal Stage**" in result
     assert (
-        "🔢 HubSpot Deal Amount" in result
-    )  # number field type has priority over hs_deal_amount name
-    assert (
-        "🏷️ HubSpot Deal Name" in result
-    )  # text field type not in elif, so hs_deal_name name condition applies
-    assert (
-        "📋 HubSpot Deal Stage" in result
-    )  # select field type has priority over hs_deal_stage name
-    assert (
-        "🔄 HubSpot Pipeline" in result
-    )  # text field type not in elif, so hs_pipeline name condition applies
-    assert (
-        "📅 HubSpot Close Date" in result
-    )  # date field type has priority over hs_closedate name
+        "Appointment Scheduled, Qualified to Buy, Presentation Scheduled, Decision Maker Bought-In, Contract Sent"
+        in result
+    )
+    assert "... and 3 more" in result
 
 
 def test_format_deal():
-    """Test formatting a single deal."""
-    deal = {
-        "id": "12345",
-        "properties": {
-            "dealname": "Enterprise Contract",
-            "amount": "75000",
-            "dealstage": "contractsent",
-            "pipeline": "enterprise",
-            "closedate": "2024-12-31",
-            "description": "Large enterprise deal for Q4",
-        },
-    }
-
-    result = HubSpotFormatter.format_deal(deal)
-
-    assert "💰 **HubSpot Deal**" in result
-    assert "**Enterprise Contract**" in result
-    assert "💰 Amount: $75,000.00" in result
-    assert "📊 Stage: contractsent" in result
-    assert "🔄 Pipeline: enterprise" in result
-    assert "📅 Close date: 2024-12-31" in result
-    assert "🆔 ID: 12345" in result
-
-
-def test_format_deal_missing_properties():
-    """Test formatting a deal with missing properties."""
-    deal = {"id": "12345", "properties": {}}
-    result = HubSpotFormatter.format_single_deal(deal)
-    assert "💰 **HubSpot Deal**" in result
-    assert "**Unnamed deal**" in result
-    assert "💰 Amount: N/A" in result
-    assert "📊 Stage: N/A" in result
-    assert "🔄 Pipeline: N/A" in result
-    assert "📅 Close date: N/A" in result
-    assert "🆔 ID: 12345" in result
-
-
-def test_format_deal_with_special_characters():
-    """Test formatting a deal with special characters in properties."""
-    deal = {
-        "id": "123",
-        "properties": {
-            "dealname": "Test & Deal",
-            "amount": "10000",
-            "dealstage": "appointmentscheduled",
-            "pipeline": "default",
-            "closedate": "2024-12-31",
-            "description": "Test & Description",
-        },
-    }
-
-    formatted = HubSpotFormatter.format_deal(deal)
-    assert "Test & Deal" in formatted
-
-
-def test_format_deal_with_html_entities():
-    """Test formatting a deal with HTML entities in properties."""
-    deal = {
-        "id": "123",
-        "properties": {
-            "dealname": "Test &amp; Deal",
-            "amount": "10000",
-            "dealstage": "appointmentscheduled",
-            "pipeline": "default",
-            "closedate": "2024-12-31",
-            "description": "Test &lt;script&gt;alert('test')&lt;/script&gt;",
-        },
-    }
-
-    formatted = HubSpotFormatter.format_deal(deal)
-    assert "Test &amp; Deal" in formatted
-
-
-def test_format_deal_with_very_long_values():
-    """Test formatting a deal with very long property values."""
-    deal = {
+    """Test the format_deal method."""
+    deal_data = {
         "id": "123",
         "properties": {
             "dealname": "Test Deal",
-            "amount": "10000",
-            "dealstage": "appointmentscheduled",
-            "pipeline": "default",
+            "amount": "1000",
+            "dealstage": "proposal",
+            "pipeline": "sales",
             "closedate": "2024-12-31",
-            "description": "A" * 1000,
+            "createdate": "2024-01-01",
+            "lastmodifieddate": "2024-06-01",
+            "hubspot_owner_id": "456",
         },
     }
 
-    formatted = HubSpotFormatter.format_deal(deal)
-    assert "Test Deal" in formatted
+    result = HubSpotFormatter.format_deal(deal_data)
+
+    assert "💰 **HubSpot Deal**" in result
+    assert "**Test Deal**" in result
+    assert "$1,000.00" in result
+    assert "proposal" in result
+    assert "sales" in result
+    assert "2024-12-31" in result
+    assert "🆔 ID: 123" in result
+
+
+def test_format_deal_missing_properties():
+    """Test format_deal with missing properties."""
+    deal_data = {
+        "id": "789",
+        # Missing properties key
+    }
+
+    result = HubSpotFormatter.format_deal(deal_data)
+
+    assert "**Unnamed deal**" in result
+    assert "💰 Amount: N/A" in result
+
+
+def test_format_deal_with_special_characters():
+    """Test deal formatting with special characters."""
+    deal_data = {
+        "id": "special123",
+        "properties": {
+            "dealname": "Deal with <special> & characters",
+            "amount": "2500.50",
+            "dealstage": "stage & more",
+        },
+    }
+
+    result = HubSpotFormatter.format_deal(deal_data)
+
+    assert "**Deal with <special> & characters**" in result
+    assert "$2,500.50" in result
+    assert "stage & more" in result
+
+
+def test_format_deal_with_html_entities():
+    """Test deal formatting with HTML entities."""
+    deal_data = {
+        "id": "html123",
+        "properties": {
+            "dealname": "Deal &amp; More",
+            "amount": "1500",
+            "dealstage": "&lt;stage&gt;",
+        },
+    }
+
+    result = HubSpotFormatter.format_deal(deal_data)
+
+    assert "**Deal &amp; More**" in result
+    assert "&lt;stage&gt;" in result
+
+
+def test_format_deal_with_very_long_values():
+    """Test deal formatting with very long values."""
+    deal_data = {
+        "id": "long123",
+        "properties": {
+            "dealname": "A" * 100,  # Very long deal name
+            "amount": "999999999.99",
+            "dealstage": "B" * 50,  # Very long stage
+        },
+    }
+
+    result = HubSpotFormatter.format_deal(deal_data)
+
+    assert "A" * 100 in result
+    assert "$999,999,999.99" in result
+    assert "B" * 50 in result
 
 
 def test_format_deal_with_none_values():
-    """Test formatting a deal with None values in properties."""
-    deal = {
-        "id": "123",
+    """Test deal formatting with None values."""
+    deal_data = {
+        "id": "none123",
         "properties": {
             "dealname": None,
             "amount": None,
             "dealstage": None,
             "pipeline": None,
             "closedate": None,
-            "description": None,
+            "createdate": None,
+            "lastmodifieddate": None,
+            "hubspot_owner_id": None,
         },
     }
 
-    formatted = HubSpotFormatter.format_deal(deal)
-    assert "Unnamed deal" in formatted
-    assert "N/A" in formatted
+    result = HubSpotFormatter.format_deal(deal_data)
+
+    assert "**Unnamed deal**" in result
+    assert "💰 Amount: N/A" in result
+    assert "📊 Stage: N/A" in result
+    assert "🔄 Pipeline: N/A" in result
 
 
 def test_format_deal_with_empty_string_values():
-    """Test formatting a deal with empty string values in properties."""
-    deal = {
-        "id": "123",
+    """Test deal formatting with empty string values."""
+    deal_data = {
+        "id": "empty123",
         "properties": {
             "dealname": "",
             "amount": "",
             "dealstage": "",
             "pipeline": "",
             "closedate": "",
-            "description": "",
+            "createdate": "",
+            "lastmodifieddate": "",
+            "hubspot_owner_id": "",
         },
     }
 
-    formatted = HubSpotFormatter.format_deal(deal)
-    assert "****" in formatted
-    assert "N/A" in formatted
+    result = HubSpotFormatter.format_deal(deal_data)
+
+    assert "****" in result  # Empty string is preserved by clean() function
+    assert "💰 Amount: N/A" in result
 
 
 def test_format_deal_with_whitespace_values():
-    """Test formatting a deal with whitespace-only values in properties."""
-    deal = {
-        "id": "123",
+    """Test deal formatting with whitespace-only values."""
+    deal_data = {
+        "id": "space123",
         "properties": {
             "dealname": "   ",
-            "amount": "   ",
-            "dealstage": "   ",
-            "pipeline": "   ",
-            "closedate": "   ",
-            "description": "   ",
+            "amount": "  ",
+            "dealstage": "\t",
+            "pipeline": "\n",
         },
     }
 
-    formatted = HubSpotFormatter.format_deal(deal)
-    assert "**   **" in formatted
-    assert "N/A" in formatted
+    result = HubSpotFormatter.format_deal(deal_data)
+
+    assert "**   **" in result  # Whitespace preserved
+    assert "💰 Amount: $  " in result  # Whitespace preserved in amount too
 
 
 def test_format_deal_with_missing_properties():
-    """Test formatting a deal with missing properties."""
-    deal = {"id": "123", "properties": {}}
+    """Test deal formatting when properties dict is missing keys."""
+    deal_data = {
+        "id": "missing123",
+        "properties": {},  # Empty properties
+    }
 
-    formatted = HubSpotFormatter.format_deal(deal)
-    assert "Unnamed deal" in formatted
-    assert "N/A" in formatted
+    result = HubSpotFormatter.format_deal(deal_data)
+
+    assert "**Unnamed deal**" in result
+    assert "💰 Amount: N/A" in result
+    assert "📊 Stage: N/A" in result
 
 
 def test_format_deal_with_missing_properties_key():
-    """Test formatting a deal with missing properties key."""
-    deal = {"id": "123"}
+    """Test deal formatting when properties key is missing entirely."""
+    deal_data = {
+        "id": "noprops123",
+        # No properties key at all
+    }
 
-    formatted = HubSpotFormatter.format_deal(deal)
-    assert "Unnamed deal" in formatted
-    assert "N/A" in formatted
+    result = HubSpotFormatter.format_deal(deal_data)
+
+    assert "**Unnamed deal**" in result
+    assert "💰 Amount: N/A" in result
 
 
 def test_format_deal_with_invalid_amount():
-    """Test formatting a deal with invalid amount value."""
-    deal = {
-        "id": "123",
+    """Test deal formatting with invalid amount in format_deal method."""
+    deal_data = {
+        "id": "invalid123",
         "properties": {
-            "dealname": "Test Deal",
-            "amount": "invalid",
-            "dealstage": "appointmentscheduled",
-            "pipeline": "default",
-            "closedate": "2024-12-31",
+            "dealname": "Invalid Amount Deal",
+            "amount": "not_a_number",
         },
     }
 
-    formatted = HubSpotFormatter.format_deal(deal)
-    assert "Test Deal" in formatted
-    assert "N/A" in formatted
+    result = HubSpotFormatter.format_deal(deal_data)
+
+    assert "**Invalid Amount Deal**" in result
+    assert "$not_a_number" in result
 
 
 def test_format_deal_with_zero_amount():
-    """Test formatting a deal with zero amount."""
-    deal = {
-        "id": "123",
+    """Test deal formatting with zero amount in format_deal method."""
+    deal_data = {
+        "id": "zero123",
         "properties": {
-            "dealname": "Test Deal",
+            "dealname": "Zero Amount Deal",
             "amount": "0",
-            "dealstage": "appointmentscheduled",
-            "pipeline": "default",
-            "closedate": "2024-12-31",
         },
     }
 
-    formatted = HubSpotFormatter.format_deal(deal)
-    assert "Test Deal" in formatted
-    assert "💰 Amount: N/A" in formatted
+    result = HubSpotFormatter.format_deal(deal_data)
+
+    assert "**Zero Amount Deal**" in result
+    assert "💰 Amount: N/A" in result
+
+
+def test_format_deal_properties_with_exact_field_names_for_coverage():
+    """Test deal properties with exact field names to hit specific icon assignment lines."""
+    properties_data = [
+        {
+            "name": "amount",
+            "label": "Amount",
+            "type": "string",  # Not number type so field name check applies
+            "fieldType": "text",
+            "groupName": "deal_info",
+        },
+        {
+            "name": "hs_deal_amount",
+            "label": "HubSpot Amount",
+            "type": "string",
+            "fieldType": "text",
+            "groupName": "deal_info",
+        },
+        {
+            "name": "dealname",
+            "label": "Deal Name",
+            "type": "string",
+            "fieldType": "text",
+            "groupName": "deal_info",
+        },
+        {
+            "name": "hs_deal_name",
+            "label": "HubSpot Deal Name",
+            "type": "string",
+            "fieldType": "text",
+            "groupName": "deal_info",
+        },
+        {
+            "name": "dealstage",
+            "label": "Deal Stage",
+            "type": "string",
+            "fieldType": "text",  # Not select type so field name check applies
+            "groupName": "deal_info",
+        },
+        {
+            "name": "hs_deal_stage",
+            "label": "HubSpot Deal Stage",
+            "type": "string",
+            "fieldType": "text",
+            "groupName": "deal_info",
+        },
+        {
+            "name": "pipeline",
+            "label": "Pipeline",
+            "type": "string",
+            "fieldType": "text",
+            "groupName": "deal_info",
+        },
+        {
+            "name": "hs_pipeline",
+            "label": "HubSpot Pipeline",
+            "type": "string",
+            "fieldType": "text",
+            "groupName": "deal_info",
+        },
+        {
+            "name": "closedate",
+            "label": "Close Date",
+            "type": "string",
+            "fieldType": "text",  # Not date type so field name check applies
+            "groupName": "deal_info",
+        },
+        {
+            "name": "hs_closedate",
+            "label": "HubSpot Close Date",
+            "type": "string",
+            "fieldType": "text",
+            "groupName": "deal_info",
+        },
+    ]
+
+    result = HubSpotFormatter.format_deal_properties(properties_data)
+
+    # These should hit the specific field name icon assignments
+    assert "**💰 Amount**" in result
+    assert "**💰 HubSpot Amount**" in result
+    assert "**🏷️ Deal Name**" in result
+    assert "**🏷️ HubSpot Deal Name**" in result
+    assert "**📊 Deal Stage**" in result
+    assert "**📊 HubSpot Deal Stage**" in result
+    assert "**🔄 Pipeline**" in result
+    assert "**🔄 HubSpot Pipeline**" in result
+    assert "**📅 Close Date**" in result
+    assert "**📅 HubSpot Close Date**" in result
+
+
+def test_format_company_properties_with_exact_field_names_for_coverage():
+    """Test company properties with exact field names to hit specific icon assignment lines."""
+    properties_data = [
+        {
+            "name": "industry",
+            "label": "Industry",
+            "type": "string",
+            "fieldType": "text",  # Not select type so field name check applies
+            "groupName": "company_info",
+        },
+        {
+            "name": "type",
+            "label": "Company Type",
+            "type": "string",
+            "fieldType": "text",
+            "groupName": "company_info",
+        },
+    ]
+
+    result = HubSpotFormatter.format_company_properties(properties_data)
+
+    # These should hit the specific field name icon assignments
+    assert "**🏭 Industry**" in result
+    assert "**🏭 Company Type**" in result

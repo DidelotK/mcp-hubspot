@@ -18,13 +18,325 @@ globs:
 - **PascalCase**: Class names in PascalCase
 - **English naming**: Use English names for variables, functions, and classes
 
-## Unit Tests
-- **Mandatory** for all new features
-- **Framework**: pytest exclusively
-- **Structure**: Tests in `tests/` with names `test_*.py`
-- **Coverage**: Minimum 80% code coverage
-- **Async**: Use pytest-asyncio for asynchronous tests
-- **English**: Test names and descriptions in English
+## Testing Standards
+
+### Mandatory Testing Requirements
+- **100% Coverage**: Every new feature MUST achieve 100% code coverage
+- **Framework**: pytest exclusively with pytest plugins
+- **TDD Approach**: Write tests BEFORE writing implementation code
+- **No Exceptions**: Zero tolerance for untested code in production
+- **English Only**: All test names, descriptions, and assertions in English
+
+### Test Structure and Organization
+```
+tests/
+├── unit/                    # Unit tests (isolated, fast)
+│   ├── test_models/
+│   ├── test_services/
+│   └── test_utils/
+├── integration/            # Integration tests (components interaction)
+│   ├── test_api/
+│   ├── test_database/
+│   └── test_external_services/
+├── e2e/                    # End-to-end tests (full workflow)
+├── fixtures/               # Test data and fixtures
+├── conftest.py             # Shared pytest configuration
+└── __init__.py
+```
+
+### Test Types and Coverage Requirements
+
+#### Unit Tests (100% Coverage Required)
+- **Scope**: Individual functions, methods, classes in isolation
+- **Speed**: Must run in < 1ms per test
+- **Dependencies**: All external dependencies mocked
+- **Coverage**: Every line, branch, and edge case
+- **Naming**: `test_{function_name}_{scenario}_{expected_result}`
+
+```python
+# Good example
+def test_calculate_discount_with_valid_percentage_returns_correct_amount():
+    # Arrange
+    original_price = 100.0
+    discount_percentage = 20.0
+    expected_discount = 20.0
+    
+    # Act
+    result = calculate_discount(original_price, discount_percentage)
+    
+    # Assert
+    assert result == expected_discount
+    assert isinstance(result, float)
+```
+
+#### Integration Tests (Required for Components)
+- **Scope**: Multiple components working together
+- **Database**: Use test database with transactions rollback
+- **External APIs**: Use real staging endpoints or comprehensive mocks
+- **Coverage**: All integration points and data flows
+
+#### End-to-End Tests (Critical Workflows)
+- **Scope**: Complete user workflows from start to finish
+- **Environment**: Staging environment that mirrors production
+- **Data**: Clean test data for each test run
+- **Coverage**: All critical business processes
+
+### Test Quality Standards
+
+#### Test Naming Conventions
+```python
+# Pattern: test_{method}_{scenario}_{expected_result}
+def test_user_login_with_valid_credentials_returns_success():
+    pass
+
+def test_user_login_with_invalid_password_raises_authentication_error():
+    pass
+
+def test_user_login_with_empty_email_raises_validation_error():
+    pass
+```
+
+#### Test Structure (AAA Pattern)
+```python
+def test_example():
+    # Arrange - Set up test data and conditions
+    user = User(email="test@example.com", password="secure123")
+    expected_result = {"status": "success", "user_id": 123}
+    
+    # Act - Execute the code under test
+    result = authenticate_user(user.email, user.password)
+    
+    # Assert - Verify the outcome
+    assert result == expected_result
+    assert user.is_authenticated is True
+```
+
+#### Mandatory Test Cases for Every Function
+- **Happy Path**: Normal execution with valid inputs
+- **Edge Cases**: Boundary conditions, empty values, null values
+- **Error Cases**: Invalid inputs, system failures, exceptions
+- **Performance**: Response time for critical functions
+- **Security**: Input validation, authorization checks
+
+### Coverage Enforcement
+
+#### Coverage Configuration (pytest.ini)
+```ini
+[tool:pytest]
+addopts = 
+    --cov=src
+    --cov-report=term-missing
+    --cov-report=html:htmlcov
+    --cov-report=xml:coverage.xml
+    --cov-fail-under=100
+    --cov-branch
+testpaths = tests
+python_files = test_*.py
+python_classes = Test*
+python_functions = test_*
+
+[coverage:run]
+source = src
+omit = 
+    */tests/*
+    */venv/*
+    */__pycache__/*
+    */migrations/*
+    */settings/*
+
+[coverage:report]
+exclude_lines =
+    pragma: no cover
+    def __repr__
+    raise AssertionError
+    raise NotImplementedError
+```
+
+#### Pre-commit Coverage Check
+```bash
+# Mandatory before any commit
+uv run pytest --cov=src --cov-report=term-missing --cov-fail-under=100
+
+# For specific files/modules
+uv run pytest tests/unit/test_new_feature.py --cov=src.new_feature --cov-fail-under=100
+```
+
+### Mocking and Fixtures Best Practices
+
+#### Mocking External Dependencies
+```python
+import pytest
+from unittest.mock import Mock, patch, MagicMock
+
+@pytest.fixture
+def mock_hubspot_client():
+    """Mock HubSpot API client for testing."""
+    mock_client = Mock()
+    mock_client.get_contacts.return_value = [
+        {"id": "1", "properties": {"email": "test@example.com"}}
+    ]
+    return mock_client
+
+def test_contact_service_with_mocked_client(mock_hubspot_client):
+    service = ContactService(client=mock_hubspot_client)
+    contacts = service.get_all_contacts()
+    
+    assert len(contacts) == 1
+    assert contacts[0]["properties"]["email"] == "test@example.com"
+    mock_hubspot_client.get_contacts.assert_called_once()
+```
+
+#### Parametrized Tests for Multiple Scenarios
+```python
+@pytest.mark.parametrize("input_value,expected_output,should_raise", [
+    ("valid@email.com", True, False),
+    ("invalid-email", False, False),
+    ("", False, False),
+    (None, False, True),
+])
+def test_email_validation(input_value, expected_output, should_raise):
+    if should_raise:
+        with pytest.raises(ValueError):
+            validate_email(input_value)
+    else:
+        result = validate_email(input_value)
+        assert result == expected_output
+```
+
+### Async Testing Requirements
+```python
+import pytest
+import pytest_asyncio
+
+@pytest.mark.asyncio
+async def test_async_function_with_proper_handling():
+    # Arrange
+    mock_data = {"id": 1, "name": "Test"}
+    
+    # Act
+    result = await async_process_data(mock_data)
+    
+    # Assert
+    assert result is not None
+    assert result["processed"] is True
+```
+
+### Test Data Management
+
+#### Fixtures for Consistent Test Data
+```python
+@pytest.fixture
+def sample_user():
+    """Create a sample user for testing."""
+    return {
+        "id": 1,
+        "email": "test@example.com",
+        "name": "Test User",
+        "created_at": "2024-01-01T00:00:00Z"
+    }
+
+@pytest.fixture
+def sample_users():
+    """Create multiple users for bulk testing."""
+    return [
+        {"id": i, "email": f"user{i}@example.com", "name": f"User {i}"}
+        for i in range(1, 6)
+    ]
+```
+
+#### Database Testing with Transactions
+```python
+@pytest.fixture
+def db_session():
+    """Create a database session for testing with rollback."""
+    connection = engine.connect()
+    transaction = connection.begin()
+    session = Session(bind=connection)
+    
+    yield session
+    
+    session.close()
+    transaction.rollback()
+    connection.close()
+```
+
+### Performance Testing Requirements
+```python
+import time
+import pytest
+
+def test_function_performance():
+    """Ensure function executes within acceptable time limits."""
+    start_time = time.time()
+    
+    result = expensive_calculation()
+    
+    execution_time = time.time() - start_time
+    assert execution_time < 1.0  # Must complete within 1 second
+    assert result is not None
+```
+
+### Strict Testing Rules
+- ❌ **NEVER** commit code without 100% test coverage
+- ❌ **NEVER** skip tests or use @pytest.mark.skip without justification
+- ❌ **NEVER** test implementation details, test behavior
+- ❌ **NEVER** use real production data in tests
+- ❌ **NEVER** write tests that depend on external services without mocks
+- ❌ **NEVER** use French or other languages in test code
+- ✅ **ALWAYS** write tests before implementing features (TDD)
+- ✅ **ALWAYS** test error conditions and edge cases
+- ✅ **ALWAYS** use descriptive test names explaining the scenario
+- ✅ **ALWAYS** clean up test data and resources
+- ✅ **ALWAYS** run the full test suite before committing
+- ✅ **ALWAYS** maintain tests when refactoring code
+
+### CI/CD Testing Integration
+```yaml
+# .github/workflows/tests.yml
+name: Tests
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+      
+      - name: Install dependencies
+        run: |
+          pip install uv
+          uv sync
+      
+      - name: Run tests with coverage
+        run: |
+          uv run pytest --cov=src --cov-report=xml --cov-fail-under=100
+      
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./coverage.xml
+          fail_ci_if_error: true
+```
+
+### Testing Tools and Plugins
+```toml
+[project.optional-dependencies]
+test = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-mock>=3.10.0",
+    "pytest-xdist>=3.0.0",        # Parallel test execution
+    "pytest-benchmark>=4.0.0",     # Performance testing
+    "factory-boy>=3.2.0",          # Test data generation
+    "freezegun>=1.2.0",            # Time mocking
+    "responses>=0.23.0",           # HTTP mocking
+]
+```
 
 ## Imports and Dependencies
 - **Import order**: standard library, third-party, local
