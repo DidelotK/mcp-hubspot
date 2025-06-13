@@ -71,8 +71,17 @@ async def main():
     # Create HubSpot client
     hubspot_client = HubSpotClient(api_key=os.getenv("HUBSPOT_API_KEY"))
 
-    # Create MCP handlers
+    # Create and add handlers
     handlers = MCPHandlers(hubspot_client)
+
+    # Enregistrement des handlers
+    @server.list_tools()
+    async def handle_list_tools():
+        return await handlers.handle_list_tools()
+
+    @server.call_tool()
+    async def handle_call_tool(name: str, arguments: dict):
+        return await handlers.handle_call_tool(name, arguments)
 
     # Initialize server options
     server_options = InitializationOptions(
