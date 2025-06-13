@@ -7,7 +7,13 @@ name = "hubspot-mcp-server"
 version = "0.1.0"
 description = "MCP Server for HubSpot integration"
 requires-python = ">=3.12"
-dependencies = ["mcp>=1.0.0", "httpx>=0.25.0", "pydantic>=2.0.0"]
+dependencies = [
+  "mcp>=1.0.0",
+  "httpx>=0.25.0",
+  "pydantic>=2.0.0",
+  "uvicorn>=0.24.0",
+  "starlette>=0.27.0",
+]
 
 [project.optional-dependencies]
 dev = [
@@ -81,6 +87,4 @@ warn_unreachable = true
 strict_equality = true
 
 [dependency-groups]
-dev = [
-    "fast-agent-mcp>=0.2.30",
-]
+dev = ["fast-agent-mcp>=0.2.30"]

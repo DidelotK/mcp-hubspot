@@ -103,8 +103,39 @@ async def main():
         logger.info(
             f"Starting server in SSE mode on {args.host}:{args.port}"
         )  # pragma: no cover
+
+        # Import required modules for SSE server
+        import uvicorn
+        from starlette.applications import Starlette
+        from starlette.requests import Request
+        from starlette.routing import Mount, Route
+
+        # Create SSE transport
         sse = SseServerTransport("/messages/")
-        await server.run_sse(sse, server_options)
+
+        # SSE endpoint handler
+        async def handle_sse(request: Request):
+            async with sse.connect_sse(
+                request.scope,
+                request.receive,
+                request._send,
+            ) as (read_stream, write_stream):
+                await server.run(read_stream, write_stream, server_options)
+
+        # Create Starlette app with SSE routes
+        app = Starlette(
+            routes=[
+                Route("/sse", endpoint=handle_sse),
+                Mount("/messages/", app=sse.handle_post_message),
+            ]
+        )
+
+        # Run the server using uvicorn
+        config = uvicorn.Config(
+            app=app, host=args.host, port=args.port, log_level="info"
+        )
+        server_instance = uvicorn.Server(config)
+        await server_instance.serve()
 
 
 if __name__ == "__main__":  # pragma: no cover
