@@ -5,6 +5,7 @@ from typing import Any, Dict, List, Optional, Union
 from unittest.mock import patch
 
 import pytest
+from httpx import HTTPStatusError
 from mcp.types import TextContent
 
 from src.hubspot_mcp.client import HubSpotClient
@@ -768,8 +769,6 @@ async def test_base_tool_handle_httpx_error():
     """Test base tool error handling for HTTPStatusError."""
     from httpx import HTTPStatusError, Request, Response
 
-    from src.hubspot_mcp.tools.base import BaseTool
-
     # Create a concrete implementation for testing
     class TestTool(BaseTool):
         def get_tool_definition(self):
@@ -785,9 +784,7 @@ async def test_base_tool_handle_httpx_error():
     response = Response(404, text="Not Found")
     request = Request("GET", "https://api.hubapi.com/test")
     error = HTTPStatusError("Not Found", request=request, response=response)
-
     result = tool.handle_error(error)
-
     assert isinstance(result, list)
     assert len(result) == 1
     assert isinstance(result[0], TextContent)
@@ -798,9 +795,7 @@ async def test_base_tool_handle_httpx_error():
 @pytest.mark.asyncio
 async def test_base_tool_handle_generic_error():
     """Test base tool error handling for generic exceptions."""
-    from src.hubspot_mcp.tools.base import BaseTool
 
-    # Create a concrete implementation for testing
     class TestTool(BaseTool):
         def get_tool_definition(self):
             return None
@@ -813,9 +808,7 @@ async def test_base_tool_handle_generic_error():
 
     # Create a generic error
     error = ValueError("Something went wrong")
-
     result = tool.handle_error(error)
-
     assert isinstance(result, list)
     assert len(result) == 1
     assert isinstance(result[0], TextContent)
