@@ -1,2 +1,4 @@
 direnv 2.34.0
 nodejs 24.2.0
+pre-commit 3.8.0
+just 1.35.0
