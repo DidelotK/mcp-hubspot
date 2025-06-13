@@ -11,7 +11,8 @@ import pytest
 
 # Add the root directory to PYTHONPATH for main import
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
-import main
+
+import main  # noqa: E402
 
 
 def test_main_script_block_execution():
