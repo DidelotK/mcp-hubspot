@@ -317,8 +317,8 @@ def test_handle_list_tools_count() -> None:
     handlers = MCPHandlers(client)
     tools: List[Tool] = asyncio.run(handlers.handle_list_tools())
 
-    # Should have exactly 12 tools (including search_hubspot_deals)
-    assert len(tools) == 12
+    # Should have exactly 14 tools after adding search contacts/companies
+    assert len(tools) == 14
 
     expected_tools: List[str] = [
         "manage_hubspot_cache",
