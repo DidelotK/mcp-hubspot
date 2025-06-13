@@ -19,6 +19,7 @@ from hubspot_mcp.tools import (
     DealByNameTool,
     DealPropertiesTool,
     DealsTool,
+    SearchDealsTool,
     UpdateDealTool,
 )
 from hubspot_mcp.tools.base import BaseTool
@@ -1271,3 +1272,53 @@ async def test_base_tool_concrete_implementation():
     assert isinstance(result, list)
     assert len(result) == 1
     assert result[0].text == "test execution"
+
+
+@pytest.mark.asyncio
+async def test_search_deals_tool_execute():
+    """Test search deals tool normal execution."""
+
+    response_data = {
+        "results": [
+            {
+                "id": "9001",
+                "properties": {
+                    "dealname": "Enterprise Renewal",
+                    "amount": "250000",
+                    "dealstage": "contractsent",
+                    "pipeline": "enterprise",
+                    "createdate": "2024-01-01T12:00:00Z",
+                },
+            }
+        ]
+    }
+
+    def mock_client(*args: Any, **kwargs: Any) -> DummyAsyncClient:  # type: ignore[name-defined]
+        return DummyAsyncClient(response_data=response_data)
+
+    with patch("httpx.AsyncClient", mock_client):
+        client = HubSpotClient("test-key")
+        tool = SearchDealsTool(client)
+
+        result = await tool.execute({"filters": {"dealname": "renewal"}})
+
+        assert isinstance(result, list)
+        assert len(result) == 1
+        assert "Enterprise Renewal" in result[0].text
+
+
+@pytest.mark.asyncio
+async def test_search_deals_tool_error_handling():
+    """Test search deals tool handles API errors."""
+
+    def mock_client(*args: Any, **kwargs: Any) -> DummyAsyncClient:  # type: ignore[name-defined]
+        return DummyAsyncClient(raise_error=True)
+
+    with patch("httpx.AsyncClient", mock_client):
+        client = HubSpotClient("test-key")
+        tool = SearchDealsTool(client)
+
+        result = await tool.execute({"filters": {"dealname": "renewal"}})
+
+        assert len(result) == 1
+        assert "HubSpot API Error" in result[0].text

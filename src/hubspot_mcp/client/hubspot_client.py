@@ -302,3 +302,94 @@ class HubSpotClient:
             response.raise_for_status()
             data = response.json()
             return data.get("results", [])
+
+    # ------------------------------------------------------------------
+    # Advanced search for deals
+    # ------------------------------------------------------------------
+
+    async def search_deals(
+        self, *, limit: int = 100, filters: Optional[Dict[str, Any]] = None
+    ) -> List[Dict[str, Any]]:
+        """Search deals using the CRM Search API.
+
+        This method leverages the ``POST /crm/v3/objects/deals/search`` endpoint
+        which supports advanced filtering. Currently the implementation supports
+        simple *contains-token* queries on a subset of commonly-used deal
+        properties. It can easily be extended with additional filters.
+
+        Args:
+            limit: Maximum number of deals to return (1-100). HubSpot caps page
+                size to 100.
+            filters: Optional dictionary with one or more of the following
+                keys:
+
+                * ``dealname`` – partial match on *dealname* using the
+                  ``CONTAINS_TOKEN`` operator.
+                * ``owner_id`` – exact match on *hubspot_owner_id*.
+                * ``dealstage`` – exact match on *dealstage*.
+                * ``pipeline`` – exact match on *pipeline*.
+
+        Returns:
+            A list of deal objects matching the criteria.
+        """
+
+        url = f"{self.base_url}/crm/v3/objects/deals/search"
+
+        # Build filter groups based on provided filters ------------
+        filter_groups: List[Dict[str, Any]] = []
+
+        if filters is None:
+            filters = {}
+
+        # Mapping of allowed filters to property names/operators
+        mapping = {
+            "dealname": ("dealname", "CONTAINS_TOKEN"),
+            "owner_id": ("hubspot_owner_id", "EQ"),
+            "dealstage": ("dealstage", "EQ"),
+            "pipeline": ("pipeline", "EQ"),
+        }
+
+        for key, value in filters.items():
+            if key not in mapping:
+                # Ignore unsupported filters silently to avoid HubSpot errors
+                continue
+
+            property_name, operator = mapping[key]
+            filter_groups.append(
+                {
+                    "filters": [
+                        {
+                            "propertyName": property_name,
+                            "operator": operator,
+                            "value": value,
+                        }
+                    ]
+                }
+            )
+
+        # If no filters specified default to return latest deals (similar to list)
+        if not filter_groups:
+            filter_groups.append(
+                {"filters": [{"propertyName": "id", "operator": "GT", "value": 0}]}
+            )
+
+        search_body = {
+            "filterGroups": filter_groups,
+            "properties": [
+                "dealname",
+                "amount",
+                "dealstage",
+                "pipeline",
+                "closedate",
+                "createdate",
+                "lastmodifieddate",
+                "hubspot_owner_id",
+            ],
+            "limit": min(limit, 100),
+        }
+
+        async with httpx.AsyncClient() as client:
+            response = await client.post(url, headers=self.headers, json=search_body)
+            response.raise_for_status()
+            data = response.json()
+            return data.get("results", [])

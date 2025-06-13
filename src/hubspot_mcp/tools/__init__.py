@@ -9,6 +9,7 @@ from .deal_by_name_tool import DealByNameTool
 from .deal_properties_tool import DealPropertiesTool
 from .deals import DealsTool
 from .engagements import EngagementsTool
+from .search_deals import SearchDealsTool
 from .update_deal_tool import UpdateDealTool
 
 __all__ = [
@@ -22,4 +23,5 @@ __all__ = [
     "DealPropertiesTool",
     "UpdateDealTool",
     "EngagementsTool",
+    "SearchDealsTool",
 ]
