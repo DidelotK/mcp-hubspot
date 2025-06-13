@@ -1,0 +1,295 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Security Conventions
+
+description: Security standards and best practices for secret management and environment configuration
+globs:
+  - "src/**/*.py"
+  - "tests/**/*.py"
+  - ".env*"
+  - "config/**"
+  - "scripts/**"
+  - "pyproject.toml"
+  - "README.md"
+
+## Secret Management Tools
+
+### Approved Secret Management Solutions
+- **direnv**: Directory-based environment variable management (recommended for development)
+- **python-dotenv**: Python library for loading environment variables from .env files
+- **HashiCorp Vault**: Enterprise secret management for production environments
+- **SecEnv**: Secure environment variable management
+- **AWS Secrets Manager**: Cloud-native secret storage (for AWS deployments)
+- **Azure Key Vault**: Cloud-native secret storage (for Azure deployments)
+
+### Tool Selection Guidelines
+- **Development**: Use `direnv` or `python-dotenv` with `.env` files
+- **Staging**: Use secure secret management services (Vault, cloud providers)
+- **Production**: Mandatory use of enterprise-grade secret management (Vault, cloud services)
+
+## Hardcoded Secrets Prohibition
+
+### Strict Rules
+- ❌ **NEVER** commit API keys, passwords, tokens, or certificates to version control
+- ❌ **NEVER** hardcode secrets in source code, configuration files, or scripts
+- ❌ **NEVER** use placeholder secrets like "your-api-key-here" in examples
+- ❌ **NEVER** commit .env files containing real secrets
+- ❌ **NEVER** log sensitive information (passwords, tokens, personal data)
+
+### What Counts as Secrets
+- API keys and tokens
+- Database passwords and connection strings
+- Encryption keys and certificates
+- OAuth client secrets
+- JWT signing keys
+- Third-party service credentials
+- Personal access tokens
+
+### Detection and Prevention
+```bash
+# Use git hooks to detect secrets before commit
+# Install pre-commit hooks with secret scanning
+pip install pre-commit
+pre-commit install
+
+# Use tools like:
+# - gitleaks
+# - detect-secrets
+# - truffleHog
+```
+
+## Environment Configuration Separation
+
+### Mandatory Environment Separation
+- **Development**: Local development with mock/test data
+- **Staging**: Production-like environment for testing
+- **Production**: Live environment with real data and users
+
+### Configuration Structure
+```
+project/
+├── config/
+│   ├── __init__.py
+│   ├── base.py          # Common configuration
+│   ├── development.py   # Development-specific config
+│   ├── staging.py       # Staging-specific config
+│   └── production.py    # Production-specific config
+├── .env.example         # Template for environment variables
+├── .env.development     # Development environment (git-ignored)
+├── .env.staging         # Staging environment (git-ignored)
+└── .env.production      # Production environment (git-ignored)
+```
+
+### Environment Variable Naming
+```python
+# Format: {PROJECT}_{ENVIRONMENT}_{PURPOSE}
+HUBSPOT_DEV_API_KEY=dev_key_here
+HUBSPOT_STAGING_API_KEY=staging_key_here
+HUBSPOT_PROD_API_KEY=prod_key_here
+
+# Database connections
+DATABASE_DEV_URL=postgresql://localhost:5432/hubspot_dev
+DATABASE_STAGING_URL=postgresql://staging.example.com:5432/hubspot_staging
+DATABASE_PROD_URL=postgresql://prod.example.com:5432/hubspot_prod
+```
+
+### Configuration Loading Example
+```python
+import os
+from typing import Optional
+
+class Config:
+    """Base configuration class."""
+    SECRET_KEY: str = os.getenv("SECRET_KEY", "")
+    DATABASE_URL: str = os.getenv("DATABASE_URL", "")
+    
+    @classmethod
+    def validate(cls) -> None:
+        """Validate required configuration."""
+        required_vars = ["SECRET_KEY", "DATABASE_URL"]
+        missing = [var for var in required_vars if not getattr(cls, var)]
+        if missing:
+            raise ValueError(f"Missing required environment variables: {missing}")
+
+class DevelopmentConfig(Config):
+    DEBUG = True
+    TESTING = False
+
+class StagingConfig(Config):
+    DEBUG = False
+    TESTING = False
+
+class ProductionConfig(Config):
+    DEBUG = False
+    TESTING = False
+```
+
+## Mandatory .env.example File
+
+### Required .env.example Structure
+```bash
+# .env.example - Template for environment variables
+# Copy this file to .env and fill in your actual values
+
+# Project Configuration
+PROJECT_NAME=hubspot-mcp
+ENVIRONMENT=development
+
+# API Configuration
+HUBSPOT_API_KEY=your_hubspot_api_key_here
+HUBSPOT_BASE_URL=https://api.hubapi.com
+
+# Database Configuration
+DATABASE_URL=postgresql://username:password@localhost:5432/database_name
+
+# Logging Configuration
+LOG_LEVEL=INFO
+LOG_FORMAT=json
+
+# Security Configuration
+SECRET_KEY=your_secret_key_here
+JWT_SECRET=your_jwt_secret_here
+
+# Third-party Services
+SMTP_HOST=smtp.example.com
+SMTP_PORT=587
+SMTP_USERNAME=your_smtp_username
+SMTP_PASSWORD=your_smtp_password
+
+# Development Tools (development only)
+DEBUG=false
+TESTING=false
+```
+
+### .env.example Maintenance Rules
+- ✅ **ALWAYS** keep .env.example up to date with all required variables
+- ✅ **ALWAYS** use descriptive placeholder values
+- ✅ **ALWAYS** include comments explaining each variable
+- ✅ **ALWAYS** group related variables together
+- ✅ **ALWAYS** document which environment each variable applies to
+- ❌ **NEVER** include real secrets in .env.example
+- ❌ **NEVER** commit actual .env files to version control
+
+## Security Implementation Guidelines
+
+### Environment Variable Loading
+```python
+# src/config/settings.py
+import os
+from pathlib import Path
+from typing import Optional
+
+def load_env_file(env_file: Optional[str] = None) -> None:
+    """Load environment variables from file."""
+    if env_file is None:
+        env = os.getenv("ENVIRONMENT", "development")
+        env_file = f".env.{env}"
+    
+    env_path = Path(env_file)
+    if env_path.exists():
+        from dotenv import load_dotenv
+        load_dotenv(env_path)
+    else:
+        raise FileNotFoundError(f"Environment file not found: {env_file}")
+
+# Usage
+load_env_file()  # Loads .env.development by default
+```
+
+### Secret Validation
+```python
+def validate_secrets() -> None:
+    """Validate that all required secrets are present."""
+    required_secrets = [
+        "HUBSPOT_API_KEY",
+        "SECRET_KEY",
+        "DATABASE_URL"
+    ]
+    
+    missing_secrets = []
+    for secret in required_secrets:
+        value = os.getenv(secret)
+        if not value or value.startswith("your_") or value == "placeholder":
+            missing_secrets.append(secret)
+    
+    if missing_secrets:
+        raise ValueError(
+            f"Missing or invalid secrets: {missing_secrets}. "
+            f"Please check your .env file and ensure all secrets are properly configured."
+        )
+```
+
+### Git Configuration
+```bash
+# .gitignore - Always include these patterns
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+secrets/
+.secrets/
+```
+
+## CI/CD Security Guidelines
+
+### Environment Variables in CI/CD
+- ✅ **ALWAYS** use CI/CD secret management (GitHub Secrets, GitLab Variables)
+- ✅ **ALWAYS** separate secrets by environment in CI/CD
+- ✅ **ALWAYS** use different secrets for each environment
+- ❌ **NEVER** expose secrets in CI/CD logs
+- ❌ **NEVER** use the same secrets across environments
+
+### Secret Rotation
+- **Development**: Rotate monthly or when compromised
+- **Staging**: Rotate bi-weekly or when compromised  
+- **Production**: Rotate weekly or immediately when compromised
+- **Document**: Keep a log of secret rotation dates
+
+## Security Checklist
+
+### Pre-Commit Checklist
+- [ ] No hardcoded secrets in code
+- [ ] All secrets loaded from environment variables
+- [ ] .env.example file is up to date
+- [ ] No .env files committed to git
+- [ ] Secret validation implemented
+- [ ] Environment separation properly configured
+
+### Pre-Deploy Checklist
+- [ ] All production secrets are properly configured
+- [ ] Secrets are stored in secure secret management system
+- [ ] Environment-specific configuration is validated
+- [ ] No debug information exposed in production
+- [ ] Security scanning completed
+
+## Incident Response
+
+### If Secrets Are Compromised
+1. **Immediate**: Revoke/rotate the compromised secret
+2. **Audit**: Check git history for other exposed secrets
+3. **Clean**: Remove secrets from git history if needed
+4. **Update**: Update all affected environments
+5. **Document**: Record the incident and lessons learned
+
+### Git History Cleanup
+```bash
+# Remove secrets from git history (use with caution)
+git filter-branch --force --index-filter \
+'git rm --cached --ignore-unmatch path/to/file/with/secrets' \
+--prune-empty --tag-name-filter cat -- --all
+
+# Alternative: use BFG Repo-Cleaner
+java -jar bfg.jar --delete-files secrets.txt
+git reflog expire --expire=now --all && git gc --prune=now --aggressive
+```
+
+## Language Policy
+- ✅ **ALWAYS** write security documentation in English
+- ✅ **ALWAYS** use English for configuration variable names
+- ✅ **ALWAYS** write error messages in English
+- ✅ **ALWAYS** document security procedures in English
+- ❌ **NEVER** use French or other languages in security-related code or documentation
