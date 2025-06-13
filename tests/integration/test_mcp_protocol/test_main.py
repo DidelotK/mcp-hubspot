@@ -20,8 +20,8 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 # Explicit import of main module for code coverage
 import main  # noqa: F401,E402
-from src.hubspot_mcp.client import HubSpotClient  # noqa: E402
-from src.hubspot_mcp.server import MCPHandlers  # noqa: E402
+from hubspot_mcp.client import HubSpotClient  # noqa: E402
+from hubspot_mcp.server import MCPHandlers  # noqa: E402
 
 
 def test_parse_arguments_default():

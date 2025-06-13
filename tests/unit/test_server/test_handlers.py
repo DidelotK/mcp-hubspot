@@ -9,9 +9,9 @@ import httpx
 import pytest
 from mcp.types import TextContent, Tool
 
+from hubspot_mcp.client import HubSpotClient
+from hubspot_mcp.server import MCPHandlers
 from main import parse_arguments
-from src.hubspot_mcp.client import HubSpotClient
-from src.hubspot_mcp.server import MCPHandlers
 
 
 def test_parse_arguments_defaults(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -354,7 +354,7 @@ def test_handle_call_tool_exception_handling() -> None:
     handlers.tools_map["list_hubspot_contacts"] = mock_tool
 
     # Patch the logger to verify it's called
-    with patch("src.hubspot_mcp.server.handlers.logger") as mock_logger:
+    with patch("hubspot_mcp.server.handlers.logger") as mock_logger:
         result: List[TextContent] = asyncio.run(
             handlers.handle_call_tool("list_hubspot_contacts", {"limit": 10})
         )
