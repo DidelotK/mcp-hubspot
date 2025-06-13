@@ -21,6 +21,7 @@ class MCPTestClient:
     
     def __init__(self):
         self.session = None
+        self._stdio_ctx = None
     
     async def connect(self):
         """Connect to the MCP server."""
@@ -28,10 +29,10 @@ class MCPTestClient:
         server_params = StdioServerParameters(
             command="uv",
             args=[
-                "run", 
-                "python", 
-                "../../main.py",  # Path to main server script
-                "--mode", 
+                "run",
+                "python",
+                "./main.py",  # Path to main server script (depuis examples/basic)
+                "--mode",
                 "stdio"
             ],
             env={
@@ -39,10 +40,10 @@ class MCPTestClient:
             }
         )
         
-        # Create session
-        self.session = await stdio_client(server_params).__aenter__()
-        
-        # Initialize session
+        # Create client and session
+        self._stdio_ctx = stdio_client(server_params)
+        read_stream, write_stream = await self._stdio_ctx.__aenter__()
+        self.session = ClientSession(read_stream, write_stream)
         await self.session.initialize()
         
         print("✅ Successfully connected to HubSpot MCP server")
@@ -68,8 +69,8 @@ class MCPTestClient:
     
     async def disconnect(self):
         """Disconnect from the server."""
-        if self.session:
-            await self.session.__aexit__(None, None, None)
+        if self._stdio_ctx:
+            await self._stdio_ctx.__aexit__(None, None, None)
 
 
 async def main():

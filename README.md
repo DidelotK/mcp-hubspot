@@ -23,7 +23,7 @@ uv run python main.py --mode stdio
 |---------|-------------|
 | **[Installation](docs/installation.md)** | Installation and configuration guide |
 | **[Integration](docs/integration.md)** | Configuration with Claude Desktop and other MCP clients |
-| **[API Reference](docs/api-reference.md)** | Complete documentation of the 8 available tools |
+| **[API Reference](docs/api-reference.md)** | Complete documentation of the 9 available tools |
 | **[Examples](docs/examples.md)** | Use cases and example conversations with Claude |
 | **[Contributing](docs/contributing.md)** | Guide for developing new tools |
 
@@ -41,6 +41,7 @@ uv run python main.py --mode stdio
 | `list_hubspot_companies` | List and filter HubSpot companies |
 | `list_hubspot_deals` | List and filter HubSpot deals |
 | `create_deal` | Create a new deal in HubSpot |
+| `update_deal` | Update an existing deal in HubSpot |
 | `get_deal_by_name` | Search for a deal by exact name |
 | `get_hubspot_contact_properties` | Retrieve contact field properties with types and descriptions |
 | `get_hubspot_company_properties` | Retrieve company field properties with types and descriptions |
