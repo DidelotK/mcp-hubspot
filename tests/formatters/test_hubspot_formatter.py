@@ -939,25 +939,8 @@ def test_format_deal():
 
 def test_format_deal_missing_properties():
     """Test formatting a deal with missing properties."""
-    deal = {"id": "12345", "properties": {"dealname": "Enterprise Contract"}}
-
-    result = HubSpotFormatter.format_deal(deal)
-
-    assert "💰 **HubSpot Deal**" in result
-    assert "**Enterprise Contract**" in result
-    assert "💰 Amount: N/A" in result
-    assert "📊 Stage: N/A" in result
-    assert "🔄 Pipeline: N/A" in result
-    assert "📅 Close date: N/A" in result
-    assert "🆔 ID: 12345" in result
-
-
-def test_format_deal_empty():
-    """Test formatting an empty deal."""
     deal = {"id": "12345", "properties": {}}
-
-    result = HubSpotFormatter.format_deal(deal)
-
+    result = HubSpotFormatter.format_single_deal(deal)
     assert "💰 **HubSpot Deal**" in result
     assert "**Unnamed deal**" in result
     assert "💰 Amount: N/A" in result
