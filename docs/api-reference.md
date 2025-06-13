@@ -1,6 +1,6 @@
 # API Reference - MCP Tools
 
-This MCP server exposes 10 tools to interact with the HubSpot API.
+This MCP server exposes 11 tools to interact with the HubSpot API.
 
 ## list_hubspot_contacts
 
@@ -112,6 +112,54 @@ Retrieves the list of HubSpot deals.
   🔄 Pipeline: enterprise
   📅 Close Date: 2024-12-31
   🆔 ID: 789012
+```
+
+## search_hubspot_deals
+
+Search HubSpot deals using the CRM Search API with advanced filtering.
+
+### Parameters
+
+| Parameter | Type | Required | Description | Default |
+|-----------|------|----------|-------------|---------|
+| `limit` | integer | No | Maximum number of deals to return (1 – 100) | 100 |
+| `filters` | object | No | Search filters object | `{}` |
+
+The `filters` object can include:
+
+| Filter Key | Type | Description |
+|------------|------|-------------|
+| `dealname` | string | Partial match on deal name (contains token) |
+| `owner_id` | string | Exact match on HubSpot owner ID |
+| `dealstage` | string | Exact match on deal stage |
+| `pipeline` | string | Exact match on pipeline ID |
+
+### Usage Example
+
+```json
+{
+  "name": "search_hubspot_deals",
+  "arguments": {
+    "limit": 10,
+    "filters": {
+      "dealname": "renewal",
+      "owner_id": "123"
+    }
+  }
+}
+```
+
+### Response
+
+```
+💰 **HubSpot Deals** (1 found)
+
+**Enterprise Renewal**
+  💰 Amount: $250,000.00
+  📊 Stage: contractsigned
+  🔄 Pipeline: enterprise
+  📅 Close Date: 2024-12-31
+  🆔 ID: 9001
 ```
 
 ## create_deal
@@ -493,7 +541,7 @@ Retrieves the list of HubSpot engagements (calls, emails, tasks, etc.).
 
 **Follow-up call with ACME Corp**
   🔖 Type: CALL
-  ��️ Created: 2024-01-01T09:00:00Z
+  ️ Created: 2024-01-01T09:00:00Z
   🔄 Updated: 2024-01-01T10:00:00Z
   🆔 ID: 123456
 ``` 
