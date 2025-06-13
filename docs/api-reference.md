@@ -1,6 +1,6 @@
 # API Reference - MCP Tools
 
-This MCP server exposes 8 tools to interact with the HubSpot API.
+This MCP server exposes 10 tools to interact with the HubSpot API.
 
 ## list_hubspot_contacts
 
@@ -459,4 +459,41 @@ These tools are particularly useful for:
 - **Planning integration** with other systems
 - **Creating and managing deals** programmatically
 - **Debugging issues** with data synchronization
-- **Building custom workflows** with HubSpot data 
+- **Building custom workflows** with HubSpot data
+
+## list_hubspot_engagements
+
+Retrieves the list of HubSpot engagements (calls, emails, tasks, etc.).
+
+### Parameters
+
+| Parameter | Type | Required | Description | Default |
+|-----------|------|----------|-------------|---------|
+| `limit` | integer | No | Maximum number of engagements to retrieve | 100 |
+| `filters` | object | No | Search filters (supports `search`) | {} |
+
+### Usage Example
+
+```json
+{
+  "name": "list_hubspot_engagements",
+  "arguments": {
+    "limit": 15,
+    "filters": {
+      "search": "call"
+    }
+  }
+}
+```
+
+### Response
+
+```
+📞 **HubSpot Engagements** (15 found)
+
+**Follow-up call with ACME Corp**
+  🔖 Type: CALL
+  ��️ Created: 2024-01-01T09:00:00Z
+  🔄 Updated: 2024-01-01T10:00:00Z
+  🆔 ID: 123456
+``` 

@@ -23,7 +23,7 @@ uv run python main.py --mode stdio
 |---------|-------------|
 | **[Installation](docs/installation.md)** | Installation and configuration guide |
 | **[Integration](docs/integration.md)** | Configuration with Claude Desktop and other MCP clients |
-| **[API Reference](docs/api-reference.md)** | Complete documentation of the 9 available tools |
+| **[API Reference](docs/api-reference.md)** | Complete documentation of the 10 available tools |
 | **[Examples](docs/examples.md)** | Use cases and example conversations with Claude |
 | **[Contributing](docs/contributing.md)** | Guide for developing new tools |
 
@@ -46,6 +46,7 @@ uv run python main.py --mode stdio
 | `get_hubspot_contact_properties` | Retrieve contact field properties with types and descriptions |
 | `get_hubspot_company_properties` | Retrieve company field properties with types and descriptions |
 | `get_hubspot_deal_properties` | Retrieve deal field properties with types and descriptions |
+| `list_hubspot_engagements` | List and filter HubSpot engagements |
 
 ## ⚡ Usage with Claude
 
