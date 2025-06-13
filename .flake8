@@ -20,7 +20,7 @@ exclude =
     .coverage,
     htmlcov
 per-file-ignores =
-    # Tests can have unused imports
-    tests/*:F401,F841
+    # Tests can have unused imports, redefinitions, and blank line issues
+    tests/*:F401,F841,F811,E306,E302
     # Scripts can be more permissive
     scripts/*:E501,F401 
