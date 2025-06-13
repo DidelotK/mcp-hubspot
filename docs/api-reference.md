@@ -78,14 +78,14 @@ Retrieves the list of HubSpot companies.
 
 ## list_hubspot_deals
 
-Retrieves the list of HubSpot deals.
+Retrieves the list of HubSpot deals with pagination support.
 
 ### Parameters
 
 | Parameter | Type | Required | Description | Default |
 |-----------|------|----------|-------------|---------|
-| `limit` | integer | No | Maximum number of deals to retrieve | 100 |
-| `filters` | object | No | Search filters | {} |
+| `limit` | integer | No | Maximum number of deals to retrieve (max 100) | 100 |
+| `after` | string | No | Pagination cursor to get the next set of results | - |
 
 ### Usage Example
 
@@ -94,9 +94,7 @@ Retrieves the list of HubSpot deals.
   "name": "list_hubspot_deals",
   "arguments": {
     "limit": 20,
-    "filters": {
-      "search": "premium"
-    }
+    "after": "cursor123"
   }
 }
 ```

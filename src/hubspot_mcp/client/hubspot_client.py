@@ -96,13 +96,13 @@ class HubSpotClient:
             return data.get("results", [])
 
     async def get_deals(
-        self, limit: int = 100, filters: Optional[Dict[str, Any]] = None
+        self, limit: int = 100, after: Optional[str] = None
     ) -> List[Dict[str, Any]]:
-        """Retrieve the list of deals with optional filtering.
+        """Retrieve the list of deals with pagination support.
 
         Args:
-            limit: Maximum number of deals to retrieve
-            filters: Optional search filters
+            limit: Maximum number of deals to retrieve (max 100)
+            after: Pagination cursor to get the next set of results
 
         Returns:
             List[Dict[str, Any]]: List of deal dictionaries
@@ -113,14 +113,13 @@ class HubSpotClient:
         url = f"{self.base_url}/crm/v3/objects/deals"
 
         params = {
-            "limit": limit,
+            "limit": min(limit, 100),  # HubSpot caps at 100
             "properties": "dealname,amount,dealstage,pipeline,closedate,createdate,lastmodifieddate,hubspot_owner_id",
         }
 
-        # Add filters if provided
-        if filters:
-            if "search" in filters:
-                params["search"] = filters["search"]
+        # Add pagination cursor if provided
+        if after:
+            params["after"] = after
 
         async with httpx.AsyncClient() as client:
             response = await client.get(url, headers=self.headers, params=params)

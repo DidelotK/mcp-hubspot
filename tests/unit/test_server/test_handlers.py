@@ -186,7 +186,7 @@ def test_get_contacts_and_companies(monkeypatch: pytest.MonkeyPatch) -> None:
 def test_get_deals(monkeypatch: pytest.MonkeyPatch) -> None:
     """Test deal retrieval.
 
-    Tests that the client correctly retrieves deals with the provided filters.
+    Tests that the client correctly retrieves deals with pagination.
 
     Args:
         monkeypatch: Pytest fixture for patching.
@@ -194,7 +194,7 @@ def test_get_deals(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(httpx, "AsyncClient", DummyAsyncClient)
     client = HubSpotClient("testkey")
     deals: List[Dict[str, Any]] = asyncio.run(
-        client.get_deals(limit=5, filters={"search": "deal"})
+        client.get_deals(limit=5, after="cursor123")
     )
     assert deals == [{"id": "1", "properties": {"foo": "bar"}}]
 
@@ -297,10 +297,10 @@ def test_handle_call_tool_with_arguments() -> None:
     assert isinstance(result, list)
     assert isinstance(result[0], TextContent)
 
-    # Test with filters
+    # Test with pagination
     result = asyncio.run(
         handlers.handle_call_tool(
-            "list_hubspot_deals", {"limit": 25, "filters": {"search": "important"}}
+            "list_hubspot_deals", {"limit": 25, "after": "cursor456"}
         )
     )
     assert isinstance(result, list)

@@ -42,7 +42,7 @@ uv run python main.py --mode stdio
 | `get_hubspot_contact_properties` | Retrieve contact field properties with types and descriptions |
 | `list_hubspot_companies` | List and filter HubSpot companies |
 | `get_hubspot_company_properties` | Retrieve company field properties with types and descriptions |
-| `list_hubspot_deals` | List and filter HubSpot deals |
+| `list_hubspot_deals` | List HubSpot deals with pagination support |
 | `search_hubspot_deals` | Advanced search for deals via HubSpot CRM Search API |
 | `create_deal` | Create a new deal in HubSpot |
 | `update_deal` | Update an existing deal in HubSpot |

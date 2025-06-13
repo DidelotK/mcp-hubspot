@@ -194,4 +194,4 @@ class TestToolAPIIntegration:
 
         # Assert
         assert len(result) == 1  # Should return formatted result
-        mock_hubspot_client.get_deals.assert_called_once_with(limit=20, filters={})
+        mock_hubspot_client.get_deals.assert_called_once_with(limit=20, after=None)
