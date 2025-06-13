@@ -216,4 +216,47 @@ Once the MCP server is configured with Claude Desktop, here are examples of inte
 ```
 "Find tech companies with more than 50 employees"
 → filters: {"search": "tech", "employees_gte": 50}
-``` 
+```
+
+## Running the FastAgent interactive example
+
+An interactive conversational agent powered by the **FastAgent** SDK is included in
+`examples/fastagent/agent.py`.  It embeds the HubSpot MCP server declared in
+`fastagent.config.yaml` and lets you chat with your CRM from the console.
+
+### Prerequisites
+
+```bash
+# Install project dependencies (if not done yet)
+uv sync
+
+# Ensure your HubSpot credentials are set
+export HUBSPOT_API_KEY="<your_key>"
+```
+
+### Start the agent
+
+```bash
+uv run examples/fastagent/agent.py
+```
+
+When the script starts you will see a prompt like:
+
+```
+🤖  Sales Agent ready! Type your questions.
+> 
+```
+
+Try something like:
+
+```
+> List the top 5 HubSpot deals over €10 000
+```
+
+The agent will internally call `search_hubspot_deals` (or other appropriate tools)
+and stream back a nicely formatted answer enriched with emojis *plus* a collapsible
+raw-JSON block for advanced inspection.
+
+Press <kbd>Ctrl+C</kbd> to exit the chat.
+
+--- 

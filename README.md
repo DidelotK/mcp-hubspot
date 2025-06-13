@@ -32,6 +32,7 @@ uv run python main.py --mode stdio
 | Example | Description |
 |---------|-------------|
 | **[Basic Test](examples/basic/)** | Python script to test the MCP server with a client |
+| **[FastAgent Chat](examples/fastagent/)** | Interactive chat agent using FastAgent SDK |
 
 ## 🛠️ Available Tools
 
