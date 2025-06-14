@@ -2,28 +2,37 @@
 
 MCP (Model Context Protocol) server for integrating HubSpot with Claude Desktop and other MCP clients. Provides access to HubSpot contacts, companies, and deals through conversational tools.
 
-## 🔀 Installation Approaches
+## 🛠️ Available Tools
 
-This server can be deployed in **two different ways** depending on your needs:
+The server provides **14 tools** for comprehensive HubSpot integration:
 
-### 🏠 **Local Installation (stdio mode)**
-**Best for:** Claude Desktop integration, local development, and direct client integration
+| Category | Tools | Description |
+|----------|--------|-------------|
+| **Contacts** | `list_hubspot_contacts`<br/>`get_hubspot_contact_properties` | List contacts and retrieve contact field properties |
+| **Companies** | `list_hubspot_companies`<br/>`get_hubspot_company_properties` | List companies and retrieve company field properties |
+| **Deals** | `list_hubspot_deals`<br/>`search_hubspot_deals`<br/>`create_deal`<br/>`update_deal`<br/>`get_deal_by_name`<br/>`get_hubspot_deal_properties` | Complete deal management and search capabilities |
+| **Engagements** | `list_hubspot_engagements` | List HubSpot engagements with pagination support |
+| **AI Search** | `semantic_search_hubspot`<br/>`manage_hubspot_embeddings` | AI-powered semantic search using natural language |
+| **System** | `manage_hubspot_cache` | Cache management and statistics |
 
-- ✅ Direct integration with Claude Desktop
-- ✅ Runs locally on your machine
-- ✅ Perfect for personal use
-- ✅ Uses stdio protocol for communication
-- ⚠️ **Requires MCP client configuration** (like Claude Desktop)
+---
 
-### 🌐 **Remote Deployment (SSE mode)**
-**Best for:** Production environments, team usage, scalable deployments
+## ⚡ Usage Examples
 
-- ✅ Production-ready Kubernetes deployment
-- ✅ Scalable and highly available
-- ✅ SSE (Server-Sent Events) protocol
-- ✅ Authentication and security
-- ✅ Multi-user support
-- ⚠️ **Requires Kubernetes cluster and infrastructure setup**
+**Once fully installed and configured** (following the complete installation guides), use natural language phrases with your MCP client:
+
+### 🗣️ **Natural Language Queries**
+- *"List my HubSpot contacts"*
+- *"Find tech sector companies"*
+- *"Show current deals"*
+- *"Create a new deal for Project X"*
+- *"Search for the 'Project X' deal"*
+- *"What contact properties are available?"*
+
+### 🤖 **AI-Powered Semantic Search**
+- *"Find software engineers"* → matches "Developer", "Programmer", "Software Architect"
+- *"Search for enterprise clients"* → finds large companies without exact keywords
+- *"Technology companies in Paris"* → contextual location and industry search
 
 ---
 
@@ -66,37 +75,28 @@ This server can be deployed in **two different ways** depending on your needs:
 
 ---
 
-## 🛠️ Available Tools
+## 🔀 Installation Approaches
 
-The server provides **14 tools** for comprehensive HubSpot integration:
+This server can be deployed in **two different ways** depending on your needs:
 
-| Category | Tools | Description |
-|----------|--------|-------------|
-| **Contacts** | `list_hubspot_contacts`<br/>`get_hubspot_contact_properties` | List contacts and retrieve contact field properties |
-| **Companies** | `list_hubspot_companies`<br/>`get_hubspot_company_properties` | List companies and retrieve company field properties |
-| **Deals** | `list_hubspot_deals`<br/>`search_hubspot_deals`<br/>`create_deal`<br/>`update_deal`<br/>`get_deal_by_name`<br/>`get_hubspot_deal_properties` | Complete deal management and search capabilities |
-| **Engagements** | `list_hubspot_engagements` | List HubSpot engagements with pagination support |
-| **AI Search** | `semantic_search_hubspot`<br/>`manage_hubspot_embeddings` | AI-powered semantic search using natural language |
-| **System** | `manage_hubspot_cache` | Cache management and statistics |
+### 🏠 **Local Installation (stdio mode)**
+**Best for:** Claude Desktop integration, local development, and direct client integration
 
----
+- ✅ Direct integration with Claude Desktop
+- ✅ Runs locally on your machine
+- ✅ Perfect for personal use
+- ✅ Uses stdio protocol for communication
+- ⚠️ **Requires MCP client configuration** (like Claude Desktop)
 
-## ⚡ Usage Examples
+### 🌐 **Remote Deployment (SSE mode)**
+**Best for:** Production environments, team usage, scalable deployments
 
-**Once fully installed and configured** (following the complete installation guides), use natural language phrases with your MCP client:
-
-### 🗣️ **Natural Language Queries**
-- *"List my HubSpot contacts"*
-- *"Find tech sector companies"*
-- *"Show current deals"*
-- *"Create a new deal for Project X"*
-- *"Search for the 'Project X' deal"*
-- *"What contact properties are available?"*
-
-### 🤖 **AI-Powered Semantic Search**
-- *"Find software engineers"* → matches "Developer", "Programmer", "Software Architect"
-- *"Search for enterprise clients"* → finds large companies without exact keywords
-- *"Technology companies in Paris"* → contextual location and industry search
+- ✅ Production-ready Kubernetes deployment
+- ✅ Scalable and highly available
+- ✅ SSE (Server-Sent Events) protocol
+- ✅ Authentication and security
+- ✅ Multi-user support
+- ⚠️ **Requires Kubernetes cluster and infrastructure setup**
 
 ---
 
