@@ -177,9 +177,8 @@ docker-build:
         echo "⚠️  Docker buildx not available, using standard docker build..."; \
         echo "💡 Install docker-buildx-plugin for warning-free builds"; \
         echo "🔨 Building and pushing image..."; \
-        DOCKER_BUILDKIT=1 docker build \
+        docker build \
             --tag ${IMAGE_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} \
-            --platform linux/amd64 \
             .; \
         docker push ${IMAGE_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}; \
         echo "✅ Docker image built and pushed successfully!"; \
@@ -208,9 +207,8 @@ docker-build-local:
         echo "⚠️  Docker buildx not available, using standard docker build..."; \
         echo "💡 Install docker-buildx-plugin for warning-free builds"; \
         echo "🔨 Building image for local use..."; \
-        DOCKER_BUILDKIT=1 docker build \
+        docker build \
             --tag ${IMAGE_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} \
-            --platform linux/amd64 \
             .; \
         echo "✅ Docker image built locally!"; \
     fi

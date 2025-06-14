@@ -44,9 +44,8 @@ else
     
     # Build image with standard docker build
     echo "Building Docker image: ${IMAGE_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
-    DOCKER_BUILDKIT=1 docker build \
+    docker build \
         --tag "${IMAGE_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}" \
-        --platform linux/amd64 \
         .
 
     echo "Pushing Docker image: ${IMAGE_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"

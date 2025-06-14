@@ -105,9 +105,8 @@ build_and_push_image() {
         
         # Build image with standard docker build
         log_info "Building image: $image_name"
-        DOCKER_BUILDKIT=1 docker build \
+        docker build \
             --tag "$image_name" \
-            --platform linux/amd64 \
             .
         
         # Push image
