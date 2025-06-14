@@ -31,7 +31,7 @@ SSE mode is ideal for web-based applications and clients that support HTTP-based
 #### Starting the Server
 
 ```bash
-uv run python main.py --mode sse --host 127.0.0.1 --port 8080
+uv run hubspot-mcp-server --mode sse --host 127.0.0.1 --port 8080
 ```
 
 #### Configuration Options
@@ -44,10 +44,10 @@ uv run python main.py --mode sse --host 127.0.0.1 --port 8080
 
 ```bash
 # Custom host and port
-uv run python main.py --mode sse --host 0.0.0.0 --port 9000
+uv run hubspot-mcp-server --mode sse --host 0.0.0.0 --port 9000
 
-# Enable CORS for web applications
-uv run python main.py --mode sse --host 127.0.0.1 --port 8080 --cors
+# Enable CORS for web applications  
+uv run hubspot-mcp-server --mode sse --host 127.0.0.1 --port 8080 --cors
 ```
 
 #### Client Connection
@@ -64,7 +64,7 @@ stdio mode is perfect for command-line tools and applications that communicate v
 #### Starting the Server
 
 ```bash
-uv run python main.py --mode stdio
+uv run hubspot-mcp-server --mode stdio
 ```
 
 #### Usage in Scripts
@@ -73,7 +73,7 @@ The server communicates via stdin/stdout according to the MCP protocol:
 
 ```bash
 #!/bin/bash
-echo '{"jsonrpc": "2.0", "id": 1, "method": "tools/list"}' | uv run python main.py --mode stdio
+echo '{"jsonrpc": "2.0", "id": 1, "method": "tools/list"}' | uv run hubspot-mcp-server --mode stdio
 ```
 
 ## Environment Configuration
@@ -84,7 +84,7 @@ Set your HubSpot API key before starting the server:
 
 ```bash
 export HUBSPOT_API_KEY="your_hubspot_api_key"
-uv run python main.py --mode sse --port 8080
+uv run hubspot-mcp-server --mode sse --port 8080
 ```
 
 ### Optional Environment Variables

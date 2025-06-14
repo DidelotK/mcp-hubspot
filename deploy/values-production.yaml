@@ -1,0 +1,224 @@
+# HubSpot MCP Server - Production Configuration
+# Using app-component helm chart: https://gitlab.com/keltiotechnology/helm-charts/-/tree/master/app-component
+
+# Global configuration
+global:
+  environment: production
+  domain: "mcp-hubspot.yourdomain.com"
+
+# Application configuration
+app:
+  name: hubspot-mcp-server
+  version: "1.0.0"
+  description: "HubSpot MCP Server for production"
+
+# Image configuration
+image:
+  repository: "your-registry/hubspot-mcp-server"
+  tag: "1.0.0"
+  pullPolicy: IfNotPresent
+  
+# Image pull secrets if using private registry
+imagePullSecrets:
+  - name: registry-secret
+
+# Pod configuration
+pod:
+  replicas: 2
+  
+  # Resource limits and requests
+  resources:
+    requests:
+      cpu: "200m"
+      memory: "256Mi"
+    limits:
+      cpu: "500m"
+      memory: "512Mi"
+  
+  # Security context
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: false
+    capabilities:
+      drop:
+        - ALL
+  
+  # Pod disruption budget
+  podDisruptionBudget:
+    enabled: true
+    minAvailable: 1
+
+# Container configuration
+container:
+  port: 8080
+  
+  # Environment variables
+  env:
+    - name: MODE
+      value: "sse"
+    - name: HOST
+      value: "0.0.0.0"
+    - name: PORT
+      value: "8080"
+    - name: HUBSPOT_API_KEY
+      valueFrom:
+        secretKeyRef:
+          name: hubspot-mcp-secrets
+          key: hubspot-api-key
+    - name: MCP_AUTH_KEY
+      valueFrom:
+        secretKeyRef:
+          name: hubspot-mcp-secrets
+          key: mcp-auth-key
+    - name: MCP_AUTH_HEADER
+      value: "X-API-Key"
+  
+  # Health checks
+  livenessProbe:
+    httpGet:
+      path: /health
+      port: 8080
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+    successThreshold: 1
+  
+  readinessProbe:
+    httpGet:
+      path: /ready
+      port: 8080
+    initialDelaySeconds: 15
+    periodSeconds: 5
+    timeoutSeconds: 3
+    failureThreshold: 3
+    successThreshold: 1
+
+# Service configuration
+service:
+  enabled: true
+  type: ClusterIP
+  port: 80
+  targetPort: 8080
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+
+# Ingress configuration
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/rate-limit: "100"
+    nginx.ingress.kubernetes.io/rate-limit-window: "1m"
+  
+  hosts:
+    - host: mcp-hubspot.yourdomain.com
+      paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: hubspot-mcp-server
+              port:
+                number: 80
+  
+  tls:
+    - secretName: hubspot-mcp-tls
+      hosts:
+        - mcp-hubspot.yourdomain.com
+
+# ServiceAccount configuration
+serviceAccount:
+  create: true
+  name: hubspot-mcp-server
+  annotations:
+    # Add IAM role annotations if using AWS IRSA
+    # eks.amazonaws.com/role-arn: arn:aws:iam::ACCOUNT:role/hubspot-mcp-role
+
+# Network Policy
+networkPolicy:
+  enabled: true
+  policyTypes:
+    - Ingress
+    - Egress
+  
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: ingress-nginx
+      ports:
+        - protocol: TCP
+          port: 8080
+  
+  egress:
+    - to: []
+      ports:
+        - protocol: TCP
+          port: 443  # HTTPS to HubSpot API
+        - protocol: TCP
+          port: 53   # DNS
+        - protocol: UDP
+          port: 53   # DNS
+
+# Horizontal Pod Autoscaler
+hpa:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
+# Monitoring
+monitoring:
+  enabled: true
+  serviceMonitor:
+    enabled: true
+    labels:
+      app: hubspot-mcp-server
+    interval: 30s
+    path: /metrics
+
+# External Secrets Operator configuration
+externalSecrets:
+  enabled: true
+  secretStore:
+    name: aws-secret-store
+    kind: SecretStore
+  
+  secrets:
+    - name: hubspot-mcp-secrets
+      refreshInterval: 1h
+      data:
+        - secretKey: hubspot-api-key
+          remoteRef:
+            key: production/hubspot/api-key
+            property: value
+        - secretKey: mcp-auth-key
+          remoteRef:
+            key: production/hubspot/mcp-auth-key
+            property: value
+
+# Labels to be applied to all resources
+commonLabels:
+  app.kubernetes.io/name: hubspot-mcp-server
+  app.kubernetes.io/instance: production
+  app.kubernetes.io/version: "1.0.0"
+  app.kubernetes.io/component: api-server
+  app.kubernetes.io/part-of: mcp-platform
+  app.kubernetes.io/managed-by: helm
+  environment: production
+
+# Annotations to be applied to all resources
+commonAnnotations:
+  deployment.kubernetes.io/revision: "1"
+  meta.helm.sh/release-name: hubspot-mcp-server
+  meta.helm.sh/release-namespace: production 

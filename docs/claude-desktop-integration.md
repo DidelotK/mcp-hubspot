@@ -55,7 +55,7 @@ For development or local installation, add this configuration to your JSON file:
       "args": [
         "run", 
         "python", 
-        "/path/to/your/project/main.py",
+        "/path/to/your/project/scripts/run_mcp_hubspot.sh",
         "--mode", 
         "stdio"
       ],
@@ -132,7 +132,7 @@ Here's a complete `claude_desktop_config.json` example:
       "args": [
         "run", 
         "python", 
-        "/home/user/projects/mcp-hubspot/main.py",
+        "/home/user/projects/mcp-hubspot/scripts/run_mcp_hubspot.sh",
         "--mode", 
         "stdio"
       ],
@@ -154,10 +154,10 @@ If you need to use a wrapper script or custom startup command:
 {
   "mcpServers": {
     "hubspot": {
-      "command": "/path/to/custom/script.sh",
-      "args": [
-        "/path/to/project/main.py"
-      ],
+          "command": "/path/to/custom/script.sh",
+    "args": [
+      "/path/to/project/scripts/run_mcp_hubspot.sh"
+    ],
       "env": {
         "HUBSPOT_API_KEY": "your_hubspot_api_key"
       }
@@ -178,9 +178,10 @@ To enable debug logging:
     "hubspot": {
       "command": "uv",
       "args": [
-        "run", 
-        "python", 
-        "/path/to/project/main.py",
+        "run",
+        "--directory",
+        "/path/to/project",
+        "hubspot-mcp-server",
         "--mode", 
         "stdio"
       ],

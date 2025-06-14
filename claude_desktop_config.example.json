@@ -1,16 +1,17 @@
 {
   "mcpServers": {
-    "hubspot": {
+    "hubspot-mcp-server": {
       "command": "uv",
       "args": [
-        "run", 
-        "python", 
-        "/CHEMIN_ABSOLU_VERS_VOTRE_PROJET/main.py",
-        "--mode", 
+        "run",
+        "--directory",
+        "/CHEMIN_ABSOLU_VERS_VOTRE_PROJET",
+        "hubspot-mcp-server",
+        "--mode",
         "stdio"
       ],
       "env": {
-        "HUBSPOT_API_KEY": "VOTRE_CLE_API_HUBSPOT"
+        "HUBSPOT_API_KEY": "YOUR_HUBSPOT_API_KEY_HERE"
       }
     }
   }

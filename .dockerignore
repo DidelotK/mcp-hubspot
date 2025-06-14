@@ -1,0 +1,119 @@
+# Git
+.git
+.gitignore
+.github
+
+# Documentation
+README.md
+docs/
+*.md
+
+# Development files
+.vscode/
+.cursor/
+.idea/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.python-version
+
+# Testing
+.tox/
+.nox/
+.coverage
+.pytest_cache/
+htmlcov/
+.coverage.*
+coverage.xml
+*.cover
+.hypothesis/
+reports/
+bandit_report.json
+lint_report.md
+
+# MyPy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Deployment files (not needed in container)
+deploy/
+k8s/
+helm/
+terraform/
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+.travis.yml
+.circleci/
+
+# IDE
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+
+# Scripts (except entrypoint)
+scripts/
+!docker-entrypoint.sh
+
+# Examples and tests
+examples/
+tests/
+
+# Lock files (will be copied separately if needed)
+poetry.lock
+Pipfile.lock
+yarn.lock
+package-lock.json
+
+# Node modules
+node_modules/
+
+# Cache directories
+.cache/
+.npm/
+.yarn/ 

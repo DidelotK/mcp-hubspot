@@ -79,13 +79,13 @@ Make sure your API key has the following permissions:
 ### stdio mode (for Claude Desktop)
 
 ```bash
-uv run python main.py --mode stdio
+uv run hubspot-mcp-server --mode stdio
 ```
 
 ### SSE mode (for other MCP clients)
 
 ```bash
-uv run python main.py --mode sse --host 127.0.0.1 --port 8080
+uv run hubspot-mcp-server --mode sse --host 127.0.0.1 --port 8080
 ```
 
 ## Installation Verification

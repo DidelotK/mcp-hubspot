@@ -106,7 +106,7 @@ Before starting integration tests, ensure:
 
 ```bash
 # Start server in SSE mode
-uv run python main.py --mode sse --host 127.0.0.1 --port 8080
+uv run hubspot-mcp-server --mode sse --host 127.0.0.1 --port 8080
 ```
 
 **Expected Output:**
@@ -174,7 +174,7 @@ curl -X POST http://127.0.0.1:8080/mcp \
 #### Basic Communication Test
 
 ```bash
-echo '{"jsonrpc": "2.0", "id": 1, "method": "tools/list"}' | uv run python main.py --mode stdio
+echo '{"jsonrpc": "2.0", "id": 1, "method": "tools/list"}' | uv run hubspot-mcp-server --mode stdio
 ```
 
 **Expected Output:**
@@ -191,7 +191,7 @@ echo '{
     "name": "list_hubspot_contacts",
     "arguments": {"limit": 3}
   }
-}' | uv run python main.py --mode stdio
+}' | uv run hubspot-mcp-server --mode stdio
 ```
 
 **Expected Output:**
@@ -526,7 +526,7 @@ jobs:
     
     - name: Start MCP Server
       run: |
-        uv run python main.py --mode sse --port 8080 &
+        uv run hubspot-mcp-server --mode sse --port 8080 &
         sleep 5
       env:
         HUBSPOT_API_KEY: ${{ secrets.HUBSPOT_API_KEY }}

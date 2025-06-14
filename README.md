@@ -14,7 +14,7 @@ uv sync
 export HUBSPOT_API_KEY="your_api_key"
 
 # Start
-uv run python main.py --mode stdio
+uv run hubspot-mcp-server --mode stdio
 ```
 
 ## 📚 Documentation

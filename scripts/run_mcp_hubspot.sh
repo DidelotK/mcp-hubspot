@@ -35,11 +35,12 @@ export PATH="$USER_LOCAL_BIN:$USER_CARGO_BIN:$NODE_BIN:$PATH"
 # Change to project directory
 cd "$PROJECT_DIR"
 
-# Validate that we're in the right directory
-if [ ! -f "main.py" ]; then
-    echo "Error: main.py not found in $PROJECT_DIR" >&2
+# Validate that we're in the right directory by checking for pyproject.toml
+if [ ! -f "pyproject.toml" ]; then
+    echo "Error: pyproject.toml not found in $PROJECT_DIR" >&2
+    echo "Make sure you're running this script from the correct project directory" >&2
     exit 1
 fi
 
-# Launch the MCP server (API key should be provided via environment)
-exec "$UV_PATH" run python main.py "$@"
+# Launch the MCP server using the official entry point
+exec "$UV_PATH" run hubspot-mcp-server "$@"

@@ -60,15 +60,15 @@ test-html:
 
 # Start the server in stdio mode (for Claude Desktop)
 server-stdio:
-    uv run python main.py --mode stdio
+    uv run hubspot-mcp-server --mode stdio
 
 # Start the server in SSE mode on default port (8080)
 server-sse:
-    uv run python main.py --mode sse
+    uv run hubspot-mcp-server --mode sse
 
 # Start the server in SSE mode on custom host and port
 server-sse-custom host="localhost" port="8080":
-    uv run python main.py --mode sse --host {{host}} --port {{port}}
+    uv run hubspot-mcp-server --mode sse --host {{host}} --port {{port}}
 
 # Install dependencies
 install:
@@ -80,31 +80,34 @@ install-dev:
 
 # Run code quality checks
 lint:
-    uv run black --check src tests main.py
-    uv run isort --check-only src tests main.py
-    uv run flake8 src tests main.py
+    uv run black --check src tests
+    uv run isort --check-only src tests
+    uv run flake8 src tests
 
 # Run rigorous static type checking over the full codebase
 type-check:
-    timeout 120 uv run mypy src/hubspot_mcp --config-file mypy.ini || echo "⚠️ Type checking timeout or issues"
+    uv run mypy src
 
 # Format code
 format:
-    uv run black src tests main.py
-    uv run isort src tests main.py
+    uv run black src tests
+    uv run isort src tests
 
 # Run security checks
 security:
-    uv run bandit -r src main.py
+    uv run bandit -r src
 
 # Clean cache and build artifacts
 clean:
-    rm -rf __pycache__ .pytest_cache .coverage htmlcov reports
-    find . -type d -name "*.egg-info" -exec rm -rf {} +
-    find . -type d -name "__pycache__" -exec rm -rf {} +
+    find . -type f -name "*.pyc" -delete
+    find . -type d -name "__pycache__" -delete
+    find . -type d -name ".pytest_cache" -delete
+    find . -type f -name "*.coverage" -delete
+    rm -rf htmlcov/
+    rm -rf .coverage
 
 # Run all quality checks (lint, test, security)
-check: lint type-check test security
+check: lint type-check security test
 
 # Build the package
 build:
@@ -217,7 +220,7 @@ help-test:
     @echo "  just test           # Run tests with coverage report"
     @echo "  just test-watch     # Run tests in watch mode"
     @echo "  just test-html      # Generate HTML coverage report"
-    @echo ""
+    echo ""
     @echo "📊 Coverage requirements:"
     @echo "  - Minimum coverage: 90%"
     @echo "  - HTML report saved to htmlcov/"

@@ -1,0 +1,34 @@
+apiVersion: v2
+name: hubspot-mcp-server
+description: HubSpot MCP Server Helm Chart for production deployment
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+
+# Keywords for chart discovery
+keywords:
+  - mcp
+  - hubspot
+  - api
+  - server
+  - crm
+
+# Maintainers information
+maintainers:
+  - name: Keltio Technology
+    email: kevin@keltio.fr
+
+# Dependencies - Using app-component helm chart
+dependencies:
+  - name: app-component
+    version: "^3.14.0"
+    repository: "https://gitlab.com/keltiotechnology/helm-charts"
+    condition: app-component.enabled
+
+# Minimum Kubernetes version
+kubeVersion: ">=1.19.0"
+
+# Annotations
+annotations:
+  category: API
+  licenses: Apache-2.0 

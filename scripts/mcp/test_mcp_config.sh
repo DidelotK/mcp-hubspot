@@ -62,13 +62,13 @@ else
     exit 1
 fi
 
-# 5. Check if main.py exists
-echo -e "\n${BLUE}🐍 Checking main.py...${NC}"
-MAIN_PY="$PROJECT_DIR/main.py"
-if [ -f "$MAIN_PY" ]; then
-    echo -e "${GREEN}✅ main.py found: $MAIN_PY${NC}"
+# 5. Check if main module exists
+echo -e "\n${BLUE}🐍 Checking main module...${NC}"
+MAIN_MODULE="$PROJECT_DIR/src/hubspot_mcp/__main__.py"
+if [ -f "$MAIN_MODULE" ]; then
+    echo -e "${GREEN}✅ Main module found: $MAIN_MODULE${NC}"
 else
-    echo -e "${RED}❌ main.py not found: $MAIN_PY${NC}"
+    echo -e "${RED}❌ Main module not found: $MAIN_MODULE${NC}"
     exit 1
 fi
 

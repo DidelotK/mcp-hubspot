@@ -51,7 +51,7 @@ uv sync --dev
 uv run python -c "import hubspot_mcp; print('✅ Package installed successfully')"
 
 # Test the server
-uv run python main.py --help
+uv run hubspot-mcp-server --help
 ```
 
 ### 2. Local Package Installation

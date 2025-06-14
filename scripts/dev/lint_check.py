@@ -1,143 +1,96 @@
 #!/usr/bin/env python3
 """
-Script to check code quality and generate a report
-for Pull Request comments.
+Comprehensive code quality check script for the HubSpot MCP Server.
+Runs formatting, import organization, linting, type checking, security analysis, and tests.
 """
 
-import os
 import subprocess
 import sys
+from pathlib import Path
 
+# Colors for output
+class Colors:
+    RED = '\033[0;31m'
+    GREEN = '\033[0;32m'
+    YELLOW = '\033[1;33m'
+    BLUE = '\033[0;34m'
+    NC = '\033[0m'  # No Color
 
-def run_command(command):
-    """Execute a command and return exit code, stdout and stderr."""
-    result = subprocess.run(command, shell=True, capture_output=True, text=True)
-    return result.returncode, result.stdout, result.stderr
-
-
-def check_black():
-    """Check formatting with Black."""
-    print("🔍 Checking formatting with Black...")
-    return_code, stdout, stderr = run_command(
-        "uv run black --check --diff src/ main.py tests/ scripts/"
-    )
-
-    if return_code == 0:
-        print("✅ Black formatting: OK")
-        return True, ""
-    else:
-        print("❌ Black formatting: Issues found")
-        return False, f"**Black formatting issues:**\n```\n{stdout}\n{stderr}\n```\n"
-
-
-def check_isort():
-    """Check import organization with isort."""
-    print("🔍 Checking imports with isort...")
-    return_code, stdout, stderr = run_command(
-        "uv run isort --check-only --diff src/ main.py tests/ scripts/"
-    )
-
-    if return_code == 0:
-        print("✅ isort imports: OK")
-        return True, ""
-    else:
-        print("❌ isort imports: Issues found")
-        return False, f"**Import organization issues:**\n```\n{stdout}\n{stderr}\n```\n"
-
-
-def check_flake8():
-    """Check PEP 8 compliance with flake8."""
-    print("🔍 Checking PEP 8 with flake8...")
-    return_code, stdout, stderr = run_command(
-        "uv run flake8 src/ main.py tests/ scripts/"
-    )
-
-    if return_code == 0:
-        print("✅ flake8 PEP 8: OK")
-        return True, ""
-    else:
-        print("❌ flake8 PEP 8: Issues found")
-        return False, f"**PEP 8 issues:**\n```\n{stdout}\n{stderr}\n```\n"
-
-
-def check_mypy():
-    """Check types with mypy."""
-    print("🔍 Checking types with mypy...")
-    return_code, stdout, stderr = run_command(
-        "timeout 120 uv run mypy src/hubspot_mcp --config-file=mypy.ini"
-    )
-
-    if return_code == 0:
-        print("✅ mypy types: OK")
-        return True, ""
-    elif return_code == 124:
-        print("⏰ mypy types: Timeout (skipping for now)")
-        return (
-            True,
-            "**Type checking timeout (will be fixed):**\nMypy took too long, skipping for CI stability.\n",
+def run_command(command: str, description: str) -> tuple[bool, str]:
+    """Run a command and return success status and output."""
+    print(f"{Colors.BLUE}🔍 {description}...{Colors.NC}")
+    
+    try:
+        result = subprocess.run(
+            command.split(),
+            capture_output=True,
+            text=True,
+            check=False
         )
-    else:
-        print("❌ mypy types: Issues found")
-        return False, f"**Type checking issues:**\n```\n{stdout}\n{stderr}\n```\n"
-
+        
+        if result.returncode == 0:
+            print(f"{Colors.GREEN}✅ {description} passed{Colors.NC}")
+            return True, result.stdout
+        else:
+            print(f"{Colors.RED}❌ {description} failed{Colors.NC}")
+            if result.stderr:
+                print(f"{Colors.YELLOW}Error details:{Colors.NC}")
+                print(result.stderr)
+            return False, result.stderr
+            
+    except Exception as e:
+        print(f"{Colors.RED}❌ {description} failed with exception: {e}{Colors.NC}")
+        return False, str(e)
 
 def main():
-    """Main function to execute all checks."""
-    print("🚀 Starting code quality checks...\n")
-
-    all_passed = True
-    report = "## 📊 Code Quality Report\n\n"
-
-    # Execute all checks
+    """Main entry point for quality checks."""
+    print(f"{Colors.BLUE}🚀 Starting comprehensive code quality checks...{Colors.NC}\n")
+    
+    project_root = Path(__file__).parent.parent.parent
+    
+    # Change to project directory
+    import os
+    os.chdir(project_root)
+    
     checks = [
-        ("Black Formatting", check_black),
-        ("Import Organization (isort)", check_isort),
-        ("PEP 8 Compliance (flake8)", check_flake8),
-        ("Type Checking (mypy)", check_mypy),
+        ("uv run black --check --diff src/ tests/ scripts/", "Code formatting (black)"),
+        ("uv run isort --check-only --diff src/ tests/ scripts/", "Import organization (isort)"),
+        ("uv run flake8 src/ tests/ scripts/", "Code linting (flake8)"),
+        ("uv run mypy src/", "Type checking (mypy)"),
+        ("uv run bandit -r src/ -f json", "Security analysis (bandit)"),
+        ("uv run pytest --cov=src --cov-report=term-missing --cov-fail-under=90", "Unit tests with coverage"),
     ]
-
-    issues = []
-
-    for check_name, check_func in checks:
-        passed, error_details = check_func()
-        if passed:
-            report += f"✅ **{check_name}**: OK\n"
-        else:
-            all_passed = False
-            report += f"❌ **{check_name}**: Issues found\n"
-            issues.append(error_details)
-        print()  # Empty line for readability
-
-    # Generate final report
-    if all_passed:
-        report += "\nAll code quality checks passed!\n\n"
-        print("🎉 All quality checks passed!")
+    
+    results = []
+    for command, description in checks:
+        success, output = run_command(command, description)
+        results.append((success, description, output))
+    
+    # Summary
+    print(f"\n{Colors.BLUE}📊 Quality Check Summary{Colors.NC}")
+    print(f"{Colors.BLUE}{'='*40}{Colors.NC}")
+    
+    passed = sum(1 for success, _, _ in results if success)
+    total = len(results)
+    
+    for success, description, _ in results:
+        status = f"{Colors.GREEN}✅" if success else f"{Colors.RED}❌"
+        print(f"{status} {description}{Colors.NC}")
+    
+    print(f"\n{Colors.BLUE}Results: {passed}/{total} checks passed{Colors.NC}")
+    
+    if passed == total:
+        print(f"{Colors.GREEN}🎉 All quality checks passed! ✨{Colors.NC}")
+        return 0
     else:
-        report += "\nSome quality checks failed. Please fix the following issues:\n\n"
-        for issue in issues:
-            report += issue + "\n"
-
-        # Add correction instructions
-        report += "### 🔧 How to fix:\n"
-        report += "```bash\n"
-        report += "# Auto-fix formatting and imports\n"
-        report += "uv run black src/ main.py tests/ scripts/\n"
-        report += "uv run isort src/ main.py tests/ scripts/\n\n"
-        report += "# Check remaining issues\n"
-        report += "uv run flake8 src/ main.py tests/ scripts/\n"
-        report += "uv run mypy src/ main.py\n"
-        report += "```\n"
-
-    # Save report for GitHub
-    os.makedirs("reports", exist_ok=True)
-    with open("lint_report.md", "w") as f:
-        f.write(report)
-
-    print(f"\n📄 Report saved to lint_report.md")
-
-    # Exit with appropriate code
-    sys.exit(0 if all_passed else 1)
-
+        print(f"{Colors.RED}❌ Some quality checks failed{Colors.NC}")
+        print(f"\n{Colors.YELLOW}🔧 To fix formatting and import issues, run:{Colors.NC}")
+        print("uv run black src/ tests/ scripts/")
+        print("uv run isort src/ tests/ scripts/")
+        print(f"\n{Colors.YELLOW}🔧 To fix linting issues, run:{Colors.NC}")
+        print("uv run flake8 src/ tests/ scripts/")
+        print("uv run mypy src/")
+        return 1
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

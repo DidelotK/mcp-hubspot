@@ -1,0 +1,198 @@
+#!/bin/bash
+set -euo pipefail
+
+# Configuration
+NAMESPACE="${NAMESPACE:-production}"
+RELEASE_NAME="${RELEASE_NAME:-hubspot-mcp-server}"
+CHART_VERSION="${CHART_VERSION:-1.0.0}"
+DOMAIN="${DOMAIN:-mcp-hubspot.yourdomain.com}"
+IMAGE_TAG="${IMAGE_TAG:-1.0.0}"
+IMAGE_REGISTRY="${IMAGE_REGISTRY:-your-registry}"
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# Logging functions
+log_info() {
+    echo -e "${BLUE}[INFO]${NC} $1"
+}
+
+log_success() {
+    echo -e "${GREEN}[SUCCESS]${NC} $1"
+}
+
+log_warning() {
+    echo -e "${YELLOW}[WARNING]${NC} $1"
+}
+
+log_error() {
+    echo -e "${RED}[ERROR]${NC} $1"
+}
+
+# Function to check if command exists
+command_exists() {
+    command -v "$1" >/dev/null 2>&1
+}
+
+# Validate prerequisites
+validate_prerequisites() {
+    log_info "Validating prerequisites..."
+    
+    # Check required commands
+    local required_commands=("kubectl" "helm" "docker")
+    for cmd in "${required_commands[@]}"; do
+        if ! command_exists "$cmd"; then
+            log_error "$cmd is required but not installed"
+            exit 1
+        fi
+    done
+    
+    # Check kubectl context
+    local current_context=$(kubectl config current-context)
+    log_info "Current kubectl context: $current_context"
+    
+    # Check if namespace exists
+    if ! kubectl get namespace "$NAMESPACE" >/dev/null 2>&1; then
+        log_warning "Namespace $NAMESPACE does not exist, creating it..."
+        kubectl create namespace "$NAMESPACE"
+        kubectl label namespace "$NAMESPACE" name="$NAMESPACE"
+    fi
+    
+    log_success "Prerequisites validated"
+}
+
+# Build and push Docker image
+build_and_push_image() {
+    log_info "Building and pushing Docker image..."
+    
+    local image_name="${IMAGE_REGISTRY}/hubspot-mcp-server:${IMAGE_TAG}"
+    
+    # Build image
+    log_info "Building image: $image_name"
+    docker build -t "$image_name" .
+    
+    # Push image
+    log_info "Pushing image: $image_name"
+    docker push "$image_name"
+    
+    log_success "Image built and pushed: $image_name"
+}
+
+# Deploy with Helm
+deploy_helm_chart() {
+    log_info "Deploying Helm chart..."
+    
+    # Add Keltio Technology repository
+    helm repo add keltio https://gitlab.com/keltiotechnology/helm-charts
+    helm repo update
+    
+    # Update dependencies
+    helm dependency update ./deploy
+    
+    # Deploy with Helm
+    helm upgrade --install "$RELEASE_NAME" ./deploy \
+        --namespace "$NAMESPACE" \
+        --values ./deploy/values-production.yaml \
+        --set image.repository="${IMAGE_REGISTRY}/hubspot-mcp-server" \
+        --set image.tag="$IMAGE_TAG" \
+        --set ingress.hosts[0].host="$DOMAIN" \
+        --set ingress.tls[0].hosts[0]="$DOMAIN" \
+        --wait \
+        --timeout=600s
+    
+    log_success "Helm chart deployed successfully"
+}
+
+# Verify deployment
+verify_deployment() {
+    log_info "Verifying deployment..."
+    
+    # Wait for pods to be ready
+    kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=hubspot-mcp-server -n "$NAMESPACE" --timeout=300s
+    
+    # Check deployment status
+    kubectl get deployment "$RELEASE_NAME" -n "$NAMESPACE"
+    kubectl get pods -l app.kubernetes.io/name=hubspot-mcp-server -n "$NAMESPACE"
+    kubectl get services -l app.kubernetes.io/name=hubspot-mcp-server -n "$NAMESPACE"
+    kubectl get ingress -n "$NAMESPACE"
+    
+    # Test health endpoint
+    local service_url="https://$DOMAIN/health"
+    log_info "Testing health endpoint: $service_url"
+    
+    # Wait a bit for ingress to be ready
+    sleep 30
+    
+    if curl -f -s "$service_url" >/dev/null; then
+        log_success "Health endpoint is responding"
+    else
+        log_warning "Health endpoint is not yet responding (this may take a few minutes for DNS/TLS)"
+    fi
+    
+    log_success "Deployment verification completed"
+}
+
+# Main deployment function
+deploy() {
+    log_info "Starting deployment of HubSpot MCP Server..."
+    log_info "Namespace: $NAMESPACE"
+    log_info "Release: $RELEASE_NAME"
+    log_info "Domain: $DOMAIN"
+    log_info "Image: ${IMAGE_REGISTRY}/hubspot-mcp-server:${IMAGE_TAG}"
+    
+    validate_prerequisites
+    build_and_push_image
+    deploy_helm_chart
+    verify_deployment
+    
+    log_success "Deployment completed successfully!"
+    log_info "Access your MCP server at: https://$DOMAIN"
+    log_info "Health check: https://$DOMAIN/health"
+    log_info "Readiness check: https://$DOMAIN/ready"
+}
+
+# Rollback function
+rollback() {
+    local revision=${1:-}
+    log_info "Rolling back deployment..."
+    
+    if [ -n "$revision" ]; then
+        helm rollback "$RELEASE_NAME" "$revision" -n "$NAMESPACE"
+    else
+        helm rollback "$RELEASE_NAME" -n "$NAMESPACE"
+    fi
+    
+    log_success "Rollback completed"
+}
+
+# Cleanup function
+cleanup() {
+    log_info "Cleaning up deployment..."
+    
+    helm uninstall "$RELEASE_NAME" -n "$NAMESPACE"
+    kubectl delete externalsecret hubspot-mcp-secrets -n "$NAMESPACE" --ignore-not-found
+    kubectl delete secret hubspot-mcp-secrets -n "$NAMESPACE" --ignore-not-found
+    
+    log_success "Cleanup completed"
+}
+
+# Parse command line arguments
+case "${1:-deploy}" in
+    deploy)
+        deploy
+        ;;
+    rollback)
+        rollback "${2:-}"
+        ;;
+    cleanup)
+        cleanup
+        ;;
+    *)
+        echo "Usage: $0 {deploy|rollback [revision]|cleanup}"
+        exit 1
+        ;;
+esac 

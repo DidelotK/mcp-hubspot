@@ -47,7 +47,7 @@ This guide helps you diagnose and resolve common issues when integrating the Hub
          "args": [
            "run", 
            "python", 
-           "/correct/absolute/path/to/your/project/main.py",
+           "/correct/absolute/path/to/your/project/scripts/run_mcp_hubspot.sh",
            "--mode", 
            "stdio"
          ]
@@ -134,7 +134,7 @@ This guide helps you diagnose and resolve common issues when integrating the Hub
    # Try starting server manually
    cd /path/to/project
    export HUBSPOT_API_KEY="your-api-key"
-   uv run python main.py --mode stdio
+   uv run hubspot-mcp-server --mode stdio
    ```
 
 3. **Check for Port Conflicts**
@@ -145,9 +145,9 @@ This guide helps you diagnose and resolve common issues when integrating the Hub
 
 4. **Verify File Permissions**
    ```bash
-   # Ensure the main.py file is executable
-   ls -la /path/to/project/main.py
-   chmod +x /path/to/project/main.py
+   # Ensure the wrapper script is executable
+   ls -la /path/to/project/scripts/run_mcp_hubspot.sh
+   chmod +x /path/to/project/scripts/run_mcp_hubspot.sh
    ```
 
 ### 2. MCP Client Integration Issues
@@ -164,7 +164,7 @@ This guide helps you diagnose and resolve common issues when integrating the Hub
 1. **Verify Server is Running**
    ```bash
    # Start server in SSE mode
-   uv run python main.py --mode sse --host 127.0.0.1 --port 8080
+   uv run hubspot-mcp-server --mode sse --host 127.0.0.1 --port 8080
    
    # Check if server is listening
    netstat -tulpn | grep 8080
@@ -187,7 +187,7 @@ This guide helps you diagnose and resolve common issues when integrating the Hub
 4. **Try Different Port**
    ```bash
    # Use alternative port
-   uv run python main.py --mode sse --port 8081
+   uv run hubspot-mcp-server --mode sse --port 8081
    ```
 
 #### stdio Mode Communication Issues
@@ -203,7 +203,7 @@ This guide helps you diagnose and resolve common issues when integrating the Hub
    ```bash
    # Simple echo test
    echo '{"jsonrpc": "2.0", "id": 1, "method": "tools/list"}' | \
-     uv run python main.py --mode stdio
+     uv run hubspot-mcp-server --mode stdio
    ```
 
 2. **Check Input Format**
@@ -217,7 +217,7 @@ This guide helps you diagnose and resolve common issues when integrating the Hub
    # Export API key before running
    export HUBSPOT_API_KEY="your-api-key"
    echo '{"jsonrpc": "2.0", "id": 1, "method": "tools/list"}' | \
-     uv run python main.py --mode stdio
+     uv run hubspot-mcp-server --mode stdio
    ```
 
 ### 3. API and Network Issues
@@ -367,7 +367,7 @@ This guide helps you diagnose and resolve common issues when integrating the Hub
 ```bash
 # Enable detailed logging
 export LOG_LEVEL=DEBUG
-uv run python main.py --mode stdio
+uv run hubspot-mcp-server --mode stdio
 ```
 
 ### 2. Use Logging to File
@@ -375,7 +375,7 @@ uv run python main.py --mode stdio
 ```bash
 # Redirect logs to file for analysis
 export LOG_LEVEL=DEBUG
-uv run python main.py --mode stdio 2> debug.log
+uv run hubspot-mcp-server --mode stdio 2> debug.log
 ```
 
 ### 3. Network Debugging
@@ -424,7 +424,7 @@ time curl -X POST http://127.0.0.1:8080/mcp \
 ```bash
 # Monitor memory usage
 ps aux | grep python
-top -p $(pgrep -f "main.py")
+top -p $(pgrep -f "hubspot-mcp-server")
 ```
 
 **Solutions:**
@@ -454,13 +454,13 @@ iotop
 
 ```bash
 # Kill existing server processes
-pkill -f "main.py"
+pkill -f "hubspot-mcp-server"
 
 # Clean restart
 cd /path/to/project
 uv sync
 export HUBSPOT_API_KEY="your-api-key"
-uv run python main.py --mode sse --port 8080
+uv run hubspot-mcp-server --mode sse --port 8080
 ```
 
 ### 2. Configuration Reset
@@ -476,9 +476,10 @@ cat > ~/.config/claude/claude_desktop_config.json << EOF
     "hubspot": {
       "command": "uv",
       "args": [
-        "run", 
-        "python", 
-        "/path/to/your/project/main.py",
+        "run",
+        "--directory",
+        "/path/to/your/project",
+        "hubspot-mcp-server",
         "--mode", 
         "stdio"
       ],
@@ -514,7 +515,7 @@ uv --version
 
 # Collect error logs
 export LOG_LEVEL=DEBUG
-uv run python main.py --mode stdio 2> error.log
+uv run hubspot-mcp-server --mode stdio 2> error.log
 
 # Collect configuration
 cat ~/.config/claude/claude_desktop_config.json (remove API key)
@@ -577,10 +578,10 @@ sudo tcpdump -i any -w hubspot_traffic.pcap port 443 and host api.hubapi.com
 
 ```bash
 # Trace system calls (Linux)
-strace -f -o trace.log uv run python main.py --mode stdio
+strace -f -o trace.log uv run hubspot-mcp-server --mode stdio
 
 # Trace on macOS
-sudo dtruss -f -o trace.log uv run python main.py --mode stdio
+sudo dtruss -f -o trace.log uv run hubspot-mcp-server --mode stdio
 ```
 
 ### 3. Memory Profiling

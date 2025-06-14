@@ -1,0 +1,61 @@
+# HubSpot MCP Server - Production Environment Variables
+# Copy this file to environment.prod and fill in your values
+
+# Kubernetes Configuration
+NAMESPACE=production
+RELEASE_NAME=hubspot-mcp-server
+CHART_VERSION=1.0.0
+
+# Domain Configuration
+DOMAIN=mcp-hubspot.keltio.fr
+TLS_SECRET_NAME=hubspot-mcp-tls
+
+# Docker Image Configuration
+IMAGE_REGISTRY=your-registry.com
+IMAGE_NAME=hubspot-mcp-server
+IMAGE_TAG=1.0.0
+
+# HubSpot Configuration
+HUBSPOT_API_KEY=your-hubspot-api-key-here
+
+# MCP Authentication Configuration
+MCP_AUTH_KEY=your-mcp-auth-key-here
+MCP_AUTH_HEADER=X-API-Key
+
+# AWS Configuration (if using External Secrets with AWS)
+AWS_REGION=us-west-2
+AWS_SECRET_NAME=production/hubspot/api-key
+AWS_MCP_AUTH_SECRET_NAME=production/hubspot/mcp-auth-key
+
+# Monitoring Configuration
+MONITORING_ENABLED=true
+PROMETHEUS_NAMESPACE=monitoring
+
+# Security Configuration
+NETWORK_POLICY_ENABLED=true
+POD_SECURITY_CONTEXT_ENABLED=true
+
+# Resource Configuration
+REPLICA_COUNT=2
+CPU_REQUEST=200m
+CPU_LIMIT=500m
+MEMORY_REQUEST=256Mi
+MEMORY_LIMIT=512Mi
+
+# Autoscaling Configuration
+HPA_ENABLED=true
+HPA_MIN_REPLICAS=2
+HPA_MAX_REPLICAS=10
+HPA_TARGET_CPU=80
+HPA_TARGET_MEMORY=80
+
+# Ingress Configuration
+INGRESS_CLASS=nginx
+INGRESS_RATE_LIMIT=100
+INGRESS_RATE_LIMIT_WINDOW=1m
+
+# Health Check Configuration
+HEALTH_CHECK_PATH=/health
+READINESS_CHECK_PATH=/ready
+LIVENESS_INITIAL_DELAY=30
+READINESS_INITIAL_DELAY=15 

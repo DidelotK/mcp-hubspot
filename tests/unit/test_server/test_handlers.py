@@ -23,7 +23,7 @@ def test_parse_arguments_defaults(monkeypatch: pytest.MonkeyPatch) -> None:
     Args:
         monkeypatch: Pytest fixture for patching.
     """
-    monkeypatch.setattr(sys, "argv", ["main.py"])
+    monkeypatch.setattr(sys, "argv", ["hubspot-mcp-server"])
     args = parse_arguments()
     assert args.mode == "stdio"
     assert args.host == "localhost"
@@ -42,7 +42,7 @@ def test_parse_arguments_sse(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(
         sys,
         "argv",
-        ["main.py", "--mode", "sse", "--host", "0.0.0.0", "--port", "9090"],
+        ["hubspot-mcp-server", "--mode", "sse", "--host", "0.0.0.0", "--port", "9090"],
     )
     args = parse_arguments()
     assert args.mode == "sse"

@@ -53,7 +53,7 @@ def test_main_script_block_general_exception():
 
 def test_parse_arguments_default():
     """Test parse_arguments function with default values."""
-    with patch("sys.argv", ["main.py"]):
+    with patch("sys.argv", ["hubspot-mcp-server"]):
         args = main.parse_arguments()
         assert args.mode == "stdio"
         assert args.host == "localhost"
@@ -62,7 +62,7 @@ def test_parse_arguments_default():
 
 def test_parse_arguments_stdio_mode():
     """Test parse_arguments function with stdio mode."""
-    with patch("sys.argv", ["main.py", "--mode", "stdio"]):
+    with patch("sys.argv", ["hubspot-mcp-server", "--mode", "stdio"]):
         args = main.parse_arguments()
         assert args.mode == "stdio"
         assert args.host == "localhost"
@@ -72,7 +72,7 @@ def test_parse_arguments_stdio_mode():
 def test_parse_arguments_sse_mode():
     """Test parse_arguments function with SSE mode and custom host/port."""
     with patch(
-        "sys.argv", ["main.py", "--mode", "sse", "--host", "0.0.0.0", "--port", "9000"]
+        "sys.argv", ["hubspot-mcp-server", "--mode", "sse", "--host", "0.0.0.0", "--port", "9000"]
     ):
         args = main.parse_arguments()
         assert args.mode == "sse"
@@ -82,7 +82,7 @@ def test_parse_arguments_sse_mode():
 
 def test_parse_arguments_help():
     """Test parse_arguments function help functionality."""
-    with patch("sys.argv", ["main.py", "--help"]):
+    with patch("sys.argv", ["hubspot-mcp-server", "--help"]):
         with pytest.raises(SystemExit) as exc_info:
             main.parse_arguments()
         assert exc_info.value.code == 0

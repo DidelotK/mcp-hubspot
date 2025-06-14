@@ -118,12 +118,12 @@ uv run pytest
 uv run pytest --cov=src --cov-report=html
 
 # Code formatting
-uv run black src/ main.py tests/ scripts/
-uv run isort src/ main.py tests/ scripts/
+uv run black src/ tests/ scripts/
+uv run isort src/ tests/ scripts/
 
 # Static analysis
-uv run flake8 src/ main.py tests/ scripts/
-uv run mypy src/ main.py
+uv run flake8 src/ tests/ scripts/
+uv run mypy src/
 
 # Complete quality report
 uv run python scripts/lint_check.py

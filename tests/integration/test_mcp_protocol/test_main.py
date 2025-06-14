@@ -26,7 +26,7 @@ from hubspot_mcp.server import MCPHandlers  # noqa: E402
 
 def test_parse_arguments_default():
     """Test argument parsing with default values."""
-    with patch("sys.argv", ["main.py"]):
+    with patch("sys.argv", ["hubspot-mcp-server"]):
         args = main.parse_arguments()
         assert args.mode == "stdio"
         assert args.host == "localhost"
@@ -36,7 +36,7 @@ def test_parse_arguments_default():
 def test_parse_arguments_custom():
     """Test argument parsing with custom values."""
     with patch(
-        "sys.argv", ["main.py", "--mode", "sse", "--host", "0.0.0.0", "--port", "9000"]
+        "sys.argv", ["hubspot-mcp-server", "--mode", "sse", "--host", "0.0.0.0", "--port", "9000"]
     ):
         args = main.parse_arguments()
         assert args.mode == "sse"
