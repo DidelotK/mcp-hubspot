@@ -34,6 +34,7 @@ Before deploying, ensure you have:
 6. **Prometheus Operator** (optional, for monitoring)
 7. **ClusterSecretStore** configured for External Secrets
 8. **Docker** with access to Scaleway Container Registry
+9. **direnv** for automatic environment variable management (recommended)
 
 ## Docker Registry Authentication
 
@@ -58,6 +59,194 @@ docker build -t rg.fr-par.scw.cloud/keltio-public/hubspot-mcp-server:1.0.0 .
 
 # Push to registry
 docker push rg.fr-par.scw.cloud/keltio-public/hubspot-mcp-server:1.0.0
+```
+
+## Environment Variables Management with direnv
+
+### Overview
+
+The project uses `direnv` for automatic environment variable management. This provides a seamless development experience where environment variables are automatically loaded when entering the project directory and unloaded when leaving.
+
+### Setup direnv
+
+#### 1. Install direnv
+
+```bash
+# Ubuntu/Debian
+sudo apt install direnv
+
+# macOS with Homebrew
+brew install direnv
+
+# Other systems: https://direnv.net/docs/installation.html
+```
+
+#### 2. Configure your shell
+
+Add to your shell profile (`~/.bashrc`, `~/.zshrc`, etc.):
+
+```bash
+# For bash
+eval "$(direnv hook bash)"
+
+# For zsh  
+eval "$(direnv hook zsh)"
+
+# For fish
+direnv hook fish | source
+```
+
+Restart your shell or run `source ~/.bashrc` (or your shell config file).
+
+### Project Setup
+
+#### 1. Create environment file
+
+```bash
+# Copy the template
+cp deploy/environment.example deploy/environment
+
+# Edit with your actual values
+nano deploy/environment  # or your preferred editor
+```
+
+#### 2. Configure your environment
+
+Edit `deploy/environment` with your values:
+
+```bash
+# Docker Image Configuration
+IMAGE_REGISTRY=rg.fr-par.scw.cloud/keltio-public
+IMAGE_NAME=hubspot-mcp-server
+IMAGE_TAG=0.1.0
+
+# Registry Authentication (Scaleway Container Registry)
+REGISTRY_URL=rg.fr-par.scw.cloud/keltio-public
+REGISTRY_USERNAME=nologin
+REGISTRY_PASSWORD=your-actual-scaleway-password
+
+# HubSpot Configuration
+HUBSPOT_API_KEY=pat-eu1-your-actual-key
+
+# MCP Authentication Configuration
+MCP_AUTH_KEY=your-secure-auth-key
+MCP_AUTH_HEADER=X-API-Key
+
+# Kubernetes Configuration
+NAMESPACE=production
+DOMAIN=mcp-hubspot.keltio.fr
+```
+
+#### 3. Allow direnv
+
+```bash
+# Allow direnv to load the configuration
+direnv allow
+
+# You should see output like:
+# 🔧 Loading environment variables from deploy/environment...
+# ✅ Environment variables loaded successfully!
+# 📋 Current configuration:
+#    - IMAGE_TAG: 0.1.0
+#    - IMAGE_REGISTRY: rg.fr-par.scw.cloud/keltio-public
+#    - NAMESPACE: production
+#    - DOMAIN: mcp-hubspot.keltio.fr
+```
+
+### Development Workflow
+
+#### Automatic Variable Loading
+
+```bash
+# Enter project directory → variables automatically load
+cd /path/to/mcp-hubspot
+# 🔧 Loading environment variables from deploy/environment...
+# ✅ Environment variables loaded successfully!
+
+# Variables are now available
+echo $IMAGE_TAG                    # → 0.1.0
+echo $REGISTRY_PASSWORD           # → your-password
+echo $HUBSPOT_API_KEY             # → your-api-key
+
+# Use variables directly in commands
+docker build -t $IMAGE_REGISTRY/$IMAGE_NAME:$IMAGE_TAG .
+./deploy/scripts/build-image.sh   # Uses loaded variables automatically
+
+# Leave directory → variables automatically unload
+cd /other/directory
+echo $IMAGE_TAG                   # → (empty)
+```
+
+#### Manual Commands
+
+```bash
+# Reload environment after changes
+direnv reload
+
+# Check direnv status
+direnv status
+
+# Temporarily disable
+direnv deny
+
+# Re-enable
+direnv allow
+```
+
+### Security Notes
+
+#### File Permissions
+```bash
+# Secure your environment file
+chmod 600 deploy/environment
+
+# Verify git ignores it
+git status --ignored | grep deploy/environment
+```
+
+#### What's Versioned
+- ✅ **`.envrc`** - Direnv configuration (no secrets)
+- ✅ **`deploy/environment.example`** - Template file
+- ❌ **`deploy/environment`** - Your actual config (contains secrets)
+
+#### Best Practices
+- Never commit `deploy/environment` to git
+- Use strong, unique passwords and API keys
+- Regularly rotate secrets, especially API keys
+- Keep `deploy/environment.example` updated with new variables
+
+### Troubleshooting
+
+#### Variables not loading
+```bash
+# Check if direnv is working
+direnv status
+
+# Check if file exists
+ls -la deploy/environment
+
+# Force reload
+direnv reload
+```
+
+#### Permission issues
+```bash
+# Fix file permissions
+chmod 600 deploy/environment
+direnv allow
+```
+
+#### Getting help
+```bash
+# If environment file is missing, you'll see:
+cd mcp-hubspot
+# ⚠️  Environment file not found!
+# 
+# 📝 To set up your environment:
+#    1. Copy the example file:
+#       cp deploy/environment.example deploy/environment
+#    2. Edit deploy/environment with your values
+#    3. Run 'direnv allow' to reload this configuration
 ```
 
 ## Secret Management

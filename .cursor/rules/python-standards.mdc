@@ -10,6 +10,228 @@ globs:
   - "src/**/*.py"
   - "tests/**/*.py"
 
+## Environment Variables Management with direnv
+
+### Overview
+The project uses `direnv` for automatic environment variable management. This provides:
+- **Automatic loading**: Variables load when entering the project directory
+- **Automatic unloading**: Variables are cleaned when leaving the directory
+- **Security**: Secrets are kept in local files, not in shell history
+- **Consistency**: Same environment setup across all developers
+
+### Setup and Configuration
+
+#### 1. Install direnv
+```bash
+# Ubuntu/Debian
+sudo apt install direnv
+
+# macOS with Homebrew
+brew install direnv
+
+# Add to your shell profile (~/.bashrc, ~/.zshrc, etc.)
+eval "$(direnv hook bash)"  # for bash
+eval "$(direnv hook zsh)"   # for zsh
+```
+
+#### 2. Project Configuration
+The project includes:
+- **`.envrc`**: Direnv configuration file (versioned)
+- **`deploy/environment.example`**: Template with all required variables
+- **`deploy/environment`**: Local configuration file (NOT versioned, contains secrets)
+
+#### 3. Setup Process
+```bash
+# 1. Clone the repository
+git clone <repository>
+cd <project>
+
+# 2. Copy environment template
+cp deploy/environment.example deploy/environment
+
+# 3. Edit with your values
+nano deploy/environment  # or your preferred editor
+
+# 4. Allow direnv to load the configuration
+direnv allow
+
+# 5. Verify variables are loaded
+echo $IMAGE_TAG
+echo $REGISTRY_PASSWORD  # Should show your password
+```
+
+### Environment File Structure
+
+#### deploy/environment.example (versioned)
+```bash
+# Example configuration template
+IMAGE_REGISTRY=rg.fr-par.scw.cloud/keltio-public
+IMAGE_TAG=1.0.0
+REGISTRY_PASSWORD=your-scaleway-registry-password-here
+HUBSPOT_API_KEY=your-hubspot-api-key-here
+MCP_AUTH_KEY=your-mcp-auth-key-here
+```
+
+#### deploy/environment (local, NOT versioned)
+```bash
+# Your actual configuration with real secrets
+IMAGE_REGISTRY=rg.fr-par.scw.cloud/keltio-public
+IMAGE_TAG=0.1.0
+REGISTRY_PASSWORD=actual-password-here
+HUBSPOT_API_KEY=pat-eu1-actual-key-here
+MCP_AUTH_KEY=secure-auth-key-here
+```
+
+### .envrc Configuration
+
+The `.envrc` file automatically:
+- Checks if `deploy/environment` exists
+- Loads all variables using `source_env`
+- Displays helpful setup instructions if file is missing
+- Shows current configuration status
+
+```bash
+#!/bin/bash
+# Example .envrc structure
+if [ -f "deploy/environment" ]; then
+    source_env deploy/environment
+    echo "✅ Environment loaded!"
+else
+    echo "⚠️ Please create deploy/environment from deploy/environment.example"
+fi
+```
+
+### Security Best Practices
+
+#### File Permissions
+```bash
+# Secure the environment file
+chmod 600 deploy/environment
+
+# Verify it's not tracked by git
+git status --ignored
+```
+
+#### Gitignore Configuration
+Ensure these patterns are in `.gitignore`:
+```gitignore
+# Environment configuration files with secrets
+deploy/environment
+
+# But NOT .envrc (this should be versioned)
+# .envrc  ← DO NOT ignore this
+```
+
+#### Secret Management
+- ✅ **Store secrets in `deploy/environment`** (local file)
+- ✅ **Version `.envrc`** (contains no secrets)
+- ✅ **Version `deploy/environment.example`** (template only)
+- ❌ **Never commit `deploy/environment`** to git
+- ❌ **Never put secrets directly in `.envrc`**
+
+### Direnv Commands
+
+#### Essential Commands
+```bash
+# Allow direnv for current directory
+direnv allow
+
+# Reload environment (after changes)
+direnv reload
+
+# Check direnv status
+direnv status
+
+# Manually trigger reload
+direnv exec . bash
+
+# Disable direnv temporarily
+direnv deny
+```
+
+#### Development Workflow
+```bash
+# 1. Enter project directory → variables auto-load
+cd /path/to/project
+# 🔧 Loading environment variables...
+# ✅ Environment variables loaded successfully!
+
+# 2. Work with loaded variables
+docker build -t $IMAGE_REGISTRY/app:$IMAGE_TAG .
+./deploy/scripts/build-image.sh
+
+# 3. Exit directory → variables auto-unload
+cd /other/directory
+# Variables are automatically cleaned from environment
+```
+
+### Troubleshooting
+
+#### Common Issues
+
+**Variables not loading**
+```bash
+# Check direnv status
+direnv status
+
+# Force reload
+direnv reload
+
+# Check if file exists and has correct permissions
+ls -la deploy/environment
+```
+
+**Permission denied**
+```bash
+# Fix file permissions
+chmod 600 deploy/environment
+
+# Re-allow direnv
+direnv allow
+```
+
+**Variables persist after leaving directory**
+```bash
+# Check if direnv hook is properly installed
+echo $DIRENV_DIR  # Should be empty outside project
+
+# Reload shell configuration
+source ~/.bashrc  # or ~/.zshrc
+```
+
+#### Debugging
+```bash
+# Verbose direnv output
+DIRENV_LOG_FORMAT="$(printf "%%s \033[2mdirenv: %%s\033[0m")" direnv allow
+
+# Check which variables are set
+direnv exec . env | grep -E "(IMAGE_|REGISTRY_|HUBSPOT_)"
+```
+
+### Integration with Development Tools
+
+#### IDE Configuration
+Most IDEs support direnv through plugins:
+- **VS Code**: `direnv` extension
+- **JetBrains**: `direnv` plugin
+- **Vim**: `direnv.vim` plugin
+
+#### CI/CD Integration
+For CI/CD pipelines, export variables manually:
+```bash
+# In CI scripts
+export IMAGE_TAG="$CI_COMMIT_TAG"
+export REGISTRY_PASSWORD="$CI_REGISTRY_PASSWORD"
+```
+
+### Benefits
+
+1. **Security**: Secrets never appear in shell history
+2. **Convenience**: No manual `export` commands needed
+3. **Consistency**: Same setup process for all developers
+4. **Isolation**: Variables don't pollute global environment
+5. **Automation**: Integrates seamlessly with development workflow
+
 ## Mandatory Coding Rules
 - **PEP 8**: Strictly follow Python style guide
 - **Type hints**: Use type annotations for all functions

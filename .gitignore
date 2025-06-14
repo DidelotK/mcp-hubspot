@@ -135,7 +135,9 @@ venv/
 ENV/
 env.bak/
 venv.bak/
-.envrc
+
+# Environment configuration files with secrets
+deploy/environment
 
 # Spyder project settings
 .spyderproject
