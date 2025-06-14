@@ -6,6 +6,11 @@ __pycache__/
 # Lint reports
 lint_report.md
 
+# Security reports
+bandit_report.*
+reports/bandit_*
+reports/security_*
+
 # C extensions
 *.so
 
