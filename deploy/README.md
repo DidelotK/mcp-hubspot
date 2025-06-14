@@ -60,8 +60,11 @@ just docker-build
 ### 5. Test Deployment
 
 ```bash
-# Run comprehensive tests
+# Run comprehensive deployment tests
 ./scripts/test-deployment.sh
+
+# Test SSE MCP functionality specifically
+./scripts/test-sse-mcp.sh
 ```
 
 ## Files Structure
@@ -81,7 +84,8 @@ deploy/
 │   ├── deploy.sh                 # Helm deployment script
 │   ├── build-image.sh            # Docker build script
 │   ├── docker-utils.sh           # Docker utility functions
-│   └── test-deployment.sh        # Deployment testing script
+│   ├── test-deployment.sh        # Deployment testing script
+│   └── test-sse-mcp.sh           # SSE MCP server testing script
 └── README.md                     # This documentation
 ```
 
@@ -144,6 +148,23 @@ Comprehensive deployment testing:
 - Health endpoint checks
 - Authentication testing
 - TLS certificate validation
+- Performance testing
+
+### 🌐 `test-sse-mcp.sh` - SSE MCP Server Testing
+
+Specialized script for testing SSE MCP functionality:
+
+```bash
+./scripts/test-sse-mcp.sh
+```
+
+**Tests include:**
+- Basic connectivity (health/ready endpoints)
+- SSE endpoint accessibility
+- Authentication security
+- SSE streaming functionality
+- MCP tools listing (`tools/list`)
+- MCP tool execution (`tools/call`)
 - Performance testing
 
 ### 🛠️ `docker-utils.sh` - Docker Utilities
@@ -305,15 +326,52 @@ kubectl get pods -n $NAMESPACE
 kubectl get ingress -n $NAMESPACE
 ```
 
-## Monitoring and Health Checks
+## Testing and Monitoring
+
+### SSE MCP Server Testing
+
+Use the dedicated SSE MCP test script for comprehensive functionality testing:
+
+```bash
+# Test with environment configuration
+./scripts/test-sse-mcp.sh
+
+# Test specific domain and auth key
+./scripts/test-sse-mcp.sh -d mcp.example.com -k your-auth-key
+
+# Test with custom parameters
+./scripts/test-sse-mcp.sh -d mcp.example.com -k your-auth-key -l 10 -t 60
+```
+
+**Test Categories:**
+
+1. **Basic Connectivity**
+   - Health endpoint (`/health`)
+   - Readiness endpoint (`/ready`)
+
+2. **SSE Functionality**
+   - SSE endpoint accessibility
+   - Authentication security
+   - SSE streaming capability
+
+3. **MCP Protocol**
+   - Tools listing (`tools/list`)
+   - Tool execution (`tools/call`)
+   - HubSpot API integration
+
+4. **Performance**
+   - Response times
+   - Request throughput
+   - Error rates
 
 ### Health Endpoints
 
 - **`/health`** - Liveness probe (no auth required)
 - **`/ready`** - Readiness probe (no auth required)
 - **`/metrics`** - Prometheus metrics (auth required)
+- **`/sse`** - SSE MCP endpoint (auth required)
 
-### Testing Commands
+### Manual Testing Commands
 
 ```bash
 # Health check
@@ -322,8 +380,22 @@ curl -k https://mcp-hubspot.your-domain.com/health
 # Ready check
 curl -k https://mcp-hubspot.your-domain.com/ready
 
-# Authenticated endpoint
-curl -k -H "X-API-Key: your-auth-key" https://mcp-hubspot.your-domain.com/sse
+# SSE endpoint (should require auth)
+curl -k https://mcp-hubspot.your-domain.com/sse
+
+# MCP tools list (authenticated)
+curl -k -H "X-API-Key: your-auth-key" \
+  -H "Content-Type: application/json" \
+  -X POST \
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}' \
+  https://mcp-hubspot.your-domain.com/
+
+# MCP tool execution (authenticated)
+curl -k -H "X-API-Key: your-auth-key" \
+  -H "Content-Type: application/json" \
+  -X POST \
+  -d '{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"list_hubspot_contacts","arguments":{"limit":5}}}' \
+  https://mcp-hubspot.your-domain.com/
 ```
 
 ## Troubleshooting
