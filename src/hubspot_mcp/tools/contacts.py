@@ -30,6 +30,11 @@ class ContactsTool(BaseTool):
                         "type": "string",
                         "description": "Pagination cursor to get the next set of results",
                     },
+                    "properties": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "description": "Optional list of additional contact properties to include in the response",
+                    },
                 },
                 "additionalProperties": False,
             },
@@ -40,11 +45,13 @@ class ContactsTool(BaseTool):
         try:
             limit = arguments.get("limit", 100)
             after = arguments.get("after")
+            extra_props = arguments.get("properties")
 
-            # Use cached client call instead of direct client call
-            contacts = await self._cached_client_call(
-                "get_contacts", limit=limit, after=after
-            )
+            kwargs = {"limit": limit, "after": after}
+            if extra_props:
+                kwargs["extra_properties"] = extra_props
+
+            contacts = await self._cached_client_call("get_contacts", **kwargs)
             formatted_result = HubSpotFormatter.format_contacts(contacts)
 
             return [types.TextContent(type="text", text=formatted_result)]

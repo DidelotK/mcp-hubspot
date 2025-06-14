@@ -30,6 +30,11 @@ class CompaniesTool(BaseTool):
                         "type": "string",
                         "description": "Pagination cursor to get the next set of results",
                     },
+                    "properties": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "description": "Optional list of additional company properties to include in the response",
+                    },
                 },
                 "additionalProperties": False,
             },
@@ -40,11 +45,13 @@ class CompaniesTool(BaseTool):
         try:
             limit = arguments.get("limit", 100)
             after = arguments.get("after")
+            extra_props = arguments.get("properties")
 
-            # Use cached client call instead of direct client call
-            companies = await self._cached_client_call(
-                "get_companies", limit=limit, after=after
-            )
+            kwargs = {"limit": limit, "after": after}
+            if extra_props:
+                kwargs["extra_properties"] = extra_props
+
+            companies = await self._cached_client_call("get_companies", **kwargs)
             formatted_result = HubSpotFormatter.format_companies(companies)
 
             return [types.TextContent(type="text", text=formatted_result)]
