@@ -23,6 +23,33 @@ globs:
 - **Structure**: Respect modular file organization
 - **Language consistency**: All code, comments, documentation, and outputs in English
 
+## Quality Validation (MANDATORY)
+- **ALWAYS run `just check` before completing ANY task or code modification**
+- **NEVER commit or finish a task without successful quality validation**
+- **Quality check includes**: formatting (black), imports (isort), linting (flake8), type checking (mypy), security (bandit), and tests
+- **All checks must PASS** before declaring a task complete
+- **If any check fails**: Fix the issues immediately before proceeding
+- **No exceptions**: This applies to ALL code changes, regardless of size
+
+### Quality Check Command
+```bash
+just check
+```
+
+### Expected Success Output
+- ✅ All formatting checks passed
+- ✅ All import organization checks passed  
+- ✅ All linting checks passed
+- ✅ All type checking passed
+- ✅ All security checks passed
+- ✅ All tests passed with adequate coverage
+
+### If Checks Fail
+1. **Fix formatting**: `just format` 
+2. **Fix specific issues**: Address linting, type, or test errors
+3. **Re-run validation**: `just check`
+4. **Only proceed when ALL checks pass**
+
 ## Action Priorities
 1. **Security**: Never expose secrets or API keys
 2. **Quality**: Clean, tested and documented code
@@ -44,10 +71,13 @@ globs:
 - ❌ **NEVER respond in French or any language other than English**
 - ❌ **NEVER create French documentation, comments, or user messages**
 - ❌ **NEVER use French variable names, function names, or identifiers**
+- ❌ **NEVER finish a task without running `just check` successfully**
+- ❌ **NEVER ignore quality check failures**
 
 ## English-Only Policy
 - ✅ **ALWAYS** write documentation in English
 - ✅ **ALWAYS** use English for code comments
 - ✅ **ALWAYS** respond to users in English
 - ✅ **ALWAYS** create English error messages
-- ✅ **ALWAYS** use English for variable/function naming when possible 
+- ✅ **ALWAYS** use English for variable/function naming when possible
+- ✅ **ALWAYS** run `just check` before task completion 
