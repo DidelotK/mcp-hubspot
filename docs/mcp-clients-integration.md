@@ -4,6 +4,24 @@
 
 This guide covers integration with MCP (Model Context Protocol) clients other than Claude Desktop, including SSE (Server-Sent Events) and stdio modes.
 
+## Prerequisites and Setup
+
+Before starting, ensure you have:
+- Python 3.12+ installed
+- uv package manager installed
+- HubSpot API key with appropriate permissions
+
+### Install Dependencies
+
+Navigate to your project directory and install dependencies:
+
+```bash
+cd /path/to/your/mcp-hubspot-project
+uv sync
+```
+
+This installs all required Python packages for the MCP server.
+
 ## Supported Integration Modes
 
 ### 1. SSE Mode (Server-Sent Events)

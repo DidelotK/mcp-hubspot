@@ -11,9 +11,20 @@ This guide covers the complete setup process for integrating the HubSpot MCP Ser
 - Python 3.12+ installed
 - uv package manager installed
 
-## Configuration Steps
+## Setup Steps
 
-### 1. Locate Configuration File
+### 1. Install Dependencies
+
+First, navigate to your project directory and install the required dependencies:
+
+```bash
+cd /path/to/your/mcp-hubspot-project
+uv sync
+```
+
+This will install all necessary Python packages required for the MCP server to function properly.
+
+### 2. Locate Configuration File
 
 Find the Claude Desktop configuration file based on your operating system:
 
@@ -32,7 +43,7 @@ Find the Claude Desktop configuration file based on your operating system:
 ~/.config/claude/claude_desktop_config.json
 ```
 
-### 2. Development Setup
+### 3. Development Setup
 
 For development or local installation, add this configuration to your JSON file:
 
@@ -58,7 +69,7 @@ For development or local installation, add this configuration to your JSON file:
 
 **Important:** Replace `/path/to/your/project/` with the actual path to your cloned repository.
 
-### 3. Global Installation Setup
+### 4. Global Installation Setup
 
 If you have installed the project globally using uv:
 
@@ -75,14 +86,14 @@ If you have installed the project globally using uv:
 }
 ```
 
-### 4. Environment Variables
+### 5. Environment Variables
 
 Ensure your HubSpot API key is properly configured:
 
 - **Direct configuration:** Add `HUBSPOT_API_KEY` in the `env` section as shown above
 - **System environment:** You can also set it as a system environment variable
 
-### 5. Apply Configuration
+### 6. Apply Configuration
 
 After modifying the configuration file:
 
