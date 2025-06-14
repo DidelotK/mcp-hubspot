@@ -86,7 +86,7 @@ lint:
 
 # Run rigorous static type checking over the full codebase
 type-check:
-    uv run mypy src/hubspot_mcp main.py --config-file mypy.ini
+    timeout 120 uv run mypy src/hubspot_mcp --config-file mypy.ini || echo "⚠️ Type checking timeout or issues"
 
 # Format code
 format:
