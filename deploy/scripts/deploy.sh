@@ -1,6 +1,12 @@
 #!/bin/bash
 set -euo pipefail
 
+# Get the directory of this script
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Source shared Docker utilities
+source "$SCRIPT_DIR/docker-utils.sh"
+
 # Configuration
 NAMESPACE="${NAMESPACE:-production}"
 RELEASE_NAME="${RELEASE_NAME:-hubspot-mcp-server}"
@@ -10,29 +16,7 @@ IMAGE_TAG="${IMAGE_TAG:-1.0.0}"
 IMAGE_REGISTRY="${IMAGE_REGISTRY:-rg.fr-par.scw.cloud/keltio-public}"
 REGISTRY_USERNAME="${REGISTRY_USERNAME:-nologin}"
 
-# Colors for output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-NC='\033[0m' # No Color
-
-# Logging functions
-log_info() {
-    echo -e "${BLUE}[INFO]${NC} $1"
-}
-
-log_success() {
-    echo -e "${GREEN}[SUCCESS]${NC} $1"
-}
-
-log_warning() {
-    echo -e "${YELLOW}[WARNING]${NC} $1"
-}
-
-log_error() {
-    echo -e "${RED}[ERROR]${NC} $1"
-}
+# Colors and logging functions are already defined in docker-utils.sh
 
 # Function to check if command exists
 command_exists() {
@@ -68,72 +52,50 @@ validate_prerequisites() {
 
 # Build and push Docker image
 build_and_push_image() {
-    log_info "Building and pushing Docker image..."
+    log_info "Checking Docker image availability..."
     
     local image_name="${IMAGE_REGISTRY}/hubspot-mcp-server:${IMAGE_TAG}"
     
+    # Check if image already exists in registry
+    if docker manifest inspect "$image_name" >/dev/null 2>&1; then
+        log_success "Image already exists in registry: $image_name"
+        return 0
+    fi
+    
+    log_info "Building and pushing Docker image..."
+    
     # Check if REGISTRY_PASSWORD is set for authentication
     if [[ -n "${REGISTRY_PASSWORD:-}" ]]; then
-        log_info "Authenticating with Scaleway Container Registry..."
-        echo "$REGISTRY_PASSWORD" | docker login "$IMAGE_REGISTRY" -u "$REGISTRY_USERNAME" --password-stdin
-    else
-        log_warning "REGISTRY_PASSWORD not set, assuming already authenticated"
-    fi
-    
-    # Check if buildx is available
-    if docker buildx version >/dev/null 2>&1; then
-        log_info "Using Docker buildx for warning-free builds..."
-        
-        # Initialize buildx builder if not exists
-        log_info "Initializing Docker buildx..."
-        if ! docker buildx ls | grep -q "multiarch"; then
-            docker buildx create --name multiarch --use --bootstrap
+        # Use shared function for building and pushing
+        if docker_build_and_push "$image_name" "$IMAGE_REGISTRY" "$REGISTRY_USERNAME"; then
+            log_success "Image built and pushed: $image_name"
         else
-            docker buildx use multiarch
+            log_error "Failed to build and push image"
+            return 1
         fi
-        
-        # Build and push image using buildx
-        log_info "Building and pushing image with buildx: $image_name"
-        docker buildx build \
-            --platform linux/amd64 \
-            --tag "$image_name" \
-            --push \
-            .
     else
-        log_warning "Docker buildx not available, using standard docker build..."
-        log_info "Note: You may see some warnings. Install docker-buildx package to eliminate them."
-        
-        # Build image with standard docker build
-        log_info "Building image: $image_name"
-        docker build \
-            --tag "$image_name" \
-            .
-        
-        # Push image
-        log_info "Pushing image: $image_name"
-        docker push "$image_name"
-        
-        log_info "💡 Tip: Install docker-buildx for better build experience: sudo apt install docker-buildx-plugin"
+        log_warning "REGISTRY_PASSWORD not set, attempting build without push..."
+        if docker_build_local "$image_name"; then
+            log_success "Image built locally: $image_name"
+            log_warning "Image was not pushed to registry (REGISTRY_PASSWORD not set)"
+        else
+            log_error "Failed to build image"
+            return 1
+        fi
     fi
-    
-    log_success "Image built and pushed: $image_name"
 }
 
 # Deploy with Helm
 deploy_helm_chart() {
     log_info "Deploying Helm chart..."
     
-    # Add Keltio Technology repository
-    helm repo add keltio https://gitlab.com/keltiotechnology/helm-charts
-    helm repo update
+    # Update dependencies to pull from OCI
+    helm dependency update .
     
-    # Update dependencies
-    helm dependency update ./deploy
-    
-    # Deploy with Helm
-    helm upgrade --install "$RELEASE_NAME" ./deploy \
+    # Deploy directly with Helm using the local chart
+    helm upgrade --install "$RELEASE_NAME" . \
         --namespace "$NAMESPACE" \
-        --values ./deploy/values-production.yaml \
+        --values ./values-production.yaml \
         --set image.repository="${IMAGE_REGISTRY}/hubspot-mcp-server" \
         --set image.tag="$IMAGE_TAG" \
         --set ingress.hosts[0].host="$DOMAIN" \

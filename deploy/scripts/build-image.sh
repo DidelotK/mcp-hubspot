@@ -1,56 +1,32 @@
 #!/bin/bash
 set -euo pipefail
 
+# Get the directory of this script
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Source shared Docker utilities
+source "$SCRIPT_DIR/docker-utils.sh"
+
 # Configuration
 IMAGE_NAME="${IMAGE_NAME:-hubspot-mcp-server}"
 IMAGE_REGISTRY="${IMAGE_REGISTRY:-rg.fr-par.scw.cloud/keltio-public}"
 IMAGE_TAG="${IMAGE_TAG:-latest}"
 REGISTRY_USERNAME="${REGISTRY_USERNAME:-nologin}"
 
-# Ensure REGISTRY_PASSWORD is set
-if [[ -z "${REGISTRY_PASSWORD:-}" ]]; then
-    echo "Error: REGISTRY_PASSWORD environment variable must be set"
+# Validate environment
+if ! docker_validate_environment; then
     exit 1
 fi
 
-# Docker authentication
-echo "Authenticating with Scaleway Container Registry..."
-echo "$REGISTRY_PASSWORD" | docker login "$IMAGE_REGISTRY" -u "$REGISTRY_USERNAME" --password-stdin
+# Build full image name
+FULL_IMAGE_NAME="${IMAGE_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
 
-# Check if buildx is available
-if docker buildx version >/dev/null 2>&1; then
-    echo "Using Docker buildx for warning-free builds..."
-    
-    # Initialize buildx builder if not exists
-    echo "Initializing Docker buildx..."
-    if ! docker buildx ls | grep -q "multiarch"; then
-        docker buildx create --name multiarch --use --bootstrap
-    else
-        docker buildx use multiarch
-    fi
+log_info "Building and pushing Docker image: $FULL_IMAGE_NAME"
 
-    # Build and push image using buildx
-    echo "Building Docker image with buildx: ${IMAGE_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
-    docker buildx build \
-        --platform linux/amd64 \
-        --tag "${IMAGE_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}" \
-        --push \
-        .
-    
-    echo "Image built and pushed successfully with buildx!"
+# Build and push image using shared function
+if docker_build_and_push "$FULL_IMAGE_NAME" "$IMAGE_REGISTRY" "$REGISTRY_USERNAME"; then
+    log_success "Docker image build and push completed successfully!"
 else
-    echo "Docker buildx not available, using standard docker build..."
-    echo "Note: You may see some warnings. Install docker-buildx package to eliminate them."
-    
-    # Build image with standard docker build
-    echo "Building Docker image: ${IMAGE_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
-    docker build \
-        --tag "${IMAGE_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}" \
-        .
-
-    echo "Pushing Docker image: ${IMAGE_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
-    docker push "${IMAGE_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
-    
-    echo "Image built and pushed successfully!"
-    echo "💡 Tip: Install docker-buildx for better build experience: sudo apt install docker-buildx-plugin"
+    log_error "Docker image build and push failed!"
+    exit 1
 fi 
