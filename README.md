@@ -23,7 +23,9 @@ uv run python main.py --mode stdio
 |---------|-------------|
 | **[Installation](docs/installation.md)** | Installation and configuration guide |
 | **[Integration](docs/integration.md)** | Configuration with Claude Desktop and other MCP clients |
-| **[API Reference](docs/api-reference.md)** | Complete documentation of the 11 available tools |
+| **[API Reference](docs/api-reference.md)** | Complete documentation of the 14 available tools |
+| **[Semantic Search](docs/semantic-search.md)** | AI-powered semantic search capabilities and usage |
+| **[Developer Guide](docs/developer.md)** | Testing, quality assurance, and development workflow |
 | **[Cache System](docs/caching.md)** | How the shared TTL cache works and how to manage it |
 | **[Examples](docs/examples.md)** | Use cases and example conversations with Claude |
 | **[Contributing](docs/contributing.md)** | Guide for developing new tools |
@@ -54,7 +56,7 @@ uv run python main.py --mode stdio
 | `semantic_search_hubspot` | AI-powered semantic search across all HubSpot entities using natural language |
 | `manage_hubspot_embeddings` | Manage embedding indexes for semantic search (build, clear, stats) |
 
-## ⚡ Usage with Claude
+## ⚡ Usage
 
 Once configured, use natural language phrases:
 
@@ -69,118 +71,38 @@ Once configured, use natural language phrases:
 
 ## 🤖 AI-Powered Semantic Search
 
-The HubSpot MCP server now includes advanced **semantic search capabilities** powered by FAISS (Facebook AI Similarity Search) and sentence transformers. This enables natural language queries across your HubSpot data.
+The server includes advanced **semantic search capabilities** powered by FAISS and sentence transformers, enabling natural language queries across your HubSpot data.
 
-### ✨ What is Semantic Search?
+**Key Features:**
+- 🔍 **Natural Language Queries**: Find *"software engineers"* → matches "Developer", "Programmer", "Software Architect"
+- 🎯 **Context-Aware**: Search *"enterprise clients"* → finds large companies without exact keyword matches
+- 🌐 **Multi-Entity Search**: Search across contacts, companies, deals, and engagements simultaneously
+- 🔄 **Hybrid Modes**: Combines AI similarity with traditional API filters
 
-Instead of exact keyword matching, semantic search understands the **meaning** and **context** of your queries:
-
-- 🔍 **Natural Language**: *"software engineers"* finds contacts with titles like "Developer", "Programmer", "Software Architect"
-- 🎯 **Context Aware**: *"enterprise clients"* finds large companies even if they don't contain the word "enterprise"
-- 🌐 **Multi-Entity**: Search across contacts, companies, deals, and engagements simultaneously
-- 🔄 **Hybrid Mode**: Combines AI similarity with traditional API filters for best results
-
-### 🚀 Getting Started with Semantic Search
-
-#### 1. **Build Embedding Index**
-First, create AI embeddings for your HubSpot data:
-
+**Quick Start:**
 ```json
-{
-  "name": "manage_hubspot_embeddings",
-  "arguments": {
-    "action": "build",
-    "entity_types": ["contacts", "companies", "deals", "engagements"],
-    "limit": 1000
-  }
-}
+// 1. Build embeddings index
+{"name": "manage_hubspot_embeddings", "arguments": {"action": "build"}}
+
+// 2. Perform semantic search
+{"name": "semantic_search_hubspot", "arguments": {"query": "technology companies in Paris"}}
 ```
 
-#### 2. **Perform Semantic Search**
-Search using natural language across all entities:
-
-```json
-{
-  "name": "semantic_search_hubspot",
-  "arguments": {
-    "query": "technology companies in San Francisco",
-    "limit": 10,
-    "search_mode": "hybrid",
-    "threshold": 0.5
-  }
-}
-```
-
-### 🎛️ Search Modes
-
-| Mode | Description | Best For |
-|------|-------------|----------|
-| `semantic` | Pure AI-based similarity search | Finding conceptually related entities |
-| `hybrid` | Combines AI + traditional API search | Most accurate and comprehensive results |
-| `auto` | Automatically chooses best approach | General use (recommended) |
-
-### 📊 Embedding Management
-
-Monitor and manage your AI indexes:
-
-```json
-{
-  "name": "manage_hubspot_embeddings",
-  "arguments": {"action": "info"}
-}
-```
-
-**Available Actions:**
-- `info` - View embedding system status and statistics
-- `build` - Create new embedding indexes  
-- `rebuild` - Clear and rebuild all indexes
-- `clear` - Remove all embeddings and indexes
-
-### 🎯 Example Queries
-
-**Find Similar Contacts:**
-- *"software engineers"* → Developers, Programmers, Architects
-- *"decision makers"* → CEOs, CTOs, Directors, VPs
-- *"marketing professionals"* → Marketing Managers, Growth Hackers, CMOs
-
-**Discover Companies:**
-- *"AI startups"* → Machine Learning, Artificial Intelligence companies
-- *"enterprise clients"* → Large corporations, Fortune 500 companies
-- *"French companies"* → Organizations based in France
-
-**Search Deals:**
-- *"enterprise sales"* → Large B2B deals, corporate contracts
-- *"renewal opportunities"* → Contract renewals, subscription extensions
-- *"urgent deals"* → Time-sensitive, high-priority opportunities
-
-### ⚙️ Technical Details
-
-- **Model**: all-MiniLM-L6-v2 (384-dimensional embeddings)
-- **Index**: FAISS with flat or IVF algorithms
-- **Cache**: Persistent embedding cache with TTL
-- **Performance**: Sub-second search across thousands of entities
-- **Storage**: In-memory with optional persistence
-
-### 🔧 Configuration
-
-The semantic search system automatically:
-- Downloads AI models on first use
-- Generates embeddings for all entity text content
-- Builds optimized FAISS indexes
-- Caches results for performance
-- Supports incremental updates
+→ **[Complete Semantic Search Guide](docs/semantic-search.md)** - Detailed usage, examples, and configuration
 
 ## 🧪 Testing and Quality
 
-```bash
-# Run tests
-uv run pytest
+Run all quality checks with a single command:
 
-# Code coverage
-uv run pytest --cov=src --cov-report=term-missing
+```bash
+just check
 ```
 
+This performs code formatting, linting, type checking, full test suite, and security scanning.
+
 **Current Status:** ✅ 140+ tests passed, comprehensive coverage including AI/embedding functionality
+
+→ **[Developer Guide](docs/developer.md)** - Complete testing procedures, quality standards, and development workflow
 
 ## 📋 Prerequisites
 
