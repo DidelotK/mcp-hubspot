@@ -25,7 +25,7 @@ globs:
 
 3. **Local tests**: Execute all tests
    ```bash
-   uv run pytest --cov=src --cov-report=term-missing
+   just check
    ```
 
 4. **Semantic commit**: Use semantic versioning format
