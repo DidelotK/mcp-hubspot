@@ -146,25 +146,17 @@ Here's a complete `claude_desktop_config.json` example:
 
 ## Advanced Configuration
 
-### Custom Port Configuration
+### Custom Script Path
 
-If you need to specify a different port or host:
+If you need to use a wrapper script or custom startup command:
 
 ```json
 {
   "mcpServers": {
     "hubspot": {
-      "command": "uv",
+      "command": "/path/to/custom/script.sh",
       "args": [
-        "run", 
-        "python", 
-        "/path/to/project/main.py",
-        "--mode", 
-        "stdio",
-        "--host", 
-        "127.0.0.1",
-        "--port", 
-        "8080"
+        "/path/to/project/main.py"
       ],
       "env": {
         "HUBSPOT_API_KEY": "your_hubspot_api_key"
@@ -173,6 +165,8 @@ If you need to specify a different port or host:
   }
 }
 ```
+
+**Note:** Claude Desktop always uses stdio mode. Port and host configurations are only relevant for SSE mode with other MCP clients.
 
 ### Debug Mode
 

@@ -166,16 +166,6 @@ This command installs all necessary Python packages required for the MCP server 
                     └───────────────────┘
 ```
 
-## Available Tools
-
-The server provides these HubSpot integration tools:
-
-| Tool | Description | Parameters |
-|------|-------------|------------|
-| `list_hubspot_contacts` | List and search contacts | `limit`, `filters` |
-| `list_hubspot_companies` | List and search companies | `limit`, `filters` |
-| `list_hubspot_deals` | List and search deals | `limit`, `filters` |
-
 ## Configuration Examples
 
 ### Environment Variables
