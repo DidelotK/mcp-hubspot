@@ -5,9 +5,10 @@ set -euo pipefail
 NAMESPACE="${NAMESPACE:-production}"
 RELEASE_NAME="${RELEASE_NAME:-hubspot-mcp-server}"
 CHART_VERSION="${CHART_VERSION:-1.0.0}"
-DOMAIN="${DOMAIN:-mcp-hubspot.yourdomain.com}"
+DOMAIN="${DOMAIN:-mcp-hubspot.keltio.fr}"
 IMAGE_TAG="${IMAGE_TAG:-1.0.0}"
-IMAGE_REGISTRY="${IMAGE_REGISTRY:-your-registry}"
+IMAGE_REGISTRY="${IMAGE_REGISTRY:-rg.fr-par.scw.cloud/keltio-public}"
+REGISTRY_USERNAME="${REGISTRY_USERNAME:-nologin}"
 
 # Colors for output
 RED='\033[0;31m'
@@ -70,6 +71,14 @@ build_and_push_image() {
     log_info "Building and pushing Docker image..."
     
     local image_name="${IMAGE_REGISTRY}/hubspot-mcp-server:${IMAGE_TAG}"
+    
+    # Check if REGISTRY_PASSWORD is set for authentication
+    if [[ -n "${REGISTRY_PASSWORD:-}" ]]; then
+        log_info "Authenticating with Scaleway Container Registry..."
+        echo "$REGISTRY_PASSWORD" | docker login "$IMAGE_REGISTRY" -u "$REGISTRY_USERNAME" --password-stdin
+    else
+        log_warning "REGISTRY_PASSWORD not set, assuming already authenticated"
+    fi
     
     # Build image
     log_info "Building image: $image_name"

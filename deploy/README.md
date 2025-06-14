@@ -33,6 +33,32 @@ Before deploying, ensure you have:
 5. **Cert-Manager** for TLS certificate management
 6. **Prometheus Operator** (optional, for monitoring)
 7. **ClusterSecretStore** configured for External Secrets
+8. **Docker** with access to Scaleway Container Registry
+
+## Docker Registry Authentication
+
+The project uses Scaleway Container Registry. To authenticate:
+
+```bash
+# Set your Scaleway registry password
+export REGISTRY_PASSWORD="your-scaleway-registry-password"
+
+# Authenticate with the registry
+docker login rg.fr-par.scw.cloud/keltio-public -u nologin --password-stdin <<< "$REGISTRY_PASSWORD"
+
+# Alternative: using echo
+echo "$REGISTRY_PASSWORD" | docker login rg.fr-par.scw.cloud/keltio-public -u nologin --password-stdin
+```
+
+### Build and Push Image
+
+```bash
+# Build and tag the image
+docker build -t rg.fr-par.scw.cloud/keltio-public/hubspot-mcp-server:1.0.0 .
+
+# Push to registry
+docker push rg.fr-par.scw.cloud/keltio-public/hubspot-mcp-server:1.0.0
+```
 
 ## Secret Management
 
@@ -63,7 +89,7 @@ The deployment uses the [Keltio Technology app-component Helm chart](https://git
 containers:
   - name: hubspot-mcp-server
     image:
-      repository: your-registry/hubspot-mcp-server
+      repository: rg.fr-par.scw.cloud/keltio-public/hubspot-mcp-server
       tag: "1.0.0"
       pullPolicy: IfNotPresent
     ports:

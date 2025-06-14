@@ -11,16 +11,15 @@ DOMAIN=mcp-hubspot.keltio.fr
 TLS_SECRET_NAME=hubspot-mcp-server-prod-tls
 
 # Docker Image Configuration
-IMAGE_REGISTRY=your-registry.com
+IMAGE_REGISTRY=rg.fr-par.scw.cloud/keltio-public
 IMAGE_NAME=hubspot-mcp-server
 IMAGE_TAG=1.0.0
 
-# HubSpot Configuration
-HUBSPOT_API_KEY=your-hubspot-api-key-here
+# Registry Authentication (Scaleway Container Registry)
+REGISTRY_URL=rg.fr-par.scw.cloud/keltio-public
+REGISTRY_USERNAME=nologin
+REGISTRY_PASSWORD=your-scaleway-registry-password-here
 
-# MCP Authentication Configuration
-MCP_AUTH_KEY=your-mcp-auth-key-here
-MCP_AUTH_HEADER=X-API-Key
 
 # External Secrets Configuration (ClusterSecretStore)
 SECRET_STORE_NAME=secret-store
