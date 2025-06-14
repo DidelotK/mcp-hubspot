@@ -2,7 +2,8 @@
 # Copy this file to environment.prod and fill in your values
 
 # Kubernetes Configuration
-NAMESPACE=production
+export KUBECONFIG=$(dirname "${BASH_SOURCE[0]}")/kubeconfig.yaml
+NAMESPACE=mcp-hubspot
 RELEASE_NAME=hubspot-mcp-server
 CHART_VERSION=1.0.0
 
@@ -13,7 +14,7 @@ TLS_SECRET_NAME=hubspot-mcp-server-prod-tls
 # Docker Image Configuration
 IMAGE_REGISTRY=rg.fr-par.scw.cloud/keltio-public
 IMAGE_NAME=hubspot-mcp-server
-IMAGE_TAG=1.0.0
+IMAGE_TAG=0.1.0
 
 # Registry Authentication (Scaleway Container Registry)
 REGISTRY_URL=rg.fr-par.scw.cloud/keltio-public

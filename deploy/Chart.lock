@@ -1,0 +1,6 @@
+dependencies:
+- name: app-component
+  repository: oci://rg.fr-par.scw.cloud/keltio-charts
+  version: 3.14.0
+digest: sha256:7a53082e556209b7c3758ee001dd2cd067af3374a487e436eb894be7a9039497
+generated: "2025-06-14T20:52:21.306845471+02:00"

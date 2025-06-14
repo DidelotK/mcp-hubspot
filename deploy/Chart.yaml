@@ -18,11 +18,11 @@ maintainers:
   - name: Keltio Technology
     email: kevin@keltio.fr
 
-# Dependencies - Using app-component helm chart
+# Dependencies - Using app-component helm chart from Scaleway
 dependencies:
   - name: app-component
     version: "^3.14.0"
-    repository: "https://gitlab.com/keltiotechnology/helm-charts"
+    repository: "oci://rg.fr-par.scw.cloud/keltio-charts"
     condition: app-component.enabled
 
 # Minimum Kubernetes version
