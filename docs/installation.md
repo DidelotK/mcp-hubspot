@@ -8,20 +8,36 @@
 
 ## Installation
 
-### 1. Clone the project
+### 1. Install uv (if not already installed)
+
+```bash
+# Install uv using the official installer
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Add uv to your PATH (restart shell or run):
+source $HOME/.local/bin/env
+```
+
+Verify installation:
+```bash
+uv --version
+```
+
+### 2. Clone the project
 
 ```bash
 git clone <repo-url>
 cd hubspot-mcp-server
 ```
 
-### 2. Install dependencies
+### 3. Install dependencies
 
 ```bash
-uv sync
+# Install all dependencies including development tools
+uv sync --extra dev
 ```
 
-### 3. Configure environment variables
+### 4. Configure environment variables
 
 Create a `.envrc` file or set environment variables:
 
