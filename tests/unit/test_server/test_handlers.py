@@ -10,15 +10,18 @@ import httpx
 import pytest
 from mcp.types import TextContent, Tool
 
-# Add src to path for imports
-project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+# Add src to path for imports before importing local modules
+project_root = os.path.dirname(
+    os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+)
 src_path = os.path.join(project_root, "src")
 if src_path not in sys.path:
     sys.path.insert(0, src_path)
 
-from hubspot_mcp.__main__ import parse_arguments
-from hubspot_mcp.client import HubSpotClient
-from hubspot_mcp.server import MCPHandlers
+# Local imports after path modification
+from hubspot_mcp.__main__ import parse_arguments  # noqa: E402
+from hubspot_mcp.client import HubSpotClient  # noqa: E402
+from hubspot_mcp.server import MCPHandlers  # noqa: E402
 
 
 def test_parse_arguments_defaults(monkeypatch: pytest.MonkeyPatch) -> None:

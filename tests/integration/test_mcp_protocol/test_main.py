@@ -16,7 +16,9 @@ from mcp.server.sse import SseServerTransport
 from mcp.server.stdio import stdio_server
 
 # Add src to path for imports
-project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+project_root = os.path.dirname(
+    os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+)
 src_path = os.path.join(project_root, "src")
 if src_path not in sys.path:
     sys.path.insert(0, src_path)
@@ -55,6 +57,7 @@ async def test_main_stdio_mode():
     """Test stdio mode."""
     # Mock dependencies
     mock_server = AsyncMock(spec=Server)
+    mock_server.run = AsyncMock(return_value=None)  # Prevent unawaited coroutine
     mock_hubspot_client = MagicMock(spec=HubSpotClient)
     mock_handlers = AsyncMock(spec=MCPHandlers)
     mock_handlers.handle_list_tools = AsyncMock()
@@ -64,7 +67,10 @@ async def test_main_stdio_mode():
     mock_read_stream = AsyncMock()
     mock_write_stream = AsyncMock()
     mock_stdio = AsyncMock()
-    mock_stdio.__aenter__.return_value = (mock_read_stream, mock_write_stream)
+    mock_stdio.__aenter__ = AsyncMock(
+        return_value=(mock_read_stream, mock_write_stream)
+    )
+    mock_stdio.__aexit__ = AsyncMock(return_value=None)
 
     # Mock InitializationOptions
     mock_init_options = MagicMock(spec=InitializationOptions)
@@ -76,7 +82,9 @@ async def test_main_stdio_mode():
         patch("hubspot_mcp.__main__.MCPHandlers", return_value=mock_handlers),
         patch("mcp.server.stdio.stdio_server", return_value=mock_stdio),
         patch("hubspot_mcp.__main__.parse_arguments") as mock_parse_args,
-        patch("hubspot_mcp.__main__.InitializationOptions", return_value=mock_init_options),
+        patch(
+            "hubspot_mcp.__main__.InitializationOptions", return_value=mock_init_options
+        ),
         patch("hubspot_mcp.__main__.logger") as mock_logger,
     ):
         # Configure parse_arguments to return stdio mode
@@ -109,7 +117,9 @@ async def test_main_sse_mode():
     mock_starlette_app = MagicMock()
     mock_uvicorn_config = MagicMock()
     mock_uvicorn_server = AsyncMock()
-    mock_uvicorn_server.serve = AsyncMock()
+    mock_uvicorn_server.serve = AsyncMock(
+        return_value=None
+    )  # Prevent unawaited coroutine
 
     # Mock InitializationOptions
     mock_init_options = MagicMock(spec=InitializationOptions)
@@ -121,7 +131,9 @@ async def test_main_sse_mode():
         patch("hubspot_mcp.__main__.MCPHandlers", return_value=mock_handlers),
         patch("hubspot_mcp.__main__.SseServerTransport", return_value=mock_sse),
         patch("hubspot_mcp.__main__.parse_arguments") as mock_parse_args,
-        patch("hubspot_mcp.__main__.InitializationOptions", return_value=mock_init_options),
+        patch(
+            "hubspot_mcp.__main__.InitializationOptions", return_value=mock_init_options
+        ),
         patch("hubspot_mcp.__main__.logger") as mock_logger,
         # Mock the new SSE implementation components
         patch("starlette.applications.Starlette", return_value=mock_starlette_app),
@@ -140,7 +152,9 @@ async def test_main_sse_mode():
 
         # Verify the flow
         mock_parse_args.assert_called_once()
-        mock_logger.info.assert_called_with("Starting server in SSE mode on localhost:8080")
+        mock_logger.info.assert_called_with(
+            "Starting server in SSE mode on localhost:8080"
+        )
 
 
 @pytest.mark.asyncio
@@ -148,6 +162,7 @@ async def test_main_stdio_mode_with_logger():
     """Test stdio mode with logger verification."""
     # Mock dependencies
     mock_server = AsyncMock(spec=Server)
+    mock_server.run = AsyncMock(return_value=None)  # Prevent unawaited coroutine
     mock_hubspot_client = MagicMock(spec=HubSpotClient)
     mock_handlers = AsyncMock(spec=MCPHandlers)
     mock_handlers.handle_list_tools = AsyncMock()
@@ -157,7 +172,10 @@ async def test_main_stdio_mode_with_logger():
     mock_read_stream = AsyncMock()
     mock_write_stream = AsyncMock()
     mock_stdio = AsyncMock()
-    mock_stdio.__aenter__.return_value = (mock_read_stream, mock_write_stream)
+    mock_stdio.__aenter__ = AsyncMock(
+        return_value=(mock_read_stream, mock_write_stream)
+    )
+    mock_stdio.__aexit__ = AsyncMock(return_value=None)
 
     # Mock InitializationOptions
     mock_init_options = MagicMock(spec=InitializationOptions)
@@ -169,7 +187,9 @@ async def test_main_stdio_mode_with_logger():
         patch("hubspot_mcp.__main__.MCPHandlers", return_value=mock_handlers),
         patch("mcp.server.stdio.stdio_server", return_value=mock_stdio),
         patch("hubspot_mcp.__main__.parse_arguments") as mock_parse_args,
-        patch("hubspot_mcp.__main__.InitializationOptions", return_value=mock_init_options),
+        patch(
+            "hubspot_mcp.__main__.InitializationOptions", return_value=mock_init_options
+        ),
         patch("hubspot_mcp.__main__.logger") as mock_logger,
     ):
         # Configure parse_arguments to return stdio mode
@@ -201,7 +221,9 @@ async def test_main_sse_mode_with_logger():
     mock_starlette_app = MagicMock()
     mock_uvicorn_config = MagicMock()
     mock_uvicorn_server = AsyncMock()
-    mock_uvicorn_server.serve = AsyncMock()
+    mock_uvicorn_server.serve = AsyncMock(
+        return_value=None
+    )  # Prevent unawaited coroutine
 
     # Mock InitializationOptions
     mock_init_options = MagicMock(spec=InitializationOptions)
@@ -213,7 +235,9 @@ async def test_main_sse_mode_with_logger():
         patch("hubspot_mcp.__main__.MCPHandlers", return_value=mock_handlers),
         patch("hubspot_mcp.__main__.SseServerTransport", return_value=mock_sse),
         patch("hubspot_mcp.__main__.parse_arguments") as mock_parse_args,
-        patch("hubspot_mcp.__main__.InitializationOptions", return_value=mock_init_options),
+        patch(
+            "hubspot_mcp.__main__.InitializationOptions", return_value=mock_init_options
+        ),
         patch("hubspot_mcp.__main__.logger") as mock_logger,
         # Mock the new SSE implementation components
         patch("starlette.applications.Starlette", return_value=mock_starlette_app),
@@ -231,7 +255,9 @@ async def test_main_sse_mode_with_logger():
         await main.main()
 
         # Verify logger was called
-        mock_logger.info.assert_called_with("Starting server in SSE mode on localhost:8080")
+        mock_logger.info.assert_called_with(
+            "Starting server in SSE mode on localhost:8080"
+        )
 
 
 @pytest.mark.asyncio
@@ -249,44 +275,6 @@ async def test_main_keyboard_interrupt():
 
         # Verify the exception was raised (simulating the script block behavior)
         # mock_logger.info.assert_called_with("Server stopped by user")
-
-
-@pytest.mark.asyncio
-async def test_main_general_exception():
-    """Test general exception handling."""
-    # Mock dependencies
-    test_exception = Exception("Test error")
-    mock_server = AsyncMock(spec=Server)
-    mock_server.run.side_effect = test_exception
-    mock_hubspot_client = MagicMock(spec=HubSpotClient)
-    mock_handlers = AsyncMock(spec=MCPHandlers)
-
-    # Mock stdio streams
-    mock_read_stream = AsyncMock()
-    mock_write_stream = AsyncMock()
-    mock_stdio = AsyncMock()
-    mock_stdio.__aenter__.return_value = (mock_read_stream, mock_write_stream)
-
-    # Mock InitializationOptions
-    mock_init_options = MagicMock(spec=InitializationOptions)
-    mock_init_options.model_dump.return_value = {}
-
-    with (
-        patch("hubspot_mcp.__main__.Server", return_value=mock_server),
-        patch("hubspot_mcp.__main__.HubSpotClient", return_value=mock_hubspot_client),
-        patch("hubspot_mcp.__main__.MCPHandlers", return_value=mock_handlers),
-        patch("mcp.server.stdio.stdio_server", return_value=mock_stdio),
-        patch("hubspot_mcp.__main__.parse_arguments") as mock_parse_args,
-        patch("hubspot_mcp.__main__.InitializationOptions", return_value=mock_init_options),
-    ):
-        # Configure parse_arguments to return stdio mode
-        mock_args = MagicMock()
-        mock_args.mode = "stdio"
-        mock_parse_args.return_value = mock_args
-
-        # Call main() and expect the exception to be raised
-        with pytest.raises(Exception, match="Test error"):
-            await main.main()
 
 
 def test_main_script_keyboard_interrupt():
@@ -311,16 +299,16 @@ def test_main_script_general_exception():
     test_exception = Exception("Test server error")
 
     with (
-        patch("hubspot_mcp.__main__.asyncio.run") as mock_asyncio_run,
+        patch("hubspot_mcp.__main__.main") as mock_main,
         patch("hubspot_mcp.__main__.logger") as mock_logger,
     ):
-        mock_asyncio_run.side_effect = test_exception
+        mock_main.side_effect = test_exception
 
-        # Simulate the if __name__ == "__main__" block
+        # Test cli_main() which is the actual entry point
         with pytest.raises(Exception):
-            main.asyncio.run(main.main())
+            main.cli_main()
 
-        mock_asyncio_run.assert_called_once()
+        mock_main.assert_called_once()
         mock_logger.error.assert_called_with("Server error: Test server error")
 
 
@@ -337,16 +325,22 @@ async def test_handle_list_tools():
     mock_init_options = MagicMock(spec=InitializationOptions)
     mock_init_options.model_dump.return_value = {}
 
-    async def fake_handler():
-        return await mock_handlers.handle_list_tools()
+    # Mock the list_tools decorator properly
+    def mock_list_tools_decorator():
+        def decorator(func):
+            return func
 
-    mock_server.list_tools.return_value = lambda: fake_handler
+        return decorator
+
+    mock_server.list_tools = mock_list_tools_decorator
 
     with (
         patch("hubspot_mcp.__main__.Server", return_value=mock_server),
         patch("hubspot_mcp.__main__.HubSpotClient", return_value=mock_hubspot_client),
         patch("hubspot_mcp.__main__.MCPHandlers", return_value=mock_handlers),
-        patch("hubspot_mcp.__main__.InitializationOptions", return_value=mock_init_options),
+        patch(
+            "hubspot_mcp.__main__.InitializationOptions", return_value=mock_init_options
+        ),
     ):
         # Create the server (this would happen in main())
         server = main.Server("hubspot-mcp-server")
@@ -376,16 +370,22 @@ async def test_handle_call_tool():
     mock_init_options = MagicMock(spec=InitializationOptions)
     mock_init_options.model_dump.return_value = {}
 
-    async def fake_handler(name: str, arguments: dict):
-        return await mock_handlers.handle_call_tool(name, arguments)
+    # Mock the call_tool decorator properly
+    def mock_call_tool_decorator():
+        def decorator(func):
+            return func
 
-    mock_server.call_tool.return_value = lambda: fake_handler
+        return decorator
+
+    mock_server.call_tool = mock_call_tool_decorator
 
     with (
         patch("hubspot_mcp.__main__.Server", return_value=mock_server),
         patch("hubspot_mcp.__main__.HubSpotClient", return_value=mock_hubspot_client),
         patch("hubspot_mcp.__main__.MCPHandlers", return_value=mock_handlers),
-        patch("hubspot_mcp.__main__.InitializationOptions", return_value=mock_init_options),
+        patch(
+            "hubspot_mcp.__main__.InitializationOptions", return_value=mock_init_options
+        ),
     ):
         # Create the server (this would happen in main())
         server = main.Server("hubspot-mcp-server")

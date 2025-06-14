@@ -54,7 +54,7 @@ class TestAuthenticationMiddleware:
     @pytest.mark.asyncio
     async def test_authentication_disabled_when_no_auth_key(self):
         """Test that authentication is bypassed when no auth key is configured."""
-        app_mock = AsyncMock()
+        app_mock = AsyncMock(return_value=None)
         middleware = AuthenticationMiddleware(app_mock, auth_key=None)
 
         scope = {"type": "http", "path": "/sse"}
@@ -69,7 +69,7 @@ class TestAuthenticationMiddleware:
     @pytest.mark.asyncio
     async def test_exempt_path_health_bypasses_auth(self):
         """Test that /health path bypasses authentication."""
-        app_mock = AsyncMock()
+        app_mock = AsyncMock(return_value=None)
         middleware = AuthenticationMiddleware(app_mock, auth_key="test-key")
 
         scope = {"type": "http", "path": "/health"}
@@ -84,7 +84,7 @@ class TestAuthenticationMiddleware:
     @pytest.mark.asyncio
     async def test_exempt_path_ready_bypasses_auth(self):
         """Test that /ready path bypasses authentication."""
-        app_mock = AsyncMock()
+        app_mock = AsyncMock(return_value=None)
         middleware = AuthenticationMiddleware(app_mock, auth_key="test-key")
 
         scope = {"type": "http", "path": "/ready"}
@@ -99,7 +99,7 @@ class TestAuthenticationMiddleware:
     @pytest.mark.asyncio
     async def test_successful_authentication_with_correct_header(self):
         """Test successful authentication with correct API key."""
-        app_mock = AsyncMock()
+        app_mock = AsyncMock(return_value=None)
         auth_key = "valid-api-key-123"
         middleware = AuthenticationMiddleware(app_mock, auth_key)
 
@@ -119,7 +119,7 @@ class TestAuthenticationMiddleware:
     @pytest.mark.asyncio
     async def test_successful_authentication_with_custom_header(self):
         """Test successful authentication with custom header name."""
-        app_mock = AsyncMock()
+        app_mock = AsyncMock(return_value=None)
         auth_key = "valid-api-key-123"
         middleware = AuthenticationMiddleware(app_mock, auth_key, "Authorization")
 
@@ -139,7 +139,7 @@ class TestAuthenticationMiddleware:
     @pytest.mark.asyncio
     async def test_failed_authentication_missing_header(self):
         """Test failed authentication when header is missing."""
-        app_mock = AsyncMock()
+        app_mock = AsyncMock(return_value=None)
         auth_key = "valid-api-key-123"
         middleware = AuthenticationMiddleware(app_mock, auth_key)
 
@@ -172,7 +172,7 @@ class TestAuthenticationMiddleware:
     @pytest.mark.asyncio
     async def test_failed_authentication_wrong_header_value(self):
         """Test failed authentication with incorrect API key."""
-        app_mock = AsyncMock()
+        app_mock = AsyncMock(return_value=None)
         auth_key = "valid-api-key-123"
         middleware = AuthenticationMiddleware(app_mock, auth_key)
 
@@ -199,7 +199,7 @@ class TestAuthenticationMiddleware:
     @pytest.mark.asyncio
     async def test_failed_authentication_empty_header_value(self):
         """Test failed authentication with empty header value."""
-        app_mock = AsyncMock()
+        app_mock = AsyncMock(return_value=None)
         auth_key = "valid-api-key-123"
         middleware = AuthenticationMiddleware(app_mock, auth_key)
 
@@ -217,7 +217,7 @@ class TestAuthenticationMiddleware:
     @pytest.mark.asyncio
     async def test_non_http_request_bypasses_auth(self):
         """Test that non-HTTP requests bypass authentication."""
-        app_mock = AsyncMock()
+        app_mock = AsyncMock(return_value=None)
         auth_key = "valid-api-key-123"
         middleware = AuthenticationMiddleware(app_mock, auth_key)
 
@@ -233,7 +233,7 @@ class TestAuthenticationMiddleware:
     @pytest.mark.asyncio
     async def test_scope_without_path_key(self):
         """Test handling of scope without path key."""
-        app_mock = AsyncMock()
+        app_mock = AsyncMock(return_value=None)
         auth_key = "valid-api-key-123"
         middleware = AuthenticationMiddleware(app_mock, auth_key)
 
@@ -249,7 +249,7 @@ class TestAuthenticationMiddleware:
     @pytest.mark.asyncio
     async def test_scope_without_headers_key(self):
         """Test handling of scope without headers key."""
-        app_mock = AsyncMock()
+        app_mock = AsyncMock(return_value=None)
         auth_key = "valid-api-key-123"
         middleware = AuthenticationMiddleware(app_mock, auth_key)
 
@@ -267,7 +267,7 @@ class TestAuthenticationMiddleware:
     @pytest.mark.asyncio
     async def test_case_insensitive_header_matching(self):
         """Test that header matching is case insensitive."""
-        app_mock = AsyncMock()
+        app_mock = AsyncMock(return_value=None)
         auth_key = "valid-api-key-123"
         middleware = AuthenticationMiddleware(app_mock, auth_key, "Authorization")
 
@@ -288,7 +288,7 @@ class TestAuthenticationMiddleware:
     @pytest.mark.asyncio
     async def test_multiple_headers_with_correct_auth(self):
         """Test authentication with multiple headers including correct auth."""
-        app_mock = AsyncMock()
+        app_mock = AsyncMock(return_value=None)
         auth_key = "valid-api-key-123"
         middleware = AuthenticationMiddleware(app_mock, auth_key)
 
@@ -312,7 +312,7 @@ class TestAuthenticationMiddleware:
     @pytest.mark.asyncio
     async def test_header_with_special_characters(self):
         """Test authentication with API key containing special characters."""
-        app_mock = AsyncMock()
+        app_mock = AsyncMock(return_value=None)
         auth_key = "key-with-special-chars_123!@#"
         middleware = AuthenticationMiddleware(app_mock, auth_key)
 
@@ -332,7 +332,7 @@ class TestAuthenticationMiddleware:
     @pytest.mark.asyncio
     async def test_unicode_handling_in_headers(self):
         """Test proper handling of unicode characters in headers."""
-        app_mock = AsyncMock()
+        app_mock = AsyncMock(return_value=None)
         auth_key = "test-key-123"
         middleware = AuthenticationMiddleware(app_mock, auth_key)
 
@@ -361,7 +361,7 @@ class TestAuthenticationMiddleware:
     @pytest.mark.asyncio
     async def test_protected_endpoint_requires_auth(self):
         """Test that protected endpoints require authentication."""
-        app_mock = AsyncMock()
+        app_mock = AsyncMock(return_value=None)
         auth_key = "valid-api-key-123"
         middleware = AuthenticationMiddleware(app_mock, auth_key)
 
