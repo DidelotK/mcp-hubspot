@@ -73,6 +73,20 @@ just security
 - ✅ **Semantic Search**: AI-powered search functionality
 - ✅ **Error Handling**: Comprehensive error scenarios
 - ✅ **Performance**: Response time and memory usage
+- ✅ **Integration Testing**: Client integration verification
+
+#### Integration Testing
+
+For testing MCP client integrations and end-to-end functionality:
+
+📖 **[Complete Integration Testing Guide →](integration-testing.md)**
+
+This guide covers:
+- Claude Desktop integration testing
+- MCP client communication validation
+- Automated testing scripts
+- CI/CD integration examples
+- Performance and load testing
 
 ### Development Workflow
 
