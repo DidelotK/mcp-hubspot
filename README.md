@@ -2,113 +2,173 @@
 
 MCP (Model Context Protocol) server for integrating HubSpot with Claude Desktop and other MCP clients. Provides access to HubSpot contacts, companies, and deals through conversational tools.
 
-## 🚀 Quick Start
+## 🔀 Installation Approaches
 
+This server can be deployed in **two different ways** depending on your needs:
+
+### 🏠 **Local Installation (stdio mode)**
+**Best for:** Claude Desktop integration, local development, and direct client integration
+
+- ✅ Simple setup and configuration
+- ✅ Direct integration with Claude Desktop
+- ✅ Runs locally on your machine
+- ✅ Perfect for personal use
+- ✅ Uses stdio protocol for communication
+
+**Quick Start:**
 ```bash
-# Installation
 git clone <repo-url>
-cd hubspot-mcp-server
+cd mcp-hubspot
 uv sync
-
-# Configuration
 export HUBSPOT_API_KEY="your_api_key"
-
-# Start
 uv run hubspot-mcp-server --mode stdio
 ```
 
-## 📚 Documentation
+### 🌐 **Remote Deployment (SSE mode)**
+**Best for:** Production environments, team usage, scalable deployments
+
+- ✅ Production-ready Kubernetes deployment
+- ✅ Scalable and highly available
+- ✅ SSE (Server-Sent Events) protocol
+- ✅ Authentication and security
+- ✅ Automated deployment scripts
+- ✅ Multi-user support
+
+**Quick Start:**
+```bash
+# Deploy to Kubernetes
+./deploy/scripts/deploy-mcp-hubspot.sh
+# Test SSE endpoint
+./deploy/scripts/test-sse-mcp.sh
+```
+
+---
+
+## 📚 Documentation Table of Contents
+
+### 🚀 Getting Started
+
+| Section | Description | Best For |
+|---------|-------------|----------|
+| **[Local Installation (stdio)](docs/installation-local-stdio.md)** | Install and run locally for Claude Desktop | Personal use, development |
+| **[Remote Deployment (SSE)](docs/installation-remote-sse.md)** | Deploy to Kubernetes for production use | Teams, production, scalability |
+| **[Configuration Guide](docs/configuration.md)** | Environment setup and API configuration | Both approaches |
+| **[Client Integration](docs/integration.md)** | Configure Claude Desktop and other MCP clients | Both approaches |
+
+### 🔧 Usage and Features
 
 | Section | Description |
 |---------|-------------|
-| **[Installation](docs/installation.md)** | Installation and configuration guide |
-| **[Integration](docs/integration.md)** | Configuration with Claude Desktop and other MCP clients |
 | **[API Reference](docs/api-reference.md)** | Complete documentation of the 14 available tools |
 | **[Semantic Search](docs/semantic-search.md)** | AI-powered semantic search capabilities and usage |
-| **[Developer Guide](docs/developer.md)** | Testing, quality assurance, and development workflow |
 | **[Cache System](docs/caching.md)** | How the shared TTL cache works and how to manage it |
 | **[Examples](docs/examples.md)** | Use cases and example conversations with Claude |
-| **[Contributing](docs/contributing.md)** | Guide for developing new tools |
 
-## 🧪 Practical Examples
+### 🛠️ Development and Testing
 
-| Example | Description |
+| Section | Description |
 |---------|-------------|
-| **[Basic Test](examples/basic/)** | Python script to test the MCP server with a client |
-| **[FastAgent Chat](examples/fastagent/)** | Interactive chat agent using FastAgent SDK |
+| **[Developer Guide](docs/developer.md)** | Testing, quality assurance, and development workflow |
+| **[Contributing](docs/contributing.md)** | Guide for developing new tools |
+| **[Troubleshooting](docs/troubleshooting.md)** | Common issues and solutions |
+| **[Integration Testing](docs/integration-testing.md)** | Comprehensive testing procedures |
+
+### 📋 Advanced Topics
+
+| Section | Description |
+|---------|-------------|
+| **[Docker Setup](docs/docker-setup.md)** | Docker configuration and containerization |
+| **[Environment Setup](docs/environment-setup.md)** | Advanced environment configuration |
+| **[MCP Clients Integration](docs/mcp-clients-integration.md)** | Integration with various MCP clients |
+
+---
 
 ## 🛠️ Available Tools
 
-| Tool | Description |
-|-------|-------------|
-| `list_hubspot_contacts` | List HubSpot contacts with pagination support |
-| `get_hubspot_contact_properties` | Retrieve contact field properties with types and descriptions |
-| `list_hubspot_companies` | List HubSpot companies with pagination support |
-| `get_hubspot_company_properties` | Retrieve company field properties with types and descriptions |
-| `list_hubspot_deals` | List HubSpot deals with pagination support |
-| `search_hubspot_deals` | Advanced search for deals via HubSpot CRM Search API |
-| `create_deal` | Create a new deal in HubSpot |
-| `update_deal` | Update an existing deal in HubSpot |
-| `get_deal_by_name` | Search for a deal by exact name |
-| `get_hubspot_deal_properties` | Retrieve deal field properties with types and descriptions |
-| `list_hubspot_engagements` | List HubSpot engagements with pagination support |
-| `manage_hubspot_cache` | View statistics or clear the shared TTL cache |
-| `semantic_search_hubspot` | AI-powered semantic search across all HubSpot entities using natural language |
-| `manage_hubspot_embeddings` | Manage embedding indexes for semantic search (build, clear, stats) |
+The server provides **14 tools** for comprehensive HubSpot integration:
 
-## ⚡ Usage
+| Category | Tools | Description |
+|----------|--------|-------------|
+| **Contacts** | `list_hubspot_contacts`<br/>`get_hubspot_contact_properties` | List contacts and retrieve contact field properties |
+| **Companies** | `list_hubspot_companies`<br/>`get_hubspot_company_properties` | List companies and retrieve company field properties |
+| **Deals** | `list_hubspot_deals`<br/>`search_hubspot_deals`<br/>`create_deal`<br/>`update_deal`<br/>`get_deal_by_name`<br/>`get_hubspot_deal_properties` | Complete deal management and search capabilities |
+| **Engagements** | `list_hubspot_engagements` | List HubSpot engagements with pagination support |
+| **AI Search** | `semantic_search_hubspot`<br/>`manage_hubspot_embeddings` | AI-powered semantic search using natural language |
+| **System** | `manage_hubspot_cache` | Cache management and statistics |
 
-Once configured, use natural language phrases:
+---
 
+## ⚡ Quick Usage Examples
+
+Once configured, use natural language phrases with your MCP client:
+
+### 🗣️ **Natural Language Queries**
 - *"List my HubSpot contacts"*
 - *"Find tech sector companies"*
 - *"Show current deals"*
 - *"Create a new deal for Project X"*
 - *"Search for the 'Project X' deal"*
 - *"What contact properties are available?"*
-- *"Find software engineers using semantic search"*
-- *"Search for technology companies in Paris"*
 
-## 🤖 AI-Powered Semantic Search
+### 🤖 **AI-Powered Semantic Search**
+- *"Find software engineers"* → matches "Developer", "Programmer", "Software Architect"
+- *"Search for enterprise clients"* → finds large companies without exact keywords
+- *"Technology companies in Paris"* → contextual location and industry search
 
-The server includes advanced **semantic search capabilities** powered by FAISS and sentence transformers, enabling natural language queries across your HubSpot data.
+---
 
-**Key Features:**
-- 🔍 **Natural Language Queries**: Find *"software engineers"* → matches "Developer", "Programmer", "Software Architect"
-- 🎯 **Context-Aware**: Search *"enterprise clients"* → finds large companies without exact keyword matches
-- 🌐 **Multi-Entity Search**: Search across contacts, companies, deals, and engagements simultaneously
-- 🔄 **Hybrid Modes**: Combines AI similarity with traditional API filters
+## 🎯 Choose Your Installation Method
 
-**Quick Start:**
-```json
-// 1. Build embeddings index
-{"name": "manage_hubspot_embeddings", "arguments": {"action": "build"}}
-
-// 2. Perform semantic search
-{"name": "semantic_search_hubspot", "arguments": {"query": "technology companies in Paris"}}
+### For Claude Desktop Users (Recommended: Local)
+```bash
+# Install locally for direct Claude Desktop integration
+git clone <repo-url>
+cd mcp-hubspot
 ```
+→ **[Follow Local Installation Guide](docs/installation-local-stdio.md)**
 
-→ **[Complete Semantic Search Guide](docs/semantic-search.md)** - Detailed usage, examples, and configuration
+### For Production/Team Deployment (Recommended: Remote)
+```bash
+# Deploy to Kubernetes for production use
+cd deploy/
+./scripts/deploy-mcp-hubspot.sh
+```
+→ **[Follow Remote Deployment Guide](docs/installation-remote-sse.md)**
+
+---
 
 ## 🧪 Testing and Quality
 
-Run all quality checks with a single command:
+Both installation methods include comprehensive testing:
 
 ```bash
-just check
+# Local development testing
+just check  # Runs all quality checks
+
+# Remote deployment testing  
+./deploy/scripts/test-sse-mcp.sh  # Tests SSE functionality
 ```
 
-This performs code formatting, linting, type checking, full test suite, and security scanning.
+**Current Status:** ✅ 330+ tests passed, 97% coverage, comprehensive AI/embedding functionality
 
-**Current Status:** ✅ 140+ tests passed, comprehensive coverage including AI/embedding functionality
-
-→ **[Developer Guide](docs/developer.md)** - Complete testing procedures, quality standards, and development workflow
+---
 
 ## 📋 Prerequisites
 
+### For Local Installation
 - Python 3.12+
 - uv (package manager)
 - HubSpot API key with CRM permissions
+
+### For Remote Deployment
+- Kubernetes cluster (>= 1.20)
+- Helm 3
+- External Secrets Operator
+- NGINX Ingress Controller
+- Cert-Manager
+- External DNS
+
+---
 
 ## 🤝 Contributing
 
@@ -118,41 +178,27 @@ Check the [contributing guide](docs/contributing.md) for:
 - Code and testing conventions
 - Git workflow and semantic versioning
 
+---
+
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
 
-**Useful Links:**
-- [Claude Desktop Configuration](docs/integration.md#integration-with-claude-desktop)
-- [Usage Examples](docs/examples.md#example-conversations)
-- [Complete Tool Reference](docs/api-reference.md)
-- [Troubleshooting](docs/integration.md#troubleshooting)
+## 🔗 Quick Links
 
-## 🗄️ Cache System
+### 🏠 Local Installation
+- [Complete Local Setup Guide](docs/installation-local-stdio.md)
+- [Claude Desktop Configuration](docs/integration.md#claude-desktop-integration)
+- [Local Development Workflow](docs/developer.md)
 
-The server uses a **shared in-memory TTL cache** (5-minute default) for all read-only HubSpot calls.  
-Benefits:
+### 🌐 Remote Deployment
+- [Kubernetes Deployment Guide](docs/installation-remote-sse.md)
+- [SSE Testing Scripts](docs/installation-remote-sse.md#testing-and-monitoring)
+- [Production Configuration](docs/installation-remote-sse.md#configuration-files)
 
-* 🚀 Faster responses on repeated queries (cache hits)
-* 🔄 Automatic refresh every 5 minutes (configurable)
-* 🔐 Isolated by API key – no data leaks between accounts
-
-You can interact with the cache via the `manage_hubspot_cache` tool:
-
-```json
-{
-  "name": "manage_hubspot_cache",
-  "arguments": {"action": "info"}
-}
-```
-
-Actions:
-
-| Action | Description |
-|--------|-------------|
-| `info` | Show cache size, TTL, utilization and sample keys |
-| `clear` | Immediately empty the cache and fetch fresh data on next call |
-
-See full details in [docs/caching.md](docs/caching.md).
+### 📖 General Documentation
+- [All Available Tools](docs/api-reference.md)
+- [Usage Examples](docs/examples.md)
+- [Troubleshooting](docs/troubleshooting.md)
