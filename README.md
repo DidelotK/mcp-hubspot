@@ -122,22 +122,6 @@ The server provides **14 tools** for comprehensive HubSpot integration:
 
 ---
 
-## 🧪 Testing and Quality
-
-Both installation methods include comprehensive testing:
-
-```bash
-# Local development testing
-just check  # Runs all quality checks
-
-# Remote deployment testing  
-./deploy/scripts/test-sse-mcp.sh  # Tests SSE functionality
-```
-
-**Current Status:** ✅ 330+ tests passed, 97% coverage, comprehensive AI/embedding functionality
-
----
-
 ## 📋 Prerequisites
 
 ### For Local Installation
