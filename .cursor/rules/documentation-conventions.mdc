@@ -1,0 +1,137 @@
+---
+description: Documentation conventions for development agents
+globs:
+  - "*"
+alwaysApply: true
+---
+
+# Documentation Conventions for Development Agents
+
+## 1. General Documentation
+
+### 1.1 Documentation Structure
+- Clear and logical section organization
+- Consistent use of titles and subtitles with Markdown levels
+- Addition of links to relevant resources
+
+### 1.2 Language and Style
+- Professional English usage
+- Concise and precise style
+- Avoid unnecessary technical jargon
+- Maintain consistency in technical vocabulary
+
+## 2. Technical Documentation
+
+### 2.1 APIs and Interfaces
+- Complete documentation of endpoints and methods
+- Description of parameters and their types
+- Usage examples
+- Error handling and special cases
+
+### 2.2 Features
+- Detailed description of agent capabilities
+- Common usage examples
+- Known limitations
+- Best practices for use
+
+## 3. User Documentation
+
+### 3.1 Usage Guide
+- Step-by-step instructions
+- Concrete examples
+- Tips and tricks
+- FAQ
+
+### 3.2 Use Cases
+- Typical scenarios
+- Best practices
+- Workflow examples
+
+## 4. Development Documentation
+
+### 4.1 Code Structure
+- Component organization
+- Naming conventions
+- Configuration file structure
+
+### 4.2 Integration
+- Integration instructions
+- Required configuration
+- Dependencies
+- Testing and validation
+
+## 5. Maintenance and Updates
+
+- Version history
+- Release notes
+- Compatibility
+- Migration
+
+## 6. Best Practices
+
+- Keep documentation up to date
+- Check consistency
+- Test examples
+- Make documentation accessible
+- Use real examples
+- Add screenshots when relevant
+- Include references to external resources
+
+## 7. Format and Style
+
+- Use bullet points for instructions
+- Highlight warnings and important notes
+- Use tables for structured information
+- Include code examples with appropriate formatting
+- Add links to additional resources
+
+## 8. Documentation Directory Structure
+
+### 8.1 Root Directory
+- README.md: Main project documentation
+- docs/: Main documentation directory
+
+### 8.2 Main Documentation Directory
+- docs/
+  ├── api/: API documentation
+  ├── guides/: User guides and tutorials
+  ├── reference/: Technical reference
+  ├── development/: Development documentation
+  ├── examples/: Code examples and sample projects
+  └── changelog.md: Version history and changes
+
+### 8.3 API Documentation
+- Organize by service/resource
+- Include request/response examples
+- Document error codes and responses
+- Include authentication requirements
+
+### 8.4 User Guides
+- Organize by feature area
+- Include step-by-step instructions
+- Provide real-world examples
+- Include troubleshooting sections
+
+### 8.5 Technical Reference
+- Detailed technical specifications
+- Configuration options
+- Environment requirements
+- Integration points
+
+### 8.6 Development Documentation
+- Code structure and organization
+- Build and deployment instructions
+- Testing guidelines
+- Development environment setup
+
+### 8.7 Examples
+- Organize by use case
+- Include complete working examples
+- Document prerequisites
+- Include setup instructions
+
+### 8.8 Additional Files
+- CONTRIBUTING.md: Guidelines for contributing
+- CODE_OF_CONDUCT.md: Project code of conduct
+- LICENSE: Project license information
+- SECURITY.md: Security guidelines and procedures
