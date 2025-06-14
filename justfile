@@ -95,19 +95,58 @@ format:
 
 # Run security checks
 security:
+    @mkdir -p reports
+    uv run bandit -r src -f json -o reports/bandit_report.json
     uv run bandit -r src
 
 # Clean cache and build artifacts
 clean:
-    find . -type f -name "*.pyc" -delete
-    find . -type d -name "__pycache__" -delete
-    find . -type d -name ".pytest_cache" -delete
-    find . -type f -name "*.coverage" -delete
-    rm -rf htmlcov/
-    rm -rf .coverage
+    @echo "🧹 Cleaning cache and build artifacts..."
+    @find src tests -type f -name "*.pyc" -delete 2>/dev/null || true
+    @find src tests -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
+    @rm -rf .pytest_cache/ 2>/dev/null || true
+    @rm -rf .coverage 2>/dev/null || true
+    @rm -rf htmlcov/ 2>/dev/null || true
+    @rm -f reports/*.json reports/*.html reports/*.txt 2>/dev/null || true
+    @echo "✅ Cleanup completed"
 
-# Run all quality checks (lint, test, security)
-check: lint type-check security test
+# Run all quality checks (lint, test, security) with visual feedback
+check:
+    @echo ""
+    @echo "\033[1;36m🚀 DÉMARRAGE DES VÉRIFICATIONS DE QUALITÉ\033[0m"
+    @echo "\033[1;36m==========================================\033[0m"
+    @echo ""
+    @echo "\033[1;34m📋 Étape 1/5: Vérification du formatage du code\033[0m"
+    @echo "\033[0;34m⏳ Vérification avec Black et isort...\033[0m"
+    uv run black --check src tests
+    uv run isort --check-only src tests
+    @echo "\033[1;32m✅ Formatage vérifié avec succès\033[0m"
+    @echo ""
+    @echo "\033[1;34m🔍 Étape 2/5: Analyse statique et linting\033[0m"
+    @echo "\033[0;34m⏳ Analyse avec flake8...\033[0m"
+    uv run flake8 src tests
+    @echo "\033[1;32m✅ Linting terminé avec succès\033[0m"
+    @echo ""
+    @echo "\033[1;34m🎯 Étape 3/5: Vérification des types statiques\033[0m"
+    @echo "\033[0;34m⏳ Analyse avec mypy...\033[0m"
+    uv run mypy src
+    @echo "\033[1;32m✅ Vérification des types réussie\033[0m"
+    @echo ""
+    @echo "\033[1;34m🔒 Étape 4/5: Analyse de sécurité du code\033[0m"
+    @echo "\033[0;34m⏳ Scan de sécurité avec bandit...\033[0m"
+    @mkdir -p reports
+    uv run bandit -r src -f json -o reports/bandit_report.json
+    uv run bandit -r src
+    @echo "\033[1;32m✅ Analyse de sécurité terminée\033[0m"
+    @echo ""
+    @echo "\033[1;34m🧪 Étape 5/5: Exécution des tests unitaires\033[0m"
+    @echo "\033[0;34m⏳ Lancement des tests avec coverage...\033[0m"
+    uv run pytest --cov=src --cov-report=term-missing -v
+    @echo ""
+    @echo "\033[1;32m🎉 TOUTES LES VÉRIFICATIONS SONT TERMINÉES AVEC SUCCÈS !\033[0m"
+    @echo "\033[1;32m=====================================================\033[0m"
+    @echo "\033[1;33m📊 Résumé: Formatage ✅ | Linting ✅ | Types ✅ | Sécurité ✅ | Tests ✅\033[0m"
+    @echo ""
 
 # Build the package
 build:
