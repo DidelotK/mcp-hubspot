@@ -35,6 +35,7 @@ Before deploying, ensure you have:
 7. **ClusterSecretStore** configured for External Secrets
 8. **Docker** with access to Scaleway Container Registry
 9. **direnv** for automatic environment variable management (recommended)
+10. **Docker buildx** for warning-free builds (recommended) - see [Docker Setup Guide](../docs/docker-setup.md)
 
 ## Docker Registry Authentication
 

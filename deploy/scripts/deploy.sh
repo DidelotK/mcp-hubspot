@@ -80,21 +80,42 @@ build_and_push_image() {
         log_warning "REGISTRY_PASSWORD not set, assuming already authenticated"
     fi
     
-    # Initialize buildx builder if not exists
-    log_info "Initializing Docker buildx..."
-    if ! docker buildx ls | grep -q "multiarch"; then
-        docker buildx create --name multiarch --use --bootstrap
+    # Check if buildx is available
+    if docker buildx version >/dev/null 2>&1; then
+        log_info "Using Docker buildx for warning-free builds..."
+        
+        # Initialize buildx builder if not exists
+        log_info "Initializing Docker buildx..."
+        if ! docker buildx ls | grep -q "multiarch"; then
+            docker buildx create --name multiarch --use --bootstrap
+        else
+            docker buildx use multiarch
+        fi
+        
+        # Build and push image using buildx
+        log_info "Building and pushing image with buildx: $image_name"
+        docker buildx build \
+            --platform linux/amd64 \
+            --tag "$image_name" \
+            --push \
+            .
     else
-        docker buildx use multiarch
+        log_warning "Docker buildx not available, using standard docker build..."
+        log_info "Note: You may see some warnings. Install docker-buildx package to eliminate them."
+        
+        # Build image with standard docker build
+        log_info "Building image: $image_name"
+        DOCKER_BUILDKIT=1 docker build \
+            --tag "$image_name" \
+            --platform linux/amd64 \
+            .
+        
+        # Push image
+        log_info "Pushing image: $image_name"
+        docker push "$image_name"
+        
+        log_info "💡 Tip: Install docker-buildx for better build experience: sudo apt install docker-buildx-plugin"
     fi
-    
-    # Build and push image using buildx
-    log_info "Building and pushing image with buildx: $image_name"
-    docker buildx build \
-        --platform linux/amd64 \
-        --tag "$image_name" \
-        --push \
-        .
     
     log_success "Image built and pushed: $image_name"
 }

@@ -156,39 +156,64 @@ build:
 
 # Build Docker image using buildx (eliminates warnings)
 docker-build:
-    @echo "🐳 Building Docker image with buildx..."
-    @if ! docker buildx ls | grep -q "multiarch"; then \
-        echo "📋 Initializing buildx builder..."; \
-        docker buildx create --name multiarch --use --bootstrap; \
+    @echo "🐳 Building Docker image..."
+    @if docker buildx version >/dev/null 2>&1; then \
+        echo "✅ Using Docker buildx for warning-free builds..."; \
+        if ! docker buildx ls | grep -q "multiarch"; then \
+            echo "📋 Initializing buildx builder..."; \
+            docker buildx create --name multiarch --use --bootstrap; \
+        else \
+            echo "📋 Using existing buildx builder..."; \
+            docker buildx use multiarch; \
+        fi; \
+        echo "🔨 Building and pushing image with buildx..."; \
+        docker buildx build \
+            --platform linux/amd64 \
+            --tag ${IMAGE_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} \
+            --push \
+            .; \
+        echo "✅ Docker image built and pushed successfully with buildx!"; \
     else \
-        echo "📋 Using existing buildx builder..."; \
-        docker buildx use multiarch; \
+        echo "⚠️  Docker buildx not available, using standard docker build..."; \
+        echo "💡 Install docker-buildx-plugin for warning-free builds"; \
+        echo "🔨 Building and pushing image..."; \
+        DOCKER_BUILDKIT=1 docker build \
+            --tag ${IMAGE_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} \
+            --platform linux/amd64 \
+            .; \
+        docker push ${IMAGE_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}; \
+        echo "✅ Docker image built and pushed successfully!"; \
     fi
-    @echo "🔨 Building and pushing image..."
-    docker buildx build \
-        --platform linux/amd64 \
-        --tag ${IMAGE_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} \
-        --push \
-        .
-    @echo "✅ Docker image built and pushed successfully!"
 
 # Build Docker image locally (no push)
 docker-build-local:
-    @echo "🐳 Building Docker image locally with buildx..."
-    @if ! docker buildx ls | grep -q "multiarch"; then \
-        echo "📋 Initializing buildx builder..."; \
-        docker buildx create --name multiarch --use --bootstrap; \
+    @echo "🐳 Building Docker image locally..."
+    @if docker buildx version >/dev/null 2>&1; then \
+        echo "✅ Using Docker buildx for warning-free builds..."; \
+        if ! docker buildx ls | grep -q "multiarch"; then \
+            echo "📋 Initializing buildx builder..."; \
+            docker buildx create --name multiarch --use --bootstrap; \
+        else \
+            echo "📋 Using existing buildx builder..."; \
+            docker buildx use multiarch; \
+        fi; \
+        echo "🔨 Building image for local use with buildx..."; \
+        docker buildx build \
+            --platform linux/amd64 \
+            --tag ${IMAGE_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} \
+            --load \
+            .; \
+        echo "✅ Docker image built locally with buildx!"; \
     else \
-        echo "📋 Using existing buildx builder..."; \
-        docker buildx use multiarch; \
+        echo "⚠️  Docker buildx not available, using standard docker build..."; \
+        echo "💡 Install docker-buildx-plugin for warning-free builds"; \
+        echo "🔨 Building image for local use..."; \
+        DOCKER_BUILDKIT=1 docker build \
+            --tag ${IMAGE_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} \
+            --platform linux/amd64 \
+            .; \
+        echo "✅ Docker image built locally!"; \
     fi
-    @echo "🔨 Building image for local use..."
-    docker buildx build \
-        --platform linux/amd64 \
-        --tag ${IMAGE_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} \
-        --load \
-        .
-    @echo "✅ Docker image built locally!"
 
 # Show project info
 info:
