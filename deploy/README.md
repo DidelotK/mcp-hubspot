@@ -13,6 +13,7 @@ Ensure you have:
 - **External Secrets Operator** installed in your cluster
 - **NGINX Ingress Controller** installed
 - **Cert-Manager** for TLS certificate management
+- **External DNS** for automatic DNS record management
 
 ### 2. Configuration
 
@@ -234,6 +235,9 @@ app-component:
     tls:
       - hosts:
         - mcp-hubspot.your-domain.com  # YOUR domain
+    annotations:
+      # External DNS will automatically create DNS records
+      external-dns.alpha.kubernetes.io/hostname: mcp-hubspot.your-domain.com
 ```
 
 #### 4. Environment and Namespace
@@ -253,6 +257,8 @@ The HubSpot MCP Server is deployed as a containerized application in Kubernetes 
 
 - **External Secrets Operator** for secure secret management
 - **NGINX Ingress** for external access with TLS
+- **Cert-Manager** for automatic TLS certificate provisioning
+- **External DNS** for automatic DNS record management
 - **Horizontal Pod Autoscaler** for automatic scaling
 - **Network Policies** for security
 - **Service Monitor** for Prometheus monitoring
@@ -289,6 +295,24 @@ secrets:
 Your secret must contain:
 - **`hubspot-api-key`**: Your HubSpot API key
 - **`mcp-auth-key`**: Authentication key for MCP server access
+
+## DNS Management
+
+### External DNS Integration
+
+The deployment uses **External DNS** for automatic DNS record management:
+
+- **Automatic DNS records**: External DNS creates DNS records based on Ingress annotations
+- **Domain synchronization**: DNS records are automatically updated when Ingress changes
+- **Multi-provider support**: Works with major DNS providers (Cloudflare, Route53, etc.)
+
+When you deploy the Ingress with the correct annotations, External DNS will:
+1. Detect the new Ingress resource
+2. Extract the hostname from annotations or hosts
+3. Create the appropriate DNS record pointing to the load balancer
+4. Monitor and update records as needed
+
+**Note**: Ensure External DNS is configured with proper permissions for your DNS provider.
 
 ## Deployment Workflow
 
