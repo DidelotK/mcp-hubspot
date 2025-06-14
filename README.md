@@ -2,16 +2,6 @@
 
 MCP (Model Context Protocol) server for integrating HubSpot with Claude Desktop and other MCP clients. Provides access to HubSpot contacts, companies, and deals through conversational tools.
 
-## ⚠️ Before You Start
-
-**This is not a simple "npm install" or "pip install" package.** This MCP server requires:
-
-- 🔑 **HubSpot API access** with proper permissions
-- 🛠️ **Client configuration** (Claude Desktop or other MCP client)
-- 🔧 **Technical setup** (local development environment OR Kubernetes cluster)
-
-**Choose your path carefully** based on your technical requirements and infrastructure.
-
 ## 🔀 Installation Approaches
 
 This server can be deployed in **two different ways** depending on your needs:
