@@ -317,26 +317,34 @@ def test_handle_list_tools_count() -> None:
     handlers = MCPHandlers(client)
     tools: List[Tool] = asyncio.run(handlers.handle_list_tools())
 
-    # Should have exactly 14 tools after adding search contacts/companies
-    assert len(tools) == 14
+    # Should have exactly 16 tools after adding semantic search and embedding management tools
+    assert len(tools) == 16
 
-    expected_tools: List[str] = [
+    # Extract tool names
+    tool_names = [tool.name for tool in tools]
+
+    # Check that all expected tools are present
+    expected_tools = [
         "manage_hubspot_cache",
         "list_hubspot_contacts",
         "list_hubspot_companies",
         "list_hubspot_deals",
-        "search_hubspot_deals",
-        "create_deal",
-        "get_deal_by_name",
+        "list_hubspot_engagements",
+        "get_deal_by_name",  # Fixed: no hubspot_ prefix
         "get_hubspot_contact_properties",
         "get_hubspot_company_properties",
         "get_hubspot_deal_properties",
-        "list_hubspot_engagements",
+        "create_deal",  # Fixed: no hubspot_ prefix
+        "update_deal",  # Fixed: no hubspot_ prefix
+        "search_hubspot_contacts",
+        "search_hubspot_companies",
+        "search_hubspot_deals",
+        "semantic_search_hubspot",
+        "manage_hubspot_embeddings",
     ]
 
-    tool_names: List[str] = [tool.name for tool in tools]
-    for expected_tool in expected_tools:
-        assert expected_tool in tool_names
+    for tool_name in expected_tools:
+        assert tool_name in tool_names, f"Tool {tool_name} not found in tools list"
 
 
 def test_handle_call_tool_exception_handling() -> None:
