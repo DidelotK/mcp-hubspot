@@ -6,9 +6,21 @@
 - uv (Python package manager)
 - Valid HubSpot API key
 
-## Installation
+## Installation Methods
 
-### 1. Install uv (if not already installed)
+### Quick Setup (Standard)
+
+Follow the steps below for standard installation and usage.
+
+### Local Package Installation
+
+For building and installing the package locally (development or system-wide deployment):
+
+📖 **[Complete Local Installation Guide →](local-installation.md)**
+
+### Standard Installation
+
+#### 1. Install uv (if not already installed)
 
 ```bash
 # Install uv using the official installer
@@ -23,21 +35,21 @@ Verify installation:
 uv --version
 ```
 
-### 2. Clone the project
+#### 2. Clone the project
 
 ```bash
 git clone <repo-url>
 cd hubspot-mcp-server
 ```
 
-### 3. Install dependencies
+#### 3. Install dependencies
 
 ```bash
 # Install all dependencies including development tools
 uv sync --extra dev
 ```
 
-### 4. Configure environment variables
+#### 4. Configure environment variables
 
 Create a `.envrc` file or set environment variables:
 
