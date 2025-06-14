@@ -41,6 +41,8 @@ default:
     @echo "📦 BUILD & DEPLOY:"
     @echo "  just help-build     # Show build commands"
     @echo "  just build          # Build package"
+    @echo "  just docker-build   # Build & push Docker image (buildx)"
+    @echo "  just docker-build-local # Build Docker image locally (no push)"
     @echo "  just clean          # Clean artifacts"
     @echo ""
     @echo "💡 Use 'just help-<category>' for detailed commands in each category"
@@ -151,6 +153,42 @@ check:
 # Build the package
 build:
     uv build
+
+# Build Docker image using buildx (eliminates warnings)
+docker-build:
+    @echo "🐳 Building Docker image with buildx..."
+    @if ! docker buildx ls | grep -q "multiarch"; then \
+        echo "📋 Initializing buildx builder..."; \
+        docker buildx create --name multiarch --use --bootstrap; \
+    else \
+        echo "📋 Using existing buildx builder..."; \
+        docker buildx use multiarch; \
+    fi
+    @echo "🔨 Building and pushing image..."
+    docker buildx build \
+        --platform linux/amd64 \
+        --tag ${IMAGE_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} \
+        --push \
+        .
+    @echo "✅ Docker image built and pushed successfully!"
+
+# Build Docker image locally (no push)
+docker-build-local:
+    @echo "🐳 Building Docker image locally with buildx..."
+    @if ! docker buildx ls | grep -q "multiarch"; then \
+        echo "📋 Initializing buildx builder..."; \
+        docker buildx create --name multiarch --use --bootstrap; \
+    else \
+        echo "📋 Using existing buildx builder..."; \
+        docker buildx use multiarch; \
+    fi
+    @echo "🔨 Building image for local use..."
+    docker buildx build \
+        --platform linux/amd64 \
+        --tag ${IMAGE_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} \
+        --load \
+        .
+    @echo "✅ Docker image built locally!"
 
 # Show project info
 info:
@@ -268,8 +306,16 @@ help-test:
 help-build:
     @echo "📦 BUILD & DEPLOY COMMANDS:"
     @echo "  just build          # Build Python package"
+    @echo "  just docker-build   # Build & push Docker image (buildx)"
+    @echo "  just docker-build-local # Build Docker image locally (no push)"
     @echo "  just clean          # Clean cache and build artifacts"
     @echo ""
     @echo "🗂️ Artifacts:"
     @echo "  - Build output: dist/"
-    @echo "  - Package info: *.egg-info/" 
+    @echo "  - Package info: *.egg-info/"
+    @echo ""
+    @echo "🐳 Docker commands require environment variables:"
+    @echo "  - IMAGE_REGISTRY (e.g., rg.fr-par.scw.cloud/keltio-public)"
+    @echo "  - IMAGE_NAME (e.g., hubspot-mcp-server)"
+    @echo "  - IMAGE_TAG (e.g., 0.1.0)"
+    @echo "  - REGISTRY_PASSWORD (for authentication)" 

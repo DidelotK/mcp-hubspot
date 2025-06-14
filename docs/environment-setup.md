@@ -116,7 +116,7 @@ echo $REGISTRY_PASSWORD           # → your-password
 echo $HUBSPOT_API_KEY             # → your-api-key
 
 # Use variables directly in commands
-docker build -t $IMAGE_REGISTRY/$IMAGE_NAME:$IMAGE_TAG .
+docker buildx build --platform linux/amd64 --tag $IMAGE_REGISTRY/$IMAGE_NAME:$IMAGE_TAG --push .
 ./deploy/scripts/build-image.sh   # Uses loaded variables automatically
 
 # Leave directory → variables automatically unload
@@ -152,7 +152,7 @@ cd /path/to/project
 # ✅ Environment variables loaded successfully!
 
 # 2. Work with loaded variables
-docker build -t $IMAGE_REGISTRY/app:$IMAGE_TAG .
+docker buildx build --platform linux/amd64 --tag $IMAGE_REGISTRY/app:$IMAGE_TAG --push .
 ./deploy/scripts/build-image.sh
 
 # 3. Exit directory → variables auto-unload
@@ -295,9 +295,15 @@ With direnv, Scaleway authentication becomes seamless:
 # Variables are automatically available
 docker login $REGISTRY_URL -u $REGISTRY_USERNAME --password-stdin <<< "$REGISTRY_PASSWORD"
 
-# Build and push with loaded variables
-docker build -t $IMAGE_REGISTRY/$IMAGE_NAME:$IMAGE_TAG .
-docker push $IMAGE_REGISTRY/$IMAGE_NAME:$IMAGE_TAG
+# Initialize buildx builder
+docker buildx create --name multiarch --use --bootstrap
+
+# Build and push with loaded variables using buildx
+docker buildx build \
+    --platform linux/amd64 \
+    --tag $IMAGE_REGISTRY/$IMAGE_NAME:$IMAGE_TAG \
+    --push \
+    .
 ```
 
 ## Environment Variables Reference
@@ -331,6 +337,7 @@ If you were previously using manual `export` commands:
 export IMAGE_TAG=0.1.0
 export REGISTRY_PASSWORD=your-password
 docker build -t registry/app:$IMAGE_TAG .
+docker push registry/app:$IMAGE_TAG
 ```
 
 ### After (direnv)
@@ -338,7 +345,7 @@ docker build -t registry/app:$IMAGE_TAG .
 # Just enter the directory
 cd mcp-hubspot
 # Variables are automatically available
-docker build -t $IMAGE_REGISTRY/$IMAGE_NAME:$IMAGE_TAG .
+docker buildx build --platform linux/amd64 --tag $IMAGE_REGISTRY/$IMAGE_NAME:$IMAGE_TAG --push .
 ```
 
 ## Best Practices

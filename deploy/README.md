@@ -54,11 +54,15 @@ echo "$REGISTRY_PASSWORD" | docker login rg.fr-par.scw.cloud/keltio-public -u no
 ### Build and Push Image
 
 ```bash
-# Build and tag the image
-docker build -t rg.fr-par.scw.cloud/keltio-public/hubspot-mcp-server:1.0.0 .
+# Initialize buildx builder
+docker buildx create --name multiarch --use --bootstrap
 
-# Push to registry
-docker push rg.fr-par.scw.cloud/keltio-public/hubspot-mcp-server:1.0.0
+# Build and push image using buildx (eliminates warnings)
+docker buildx build \
+    --platform linux/amd64 \
+    --tag rg.fr-par.scw.cloud/keltio-public/hubspot-mcp-server:1.0.0 \
+    --push \
+    .
 ```
 
 ## Environment Variables Management

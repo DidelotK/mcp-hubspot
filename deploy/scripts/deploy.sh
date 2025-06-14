@@ -80,13 +80,21 @@ build_and_push_image() {
         log_warning "REGISTRY_PASSWORD not set, assuming already authenticated"
     fi
     
-    # Build image
-    log_info "Building image: $image_name"
-    docker build -t "$image_name" .
+    # Initialize buildx builder if not exists
+    log_info "Initializing Docker buildx..."
+    if ! docker buildx ls | grep -q "multiarch"; then
+        docker buildx create --name multiarch --use --bootstrap
+    else
+        docker buildx use multiarch
+    fi
     
-    # Push image
-    log_info "Pushing image: $image_name"
-    docker push "$image_name"
+    # Build and push image using buildx
+    log_info "Building and pushing image with buildx: $image_name"
+    docker buildx build \
+        --platform linux/amd64 \
+        --tag "$image_name" \
+        --push \
+        .
     
     log_success "Image built and pushed: $image_name"
 }

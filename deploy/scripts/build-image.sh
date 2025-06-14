@@ -17,11 +17,20 @@ fi
 echo "Authenticating with Scaleway Container Registry..."
 echo "$REGISTRY_PASSWORD" | docker login "$IMAGE_REGISTRY" -u "$REGISTRY_USERNAME" --password-stdin
 
-# Build and push image
-echo "Building Docker image: ${IMAGE_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
-docker build -t "${IMAGE_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}" .
+# Initialize buildx builder if not exists
+echo "Initializing Docker buildx..."
+if ! docker buildx ls | grep -q "multiarch"; then
+    docker buildx create --name multiarch --use --bootstrap
+else
+    docker buildx use multiarch
+fi
 
-echo "Pushing Docker image: ${IMAGE_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
-docker push "${IMAGE_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
+# Build and push image using buildx
+echo "Building Docker image with buildx: ${IMAGE_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
+docker buildx build \
+    --platform linux/amd64 \
+    --tag "${IMAGE_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}" \
+    --push \
+    .
 
-echo "Image built and pushed successfully!" 
+echo "Image built and pushed successfully with buildx!" 
