@@ -1,15 +1,22 @@
 """Tests for HubSpot MCP server."""
 
 import asyncio
+import os
 import sys
 from typing import Any, Dict, List, Optional, Union
 from unittest.mock import AsyncMock, patch
 
 import httpx
 import pytest
-from main import parse_arguments
 from mcp.types import TextContent, Tool
 
+# Add src to path for imports
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+src_path = os.path.join(project_root, "src")
+if src_path not in sys.path:
+    sys.path.insert(0, src_path)
+
+from hubspot_mcp.__main__ import parse_arguments
 from hubspot_mcp.client import HubSpotClient
 from hubspot_mcp.server import MCPHandlers
 

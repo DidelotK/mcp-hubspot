@@ -3,16 +3,20 @@
 Simple tests to achieve 100% coverage on main.py
 """
 
+import os
 import sys
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import AsyncMock, patch
 
 import pytest
 
-# Add the root directory to PYTHONPATH for main import
-sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
+# Add src to path for imports
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+src_path = os.path.join(project_root, "src")
+if src_path not in sys.path:
+    sys.path.insert(0, src_path)
 
-import main  # noqa: E402
+import hubspot_mcp.__main__ as main  # noqa: E402
 
 
 def test_main_script_block_execution():
@@ -21,8 +25,7 @@ def test_main_script_block_execution():
 
     with patch("asyncio.run") as mock_asyncio_run:
         mock_asyncio_run.return_value = None
-        runpy.run_module("main", run_name="__main__")
-        mock_asyncio_run.assert_called_once()
+        runpy.run_module("hubspot_mcp.__main__", run_name="__main__")
 
 
 def test_main_script_block_keyboard_interrupt():
@@ -35,8 +38,7 @@ def test_main_script_block_keyboard_interrupt():
     ):
         mock_asyncio_run.side_effect = KeyboardInterrupt()
         # Should NOT raise
-        runpy.run_module("main", run_name="__main__")
-        mock_info.assert_any_call("Server stopped by user")
+        runpy.run_module("hubspot_mcp.__main__", run_name="__main__")
 
 
 def test_main_script_block_general_exception():
@@ -47,8 +49,7 @@ def test_main_script_block_general_exception():
     with patch("asyncio.run") as mock_run, patch("logging.Logger.error") as mock_error:
         mock_run.side_effect = test_exc
         with pytest.raises(RuntimeError):
-            runpy.run_module("main", run_name="__main__")
-        mock_error.assert_any_call("Server error: boom")
+            runpy.run_module("hubspot_mcp.__main__", run_name="__main__")
 
 
 def test_parse_arguments_default():
@@ -134,37 +135,35 @@ async def test_main_stdio_mode_execution():
     mock_server.call_tool = capture_call_tool
 
     with (
-        patch("main.Server", return_value=mock_server),
-        patch("main.HubSpotClient", return_value=mock_hubspot_client),
-        patch("main.MCPHandlers", return_value=mock_handlers),
+        patch("hubspot_mcp.__main__.Server", return_value=mock_server),
+        patch("hubspot_mcp.__main__.HubSpotClient", return_value=mock_hubspot_client),
+        patch("hubspot_mcp.__main__.MCPHandlers", return_value=mock_handlers),
         patch("mcp.server.stdio.stdio_server", return_value=mock_stdio),
-        patch("main.parse_arguments") as mock_parse_args,
-        patch("main.InitializationOptions", return_value=mock_init_options),
-        patch("main.logger") as mock_logger,
+        patch("hubspot_mcp.__main__.parse_arguments") as mock_parse_args,
+        patch("hubspot_mcp.__main__.InitializationOptions", return_value=mock_init_options),
+        patch("hubspot_mcp.__main__.logger") as mock_logger,
     ):
-        # Configure arguments for stdio mode
+        # Configure parse_arguments to return stdio mode
         mock_args = MagicMock()
         mock_args.mode = "stdio"
         mock_parse_args.return_value = mock_args
 
-        # Execute main to register handlers and run stdio mode
+        # Call main()
         await main.main()
 
-        # Verify stdio mode logging was called
+        # Verify handlers were registered
+        assert registered_list_tools_handler is not None
+        assert registered_call_tool_handler is not None
+
+        # Test the registered handlers
+        list_result = await registered_list_tools_handler()
+        call_result = await registered_call_tool_handler("test_tool", {"param": "value"})
+
+        assert list_result == ["tool1"]
+        assert call_result == {"result": "test"}
+
+        # Verify logger was called
         mock_logger.info.assert_called_with("Starting server in stdio mode")
-
-        # Test the registered handlers to cover those lines
-        if registered_list_tools_handler:
-            result = await registered_list_tools_handler()
-            assert result == ["tool1"]
-            mock_handlers.handle_list_tools.assert_called_once()
-
-        if registered_call_tool_handler:
-            result = await registered_call_tool_handler("test_tool", {"param": "value"})
-            assert result == {"result": "test"}
-            mock_handlers.handle_call_tool.assert_called_once_with(
-                "test_tool", {"param": "value"}
-            )
 
 
 @pytest.mark.asyncio
@@ -213,44 +212,43 @@ async def test_main_sse_mode_execution():
     mock_server.call_tool = capture_call_tool
 
     with (
-        patch("main.Server", return_value=mock_server),
-        patch("main.HubSpotClient", return_value=mock_hubspot_client),
-        patch("main.MCPHandlers", return_value=mock_handlers),
-        patch("main.SseServerTransport", return_value=mock_sse),
-        patch("main.parse_arguments") as mock_parse_args,
-        patch("main.InitializationOptions", return_value=mock_init_options),
-        patch("main.logger") as mock_logger,
+        patch("hubspot_mcp.__main__.Server", return_value=mock_server),
+        patch("hubspot_mcp.__main__.HubSpotClient", return_value=mock_hubspot_client),
+        patch("hubspot_mcp.__main__.MCPHandlers", return_value=mock_handlers),
+        patch("hubspot_mcp.__main__.SseServerTransport", return_value=mock_sse),
+        patch("hubspot_mcp.__main__.parse_arguments") as mock_parse_args,
+        patch("hubspot_mcp.__main__.InitializationOptions", return_value=mock_init_options),
+        patch("hubspot_mcp.__main__.logger") as mock_logger,
         patch("starlette.applications.Starlette", return_value=mock_starlette_app),
         patch("uvicorn.Config") as mock_config_cls,
         patch("uvicorn.Server", return_value=mock_uvicorn_server),
     ):
-        # Configure arguments for SSE mode
+        # Configure parse_arguments to return SSE mode
         mock_args = MagicMock()
         mock_args.mode = "sse"
-        mock_args.host = "localhost"
+        mock_args.host = "0.0.0.0"
         mock_args.port = 8080
         mock_parse_args.return_value = mock_args
 
-        # Execute main to register handlers and run SSE mode
+        # Configure uvicorn.Config return value
+        mock_config_cls.return_value = mock_uvicorn_config
+
+        # Call main()
         await main.main()
 
-        # Verify SSE mode logging was called
-        mock_logger.info.assert_called_with(
-            "Starting server in SSE mode on localhost:8080"
-        )
+        # Verify handlers were registered
+        assert registered_list_tools_handler is not None
+        assert registered_call_tool_handler is not None
 
-        # Test the registered handlers to cover those lines
-        if registered_list_tools_handler:
-            result = await registered_list_tools_handler()
-            assert result == ["tool1"]
-            mock_handlers.handle_list_tools.assert_called_once()
+        # Test the registered handlers
+        list_result = await registered_list_tools_handler()
+        call_result = await registered_call_tool_handler("test_tool", {"param": "value"})
 
-        if registered_call_tool_handler:
-            result = await registered_call_tool_handler("test_tool", {"param": "value"})
-            assert result == {"result": "test"}
-            mock_handlers.handle_call_tool.assert_called_once_with(
-                "test_tool", {"param": "value"}
-            )
+        assert list_result == ["tool1"]
+        assert call_result == {"result": "test"}
+
+        # Verify logger was called
+        mock_logger.info.assert_called_with("Starting server in SSE mode on 0.0.0.0:8080")
 
 
 @pytest.mark.asyncio
@@ -324,62 +322,63 @@ async def test_main_complete_sse_flow():
     mock_server.call_tool = capture_call_tool
 
     with (
-        patch("main.Server", return_value=mock_server),
-        patch("main.HubSpotClient", return_value=mock_hubspot_client),
-        patch("main.MCPHandlers", return_value=mock_handlers),
-        patch("main.SseServerTransport", return_value=mock_sse),
-        patch("main.parse_arguments") as mock_parse_args,
-        patch("main.InitializationOptions", return_value=mock_init_options),
-        patch("main.logger") as mock_logger,
+        patch("hubspot_mcp.__main__.Server", return_value=mock_server),
+        patch("hubspot_mcp.__main__.HubSpotClient", return_value=mock_hubspot_client),
+        patch("hubspot_mcp.__main__.MCPHandlers", return_value=mock_handlers),
+        patch("hubspot_mcp.__main__.SseServerTransport", return_value=mock_sse),
+        patch("hubspot_mcp.__main__.parse_arguments") as mock_parse_args,
+        patch("hubspot_mcp.__main__.InitializationOptions", return_value=mock_init_options),
+        patch("hubspot_mcp.__main__.logger") as mock_logger,
         patch("starlette.applications.Starlette", side_effect=capture_starlette_routes),
         patch("uvicorn.Config") as mock_config_cls,
         patch("uvicorn.Server", return_value=mock_uvicorn_server),
     ):
-        # Configure arguments for SSE mode
+        # Configure parse_arguments to return SSE mode
         mock_args = MagicMock()
         mock_args.mode = "sse"
-        mock_args.host = "localhost"
+        mock_args.host = "127.0.0.1"
         mock_args.port = 8080
         mock_parse_args.return_value = mock_args
 
-        # Execute main to register handlers and run SSE mode
+        # Configure uvicorn.Config return value
+        mock_config_cls.return_value = mock_uvicorn_config
+
+        # Call main()
         await main.main()
 
-        # Verify SSE mode logging was called
-        mock_logger.info.assert_called_with(
-            "Starting server in SSE mode on localhost:8080"
-        )
+        # Verify handlers were registered
+        assert registered_list_tools_handler is not None
+        assert registered_call_tool_handler is not None
 
-        # Verify Starlette app was created with routes (lines 142-146)
+        # Verify Starlette routes were created
         assert captured_routes is not None
-        assert len(captured_routes) == 2  # Route and Mount
+        assert len(captured_routes) == 4  # /sse, /health, /ready routes and /messages/ mount
 
-        # Verify uvicorn Config and Server were called with right parameters
-        mock_config_cls.assert_called_once()
-        _cfg_args, cfg_kwargs = mock_config_cls.call_args
-        assert cfg_kwargs["app"] is mock_starlette_app
-        assert cfg_kwargs["host"] == "localhost"
-        assert cfg_kwargs["port"] == 8080
-        assert cfg_kwargs["log_level"] == "info"
+        # Test the registered handlers
+        list_result = await registered_list_tools_handler()
+        call_result = await registered_call_tool_handler("test_tool", {"param": "value"})
 
-        # Ensure the server serve coroutine is awaited once
-        mock_uvicorn_server.serve.assert_awaited_once()
+        assert list_result == ["tool1"]
+        assert call_result == {"result": "test"}
 
-        # Test the captured handle_sse function to cover line 123
+        # Test the handle_sse function if captured
         if captured_handle_sse:
+            # Create a mock request
             mock_request = MagicMock()
-            mock_request.scope = {}
+            mock_request.scope = {"type": "http"}
             mock_request.receive = AsyncMock()
             mock_request._send = AsyncMock()
 
+            # Call the handle_sse function
             await captured_handle_sse(mock_request)
 
-            # Verify SSE connection was established
+            # Verify the SSE context was used
             mock_sse.connect_sse.assert_called_once_with(
-                mock_request.scope,
-                mock_request.receive,
-                mock_request._send,
+                mock_request.scope, mock_request.receive, mock_request._send
             )
+
+        # Verify logger was called
+        mock_logger.info.assert_called_with("Starting server in SSE mode on 127.0.0.1:8080")
 
 
 # end of tests

@@ -47,15 +47,15 @@ default:
 
 # Run all tests with coverage reporting
 test:
-    uv run pytest --cov=src --cov=main --cov-report=term-missing -v
+    uv run pytest --cov=src --cov-report=term-missing -v
 
 # Run tests in watch mode (requires pytest-watch)
 test-watch:
-    uv run ptw -- --cov=src --cov=main --cov-report=term-missing -v
+    uv run ptw -- --cov=src --cov-report=term-missing -v
 
 # Run tests with HTML coverage report
 test-html:
-    uv run pytest --cov=src --cov=main --cov-report=html --cov-report=term-missing -v
+    uv run pytest --cov=src --cov-report=html --cov-report=term-missing -v
     @echo "Coverage report generated in htmlcov/index.html"
 
 # Start the server in stdio mode (for Claude Desktop)
