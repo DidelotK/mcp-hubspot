@@ -71,7 +71,7 @@ For development or local installation, add this configuration to your JSON file:
 
 ### 4. Global Installation Setup
 
-If you have installed the project globally using uv:
+If you have installed the project globally using uv (see [Local Installation Guide](local-installation.md)):
 
 ```json
 {
