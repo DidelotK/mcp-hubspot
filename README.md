@@ -2,6 +2,16 @@
 
 MCP (Model Context Protocol) server for integrating HubSpot with Claude Desktop and other MCP clients. Provides access to HubSpot contacts, companies, and deals through conversational tools.
 
+## ⚠️ Before You Start
+
+**This is not a simple "npm install" or "pip install" package.** This MCP server requires:
+
+- 🔑 **HubSpot API access** with proper permissions
+- 🛠️ **Client configuration** (Claude Desktop or other MCP client)
+- 🔧 **Technical setup** (local development environment OR Kubernetes cluster)
+
+**Choose your path carefully** based on your technical requirements and infrastructure.
+
 ## 🔀 Installation Approaches
 
 This server can be deployed in **two different ways** depending on your needs:
@@ -9,20 +19,11 @@ This server can be deployed in **two different ways** depending on your needs:
 ### 🏠 **Local Installation (stdio mode)**
 **Best for:** Claude Desktop integration, local development, and direct client integration
 
-- ✅ Simple setup and configuration
 - ✅ Direct integration with Claude Desktop
 - ✅ Runs locally on your machine
 - ✅ Perfect for personal use
 - ✅ Uses stdio protocol for communication
-
-**Quick Start:**
-```bash
-git clone <repo-url>
-cd mcp-hubspot
-uv sync
-export HUBSPOT_API_KEY="your_api_key"
-uv run hubspot-mcp-server --mode stdio
-```
+- ⚠️ **Requires MCP client configuration** (like Claude Desktop)
 
 ### 🌐 **Remote Deployment (SSE mode)**
 **Best for:** Production environments, team usage, scalable deployments
@@ -31,16 +32,8 @@ uv run hubspot-mcp-server --mode stdio
 - ✅ Scalable and highly available
 - ✅ SSE (Server-Sent Events) protocol
 - ✅ Authentication and security
-- ✅ Automated deployment scripts
 - ✅ Multi-user support
-
-**Quick Start:**
-```bash
-# Deploy to Kubernetes
-./deploy/scripts/deploy-mcp-hubspot.sh
-# Test SSE endpoint
-./deploy/scripts/test-sse-mcp.sh
-```
+- ⚠️ **Requires Kubernetes cluster and infrastructure setup**
 
 ---
 
@@ -98,9 +91,9 @@ The server provides **14 tools** for comprehensive HubSpot integration:
 
 ---
 
-## ⚡ Quick Usage Examples
+## ⚡ Usage Examples
 
-Once configured, use natural language phrases with your MCP client:
+**Once fully installed and configured** (following the complete installation guides), use natural language phrases with your MCP client:
 
 ### 🗣️ **Natural Language Queries**
 - *"List my HubSpot contacts"*
@@ -120,20 +113,22 @@ Once configured, use natural language phrases with your MCP client:
 ## 🎯 Choose Your Installation Method
 
 ### For Claude Desktop Users (Recommended: Local)
-```bash
-# Install locally for direct Claude Desktop integration
-git clone <repo-url>
-cd mcp-hubspot
-```
-→ **[Follow Local Installation Guide](docs/installation-local-stdio.md)**
+**What this involves:**
+- Installing Python dependencies locally
+- Configuring HubSpot API credentials
+- Setting up Claude Desktop MCP configuration
+- Server runs when Claude Desktop starts
+
+→ **[Complete Local Installation Guide](docs/installation-local-stdio.md)**
 
 ### For Production/Team Deployment (Recommended: Remote)
-```bash
-# Deploy to Kubernetes for production use
-cd deploy/
-./scripts/deploy-mcp-hubspot.sh
-```
-→ **[Follow Remote Deployment Guide](docs/installation-remote-sse.md)**
+**What this involves:**
+- Kubernetes cluster setup and configuration
+- External Secrets, Ingress, DNS configuration
+- Production-grade security and monitoring
+- Helm chart deployment and management
+
+→ **[Complete Remote Deployment Guide](docs/installation-remote-sse.md)**
 
 ---
 
