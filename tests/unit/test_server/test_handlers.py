@@ -7,11 +7,11 @@ from unittest.mock import AsyncMock, patch
 
 import httpx
 import pytest
+from main import parse_arguments
 from mcp.types import TextContent, Tool
 
 from hubspot_mcp.client import HubSpotClient
 from hubspot_mcp.server import MCPHandlers
-from main import parse_arguments
 
 
 def test_parse_arguments_defaults(monkeypatch: pytest.MonkeyPatch) -> None:

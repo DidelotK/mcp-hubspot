@@ -152,7 +152,9 @@ async def test_hubspot_mcp_server():
     print(f"🔑 Clé API HubSpot: {hubspot_api_key[:10]}...")
 
     # Chemin vers le serveur MCP
-    server_script_path = Path(__file__).parent.parent.parent / "src" / "hubspot_mcp" / "__main__.py"
+    server_script_path = (
+        Path(__file__).parent.parent.parent / "src" / "hubspot_mcp" / "__main__.py"
+    )
 
     # Configuration du serveur
     server_params = StdioServerParameters(

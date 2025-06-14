@@ -20,6 +20,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 # Explicit import of main module for code coverage
 import main  # noqa: F401,E402
+
 from hubspot_mcp.client import HubSpotClient  # noqa: E402
 from hubspot_mcp.server import MCPHandlers  # noqa: E402
 
@@ -36,7 +37,8 @@ def test_parse_arguments_default():
 def test_parse_arguments_custom():
     """Test argument parsing with custom values."""
     with patch(
-        "sys.argv", ["hubspot-mcp-server", "--mode", "sse", "--host", "0.0.0.0", "--port", "9000"]
+        "sys.argv",
+        ["hubspot-mcp-server", "--mode", "sse", "--host", "0.0.0.0", "--port", "9000"],
     ):
         args = main.parse_arguments()
         assert args.mode == "sse"

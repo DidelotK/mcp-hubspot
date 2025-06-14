@@ -72,7 +72,8 @@ def test_parse_arguments_stdio_mode():
 def test_parse_arguments_sse_mode():
     """Test parse_arguments function with SSE mode and custom host/port."""
     with patch(
-        "sys.argv", ["hubspot-mcp-server", "--mode", "sse", "--host", "0.0.0.0", "--port", "9000"]
+        "sys.argv",
+        ["hubspot-mcp-server", "--mode", "sse", "--host", "0.0.0.0", "--port", "9000"],
     ):
         args = main.parse_arguments()
         assert args.mode == "sse"
