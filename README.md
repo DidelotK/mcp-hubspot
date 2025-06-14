@@ -109,6 +109,11 @@ The server provides **14 tools** for comprehensive HubSpot integration:
 - Setting up Claude Desktop MCP configuration
 - Server runs when Claude Desktop starts
 
+**Prerequisites:**
+- Python 3.12+
+- uv (package manager)
+- HubSpot API key with CRM permissions
+
 → **[Complete Local Installation Guide](docs/installation-local-stdio.md)**
 
 ### For Production/Team Deployment (Recommended: Remote)
@@ -118,24 +123,17 @@ The server provides **14 tools** for comprehensive HubSpot integration:
 - Production-grade security and monitoring
 - Helm chart deployment and management
 
-→ **[Complete Remote Deployment Guide](docs/installation-remote-sse.md)**
-
----
-
-## 📋 Prerequisites
-
-### For Local Installation
-- Python 3.12+
-- uv (package manager)
-- HubSpot API key with CRM permissions
-
-### For Remote Deployment
+**Prerequisites:**
 - Kubernetes cluster (>= 1.20)
 - Helm 3
 - External Secrets Operator
 - NGINX Ingress Controller
 - Cert-Manager
 - External DNS
+
+→ **[Complete Remote Deployment Guide](docs/installation-remote-sse.md)**
+
+---
 
 ## 🔐 Secure Environment Configuration
 
