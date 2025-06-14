@@ -26,6 +26,17 @@ nano environment
 nano values-production.yaml
 ```
 
+#### 📝 Configure `values-production.yaml`
+
+This file contains your **environment-specific configuration** and is **excluded from Git**. You must customize:
+
+1. **Docker image**: Update `repository` and `tag` with your values
+2. **Domain**: Replace `mcp-hubspot.your-domain.com` with your actual domain
+3. **Secret ID**: Update with your External Secrets secret identifier
+4. **Environment labels**: Set your environment name and namespace
+
+See detailed configuration instructions in the [Helm Values section](#helm-values-values-productionyaml) below.
+
 ### 3. Build and Push Docker Image
 
 ```bash
@@ -162,30 +173,58 @@ export CHART_REPO="oci://your-registry.example.com/helm-charts"
 
 ### Helm Values (`values-production.yaml`)
 
-Key sections to customize:
+⚠️ **Important**: Copy `values.example.yaml` to `values-production.yaml` and customize with your specific values:
 
+```bash
+cp values.example.yaml values-production.yaml
+nano values-production.yaml  # or use your preferred editor
+```
+
+**Key sections you MUST customize:**
+
+#### 1. Docker Image Configuration
 ```yaml
 app-component:
   containers:
     - name: hubspot-mcp-server
       image:
-        repository: your-registry.example.com/your-org/hubspot-mcp-server
-        tag: "0.1.0"
+        repository: your-registry.example.com/your-org/hubspot-mcp-server  # YOUR registry
+        tag: "0.1.0"  # YOUR image tag
+```
 
+#### 2. Secret Management
+```yaml
   secrets:
     - name: hubspot-mcp-secrets
       spec:
         dataFrom:
           - extract:
-              key: id:your-secret-id  # For Scaleway Secret Manager
+              # For Scaleway Secret Manager:
+              key: id:your-secret-id
+              # For other providers:
+              # key: production/hubspot-mcp-secrets
+```
 
+#### 3. Domain and Ingress
+```yaml
   ingress:
     hosts:
-      - host: mcp-hubspot.your-domain.com
+      - host: mcp-hubspot.your-domain.com  # YOUR domain
     tls:
       - hosts:
-        - mcp-hubspot.your-domain.com
+        - mcp-hubspot.your-domain.com  # YOUR domain
 ```
+
+#### 4. Environment and Namespace
+```yaml
+  commonLabels:
+    environment: your-environment-name  # e.g., production, staging
+  
+  commonAnnotations:
+    meta.helm.sh/release-namespace: your-namespace  # e.g., mcp-hubspot
+```
+
+**Note**: The `values-production.yaml` file is excluded from Git for security and contains your environment-specific configuration.
 
 ## Architecture Overview
 
