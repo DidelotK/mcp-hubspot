@@ -8,7 +8,7 @@ CHART_VERSION=1.0.0
 
 # Domain Configuration
 DOMAIN=mcp-hubspot.keltio.fr
-TLS_SECRET_NAME=hubspot-mcp-tls
+TLS_SECRET_NAME=hubspot-mcp-server-prod-tls
 
 # Docker Image Configuration
 IMAGE_REGISTRY=your-registry.com
@@ -22,10 +22,10 @@ HUBSPOT_API_KEY=your-hubspot-api-key-here
 MCP_AUTH_KEY=your-mcp-auth-key-here
 MCP_AUTH_HEADER=X-API-Key
 
-# AWS Configuration (if using External Secrets with AWS)
-AWS_REGION=us-west-2
-AWS_SECRET_NAME=production/hubspot/api-key
-AWS_MCP_AUTH_SECRET_NAME=production/hubspot/mcp-auth-key
+# External Secrets Configuration (ClusterSecretStore)
+SECRET_STORE_NAME=secret-store
+SECRET_STORE_KIND=ClusterSecretStore
+EXTERNAL_SECRET_KEY=production/hubspot-mcp-secrets
 
 # Monitoring Configuration
 MONITORING_ENABLED=true
