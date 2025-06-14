@@ -17,14 +17,12 @@ RUN pip install uv==$UV_VERSION
 # Set working directory
 WORKDIR /app
 
-# Copy dependency files
+# Copy dependency files and source code
 COPY pyproject.toml uv.lock ./
+COPY src/ ./src/
 
 # Install dependencies
 RUN uv sync --frozen --no-dev
-
-# Copy source code
-COPY src/ ./src/
 
 # Build the package
 RUN uv build

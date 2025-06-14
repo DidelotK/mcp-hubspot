@@ -1,7 +1,7 @@
 ---
 description: 
 globs: 
-alwaysApply: true
+alwaysApply: false
 ---
 # Python Standards
 
@@ -10,471 +10,193 @@ globs:
   - "src/**/*.py"
   - "tests/**/*.py"
 
-## Environment Variables Management with direnv
+## General Conventions Reference
 
-### Overview
-The project uses `direnv` for automatic environment variable management. This provides:
-- **Automatic loading**: Variables load when entering the project directory
-- **Automatic unloading**: Variables are cleaned when leaving the directory
-- **Security**: Secrets are kept in local files, not in shell history
-- **Consistency**: Same environment setup across all developers
+**📋 For general coding conventions that apply to all programming languages, see:**
+📖 **[General Coding Conventions](mdc:coding-conventions.mdc)**
 
-### Setup and Configuration
+This file covers Python-specific standards. The general conventions file covers:
+- DRY (Don't Repeat Yourself) principle
+- Code organization and structure
+- Error handling patterns
+- Documentation requirements
+- Quality assurance standards
+- Language-agnostic best practices
 
-#### 1. Install direnv
-```bash
-# Ubuntu/Debian
-sudo apt install direnv
+## Python-Specific Coding Rules
 
-# macOS with Homebrew
-brew install direnv
-
-# Add to your shell profile (~/.bashrc, ~/.zshrc, etc.)
-eval "$(direnv hook bash)"  # for bash
-eval "$(direnv hook zsh)"   # for zsh
-```
-
-#### 2. Project Configuration
-The project includes:
-- **`.envrc`**: Direnv configuration file (versioned)
-- **`deploy/environment.example`**: Template with all required variables
-- **`deploy/environment`**: Local configuration file (NOT versioned, contains secrets)
-
-#### 3. Setup Process
-```bash
-# 1. Clone the repository
-git clone <repository>
-cd <project>
-
-# 2. Copy environment template
-cp deploy/environment.example deploy/environment
-
-# 3. Edit with your values
-nano deploy/environment  # or your preferred editor
-
-# 4. Allow direnv to load the configuration
-direnv allow
-
-# 5. Verify variables are loaded
-echo $IMAGE_TAG
-echo $REGISTRY_PASSWORD  # Should show your password
-```
-
-### Environment File Structure
-
-#### deploy/environment.example (versioned)
-```bash
-# Example configuration template
-IMAGE_REGISTRY=rg.fr-par.scw.cloud/keltio-public
-IMAGE_TAG=1.0.0
-REGISTRY_PASSWORD=your-scaleway-registry-password-here
-HUBSPOT_API_KEY=your-hubspot-api-key-here
-MCP_AUTH_KEY=your-mcp-auth-key-here
-```
-
-#### deploy/environment (local, NOT versioned)
-```bash
-# Your actual configuration with real secrets
-IMAGE_REGISTRY=rg.fr-par.scw.cloud/keltio-public
-IMAGE_TAG=0.1.0
-REGISTRY_PASSWORD=actual-password-here
-HUBSPOT_API_KEY=pat-eu1-actual-key-here
-MCP_AUTH_KEY=secure-auth-key-here
-```
-
-### .envrc Configuration
-
-The `.envrc` file automatically:
-- Checks if `deploy/environment` exists
-- Loads all variables using `source_env`
-- Displays helpful setup instructions if file is missing
-- Shows current configuration status
-
-```bash
-#!/bin/bash
-# Example .envrc structure
-if [ -f "deploy/environment" ]; then
-    source_env deploy/environment
-    echo "✅ Environment loaded!"
-else
-    echo "⚠️ Please create deploy/environment from deploy/environment.example"
-fi
-```
-
-### Security Best Practices
-
-#### File Permissions
-```bash
-# Secure the environment file
-chmod 600 deploy/environment
-
-# Verify it's not tracked by git
-git status --ignored
-```
-
-#### Gitignore Configuration
-Ensure these patterns are in `.gitignore`:
-```gitignore
-# Environment configuration files with secrets
-deploy/environment
-
-# But NOT .envrc (this should be versioned)
-# .envrc  ← DO NOT ignore this
-```
-
-#### Secret Management
-- ✅ **Store secrets in `deploy/environment`** (local file)
-- ✅ **Version `.envrc`** (contains no secrets)
-- ✅ **Version `deploy/environment.example`** (template only)
-- ❌ **Never commit `deploy/environment`** to git
-- ❌ **Never put secrets directly in `.envrc`**
-
-### Direnv Commands
-
-#### Essential Commands
-```bash
-# Allow direnv for current directory
-direnv allow
-
-# Reload environment (after changes)
-direnv reload
-
-# Check direnv status
-direnv status
-
-# Manually trigger reload
-direnv exec . bash
-
-# Disable direnv temporarily
-direnv deny
-```
-
-#### Development Workflow
-```bash
-# 1. Enter project directory → variables auto-load
-cd /path/to/project
-# 🔧 Loading environment variables...
-# ✅ Environment variables loaded successfully!
-
-# 2. Work with loaded variables
-docker build -t $IMAGE_REGISTRY/app:$IMAGE_TAG .
-./deploy/scripts/build-image.sh
-
-# 3. Exit directory → variables auto-unload
-cd /other/directory
-# Variables are automatically cleaned from environment
-```
-
-### Troubleshooting
-
-#### Common Issues
-
-**Variables not loading**
-```bash
-# Check direnv status
-direnv status
-
-# Force reload
-direnv reload
-
-# Check if file exists and has correct permissions
-ls -la deploy/environment
-```
-
-**Permission denied**
-```bash
-# Fix file permissions
-chmod 600 deploy/environment
-
-# Re-allow direnv
-direnv allow
-```
-
-**Variables persist after leaving directory**
-```bash
-# Check if direnv hook is properly installed
-echo $DIRENV_DIR  # Should be empty outside project
-
-# Reload shell configuration
-source ~/.bashrc  # or ~/.zshrc
-```
-
-#### Debugging
-```bash
-# Verbose direnv output
-DIRENV_LOG_FORMAT="$(printf "%%s \033[2mdirenv: %%s\033[0m")" direnv allow
-
-# Check which variables are set
-direnv exec . env | grep -E "(IMAGE_|REGISTRY_|HUBSPOT_)"
-```
-
-### Integration with Development Tools
-
-#### IDE Configuration
-Most IDEs support direnv through plugins:
-- **VS Code**: `direnv` extension
-- **JetBrains**: `direnv` plugin
-- **Vim**: `direnv.vim` plugin
-
-#### CI/CD Integration
-For CI/CD pipelines, export variables manually:
-```bash
-# In CI scripts
-export IMAGE_TAG="$CI_COMMIT_TAG"
-export REGISTRY_PASSWORD="$CI_REGISTRY_PASSWORD"
-```
-
-### Benefits
-
-1. **Security**: Secrets never appear in shell history
-2. **Convenience**: No manual `export` commands needed
-3. **Consistency**: Same setup process for all developers
-4. **Isolation**: Variables don't pollute global environment
-5. **Automation**: Integrates seamlessly with development workflow
-
-## Mandatory Coding Rules
+### Code Style and Formatting
 - **PEP 8**: Strictly follow Python style guide
-- **Type hints**: Use type annotations for all functions
-- **Docstrings**: Document public classes and functions in English
+- **Type hints**: Use type annotations for all functions and methods
+- **Docstrings**: Document public classes and functions in English using Python docstring conventions
 - **Snake_case**: Variable and function names in snake_case
 - **PascalCase**: Class names in PascalCase
-- **English naming**: Use English names for variables, functions, and classes
-- **Lint ignore comments only as last resort**: Disabling linter rules (e.g., `# noqa`, `pylint: disable=...`) must be used **only when absolutely necessary**, and each occurrence must include a clear, documented justification.
+- **UPPER_CASE**: Constants in UPPER_CASE
+- **Private members**: Prefix with single underscore `_` for protected, double underscore `__` for private
+- **Magic methods**: Implement `__str__` and `__repr__` when relevant
 
-## Testing Standards
+### Type Hints and Documentation
+```python
+from typing import List, Dict, Optional, Union
+from datetime import datetime
 
-### Mandatory Testing Requirements
-- **100% Coverage**: Every new feature MUST achieve 100% code coverage
+def process_user_data(
+    user_id: int,
+    data: Dict[str, Any],
+    options: Optional[List[str]] = None
+) -> Dict[str, Union[str, int]]:
+    """Process user data with specified options.
+    
+    Args:
+        user_id: Unique identifier for the user
+        data: User data dictionary containing profile information
+        options: Optional list of processing options
+        
+    Returns:
+        Dictionary containing processed results
+        
+    Raises:
+        ValueError: If user_id is invalid
+        ProcessingError: If data processing fails
+    """
+    pass
+```
+
+### Import Organization
+- **Standard library imports**: First group
+- **Third-party imports**: Second group  
+- **Local application imports**: Third group
+- **Absolute imports preferred**: Over relative imports
+- **One import per line**: For better readability
+
+```python
+# Standard library
+import os
+import sys
+from datetime import datetime
+from typing import Dict, List
+
+# Third-party
+import requests
+from fastapi import FastAPI
+
+# Local application
+from .models import User
+from .services import UserService
+```
+
+### Exception Handling
+```python
+# Good: Specific exception handling
+try:
+    result = process_data(data)
+except ValueError as e:
+    logger.error(f"Invalid data format: {e}")
+    raise ProcessingError(f"Data validation failed: {e}")
+except APIError as e:
+    logger.warning(f"API call failed: {e}")
+    return default_result()
+
+# Bad: Bare except
+try:
+    result = process_data(data)
+except:  # Never do this
+    pass
+```
+
+### Lint Configuration and Rules
+- **Lint ignore comments only as last resort**: Disabling linter rules (e.g., `# noqa`, `pylint: disable=...`) must be used **only when absolutely necessary**
+- **Document justification**: Each occurrence must include a clear, documented justification
+- **Prefer code refactoring**: Fix the underlying issue instead of ignoring warnings
+
+```python
+# Acceptable with justification
+result = eval(user_input)  # noqa: S307 - Controlled environment, input validated
+
+# Better approach - refactor instead
+if user_input in ALLOWED_EXPRESSIONS:
+    result = safe_eval(user_input)
+```
+
+## Python Testing Standards
+
+### Testing Framework and Requirements
 - **Framework**: pytest exclusively with pytest plugins
+- **Coverage**: 100% code coverage requirement for all new code
 - **TDD Approach**: Write tests BEFORE writing implementation code
-- **No Exceptions**: Zero tolerance for untested code in production
-- **English Only**: All test names, descriptions, and assertions in English
+- **Test isolation**: Each test should be independent and repeatable
 
-### Test Structure and Organization
-```
-tests/
-├── unit/                    # Unit tests (isolated, fast)
-│   ├── test_models/
-│   ├── test_services/
-│   └── test_utils/
-├── integration/            # Integration tests (components interaction)
-│   ├── test_api/
-│   ├── test_database/
-│   └── test_external_services/
-├── e2e/                    # End-to-end tests (full workflow)
-├── fixtures/               # Test data and fixtures
-├── conftest.py             # Shared pytest configuration
-└── __init__.py
-```
+### Python-Specific Testing Patterns
 
-### Test Types and Coverage Requirements
-
-#### Unit Tests (100% Coverage Required)
-- **Scope**: Individual functions, methods, classes in isolation
-- **Speed**: Must run in < 1ms per test
-- **Dependencies**: All external dependencies mocked
-- **Coverage**: Every line, branch, and edge case
-- **Naming**: `test_{function_name}_{scenario}_{expected_result}`
-
+#### Test Structure and Naming
 ```python
-# Good example
-def test_calculate_discount_with_valid_percentage_returns_correct_amount():
-    # Arrange
-    original_price = 100.0
-    discount_percentage = 20.0
-    expected_discount = 20.0
+# File: tests/unit/test_user_service.py
+class TestUserService:
+    """Test suite for UserService class."""
     
-    # Act
-    result = calculate_discount(original_price, discount_percentage)
-    
-    # Assert
-    assert result == expected_discount
-    assert isinstance(result, float)
+    def test_create_user_with_valid_data_returns_user_instance(self):
+        # Arrange
+        user_data = {"email": "test@example.com", "name": "Test User"}
+        service = UserService()
+        
+        # Act
+        result = service.create_user(user_data)
+        
+        # Assert
+        assert isinstance(result, User)
+        assert result.email == "test@example.com"
+        assert result.name == "Test User"
 ```
 
-#### Integration Tests (Required for Components)
-- **Scope**: Multiple components working together
-- **Database**: Use test database with transactions rollback
-- **External APIs**: Use real staging endpoints or comprehensive mocks
-- **Coverage**: All integration points and data flows
-
-#### End-to-End Tests (Critical Workflows)
-- **Scope**: Complete user workflows from start to finish
-- **Environment**: Staging environment that mirrors production
-- **Data**: Clean test data for each test run
-- **Coverage**: All critical business processes
-
-### Test Quality Standards
-
-#### Test Naming Conventions
+#### Pytest Fixtures and Parametrization
 ```python
-# Pattern: test_{method}_{scenario}_{expected_result}
-def test_user_login_with_valid_credentials_returns_success():
-    pass
-
-def test_user_login_with_invalid_password_raises_authentication_error():
-    pass
-
-def test_user_login_with_empty_email_raises_validation_error():
-    pass
-```
-
-#### Test Structure (AAA Pattern)
-```python
-def test_example():
-    # Arrange - Set up test data and conditions
-    user = User(email="test@example.com", password="secure123")
-    expected_result = {"status": "success", "user_id": 123}
-    
-    # Act - Execute the code under test
-    result = authenticate_user(user.email, user.password)
-    
-    # Assert - Verify the outcome
-    assert result == expected_result
-    assert user.is_authenticated is True
-```
-
-#### Mandatory Test Cases for Every Function
-- **Happy Path**: Normal execution with valid inputs
-- **Edge Cases**: Boundary conditions, empty values, null values
-- **Error Cases**: Invalid inputs, system failures, exceptions
-- **Performance**: Response time for critical functions
-- **Security**: Input validation, authorization checks
-
-### Coverage Enforcement
-
-#### Coverage Configuration (pytest.ini)
-```ini
-[tool:pytest]
-addopts = 
-    --cov=src
-    --cov-report=term-missing
-    --cov-report=html:htmlcov
-    --cov-report=xml:coverage.xml
-    --cov-fail-under=100
-    --cov-branch
-testpaths = tests
-python_files = test_*.py
-python_classes = Test*
-python_functions = test_*
-
-[coverage:run]
-source = src
-omit = 
-    */tests/*
-    */venv/*
-    */__pycache__/*
-    */migrations/*
-    */settings/*
-
-[coverage:report]
-exclude_lines =
-    pragma: no cover
-    def __repr__
-    raise AssertionError
-    raise NotImplementedError
-```
-
-#### Pre-commit Coverage Check
-```bash
-# Mandatory before any commit
-uv run pytest --cov=src --cov-report=term-missing --cov-fail-under=100
-
-# For specific files/modules
-uv run pytest tests/unit/test_new_feature.py --cov=src.new_feature --cov-fail-under=100
-```
-
-### Mocking and Fixtures Best Practices
-
-#### Mocking External Dependencies
-```python
-import pytest
-from unittest.mock import Mock, patch, MagicMock
-
 @pytest.fixture
-def mock_hubspot_client():
-    """Mock HubSpot API client for testing."""
-    mock_client = Mock()
-    mock_client.get_contacts.return_value = [
-        {"id": "1", "properties": {"email": "test@example.com"}}
-    ]
-    return mock_client
+def mock_database():
+    """Mock database connection for testing."""
+    with patch('app.database.get_connection') as mock_conn:
+        mock_conn.return_value = MagicMock()
+        yield mock_conn
 
-def test_contact_service_with_mocked_client(mock_hubspot_client):
-    service = ContactService(client=mock_hubspot_client)
-    contacts = service.get_all_contacts()
-    
-    assert len(contacts) == 1
-    assert contacts[0]["properties"]["email"] == "test@example.com"
-    mock_hubspot_client.get_contacts.assert_called_once()
-```
-
-#### Parametrized Tests for Multiple Scenarios
-```python
-@pytest.mark.parametrize("input_value,expected_output,should_raise", [
-    ("valid@email.com", True, False),
-    ("invalid-email", False, False),
-    ("", False, False),
-    (None, False, True),
+@pytest.mark.parametrize("email,expected_valid", [
+    ("valid@example.com", True),
+    ("invalid-email", False),
+    ("", False),
+    (None, False),
 ])
-def test_email_validation(input_value, expected_output, should_raise):
-    if should_raise:
-        with pytest.raises(ValueError):
-            validate_email(input_value)
-    else:
-        result = validate_email(input_value)
-        assert result == expected_output
+def test_email_validation(email: Optional[str], expected_valid: bool):
+    """Test email validation with various inputs."""
+    result = validate_email(email)
+    assert result == expected_valid
 ```
 
-### Async Testing Requirements
+#### Async Testing
 ```python
-import pytest
-import pytest_asyncio
-
 @pytest.mark.asyncio
-async def test_async_function_with_proper_handling():
+async def test_async_api_call_returns_expected_data():
+    """Test asynchronous API call handling."""
     # Arrange
-    mock_data = {"id": 1, "name": "Test"}
+    mock_response = {"status": "success", "data": []}
     
     # Act
-    result = await async_process_data(mock_data)
+    with aioresponses() as m:
+        m.get("https://api.example.com/data", payload=mock_response)
+        result = await fetch_api_data()
     
     # Assert
-    assert result is not None
-    assert result["processed"] is True
-```
-
-### Test Data Management
-
-#### Fixtures for Consistent Test Data
-```python
-@pytest.fixture
-def sample_user():
-    """Create a sample user for testing."""
-    return {
-        "id": 1,
-        "email": "test@example.com",
-        "name": "Test User",
-        "created_at": "2024-01-01T00:00:00Z"
-    }
-
-@pytest.fixture
-def sample_users():
-    """Create multiple users for bulk testing."""
-    return [
-        {"id": i, "email": f"user{i}@example.com", "name": f"User {i}"}
-        for i in range(1, 6)
-    ]
+    assert result["status"] == "success"
+    assert isinstance(result["data"], list)
 ```
 
 #### Database Testing with Transactions
 ```python
 @pytest.fixture
 def db_session():
-    """Create a database session for testing with rollback."""
+    """Database session with transaction rollback."""
+    from app.database import engine, SessionLocal
+    
     connection = engine.connect()
     transaction = connection.begin()
-    session = Session(bind=connection)
+    session = SessionLocal(bind=connection)
     
     yield session
     
@@ -483,70 +205,50 @@ def db_session():
     connection.close()
 ```
 
-### Performance Testing Requirements
-```python
-import time
-import pytest
+### Coverage Configuration
+```ini
+# pytest.ini
+[tool:pytest]
+addopts = 
+    --cov=src
+    --cov-report=term-missing
+    --cov-report=html:htmlcov
+    --cov-report=xml:coverage.xml
+    --cov-fail-under=100
+    --cov-branch
+    --strict-markers
+    --strict-config
+testpaths = tests
+python_files = test_*.py
+python_classes = Test*
+python_functions = test_*
+markers =
+    slow: marks tests as slow (deselect with '-m "not slow"')
+    integration: marks tests as integration tests
+    unit: marks tests as unit tests
 
-def test_function_performance():
-    """Ensure function executes within acceptable time limits."""
-    start_time = time.time()
-    
-    result = expensive_calculation()
-    
-    execution_time = time.time() - start_time
-    assert execution_time < 1.0  # Must complete within 1 second
-    assert result is not None
+[coverage:run]
+source = src
+omit = 
+    */tests/*
+    */venv/*
+    */__pycache__/*
+    */migrations/*
+    */conftest.py
+
+[coverage:report]
+exclude_lines =
+    pragma: no cover
+    def __repr__
+    def __str__
+    raise AssertionError
+    raise NotImplementedError
+    if __name__ == .__main__.:
 ```
 
-### Strict Testing Rules
-- ❌ **NEVER** commit code without 100% test coverage
-- ❌ **NEVER** skip tests or use @pytest.mark.skip without justification
-- ❌ **NEVER** test implementation details, test behavior
-- ❌ **NEVER** use real production data in tests
-- ❌ **NEVER** write tests that depend on external services without mocks
-- ❌ **NEVER** use French or other languages in test code
-- ✅ **ALWAYS** write tests before implementing features (TDD)
-- ✅ **ALWAYS** test error conditions and edge cases
-- ✅ **ALWAYS** use descriptive test names explaining the scenario
-- ✅ **ALWAYS** clean up test data and resources
-- ✅ **ALWAYS** run the full test suite before committing
-- ✅ **ALWAYS** maintain tests when refactoring code
-
-### CI/CD Testing Integration
-```yaml
-# .github/workflows/tests.yml
-name: Tests
-on: [push, pull_request]
-
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.12'
-      
-      - name: Install dependencies
-        run: |
-          pip install uv
-          uv sync
-      
-      - name: Run tests with coverage
-        run: |
-          uv run pytest --cov=src --cov-report=xml --cov-fail-under=100
-      
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          file: ./coverage.xml
-          fail_ci_if_error: true
-```
-
-### Testing Tools and Plugins
+### Testing Tools and Dependencies
 ```toml
+# pyproject.toml - Python testing dependencies
 [project.optional-dependencies]
 test = [
     "pytest>=7.0.0",
@@ -558,126 +260,282 @@ test = [
     "factory-boy>=3.2.0",          # Test data generation
     "freezegun>=1.2.0",            # Time mocking
     "responses>=0.23.0",           # HTTP mocking
+    "aioresponses>=0.7.0",         # Async HTTP mocking
 ]
 ```
 
-## Imports and Dependencies
-- **Import order**: standard library, third-party, local
-- **Absolute imports** preferred over relative imports
-- **Manager**: `uv` for all dependencies
-- **Files**: Configuration in `pyproject.toml`
-
-## Best Practices
-- **Exceptions**: Catch specific exceptions
-- **Constants**: UPPER_CASE for constants
-- **Private**: Prefix with _ for private methods
-- **Magic methods**: Implement __str__ and __repr__ if relevant
-- **Documentation**: All comments and docstrings in English
-
-## Logging Management
-- **Framework**: Use Python's standard `logging` module exclusively
-- **Format**: Structured JSON logging for production environments
-- **Language**: All log messages must be in English
-- **No Print**: Absolutely no `print()` statements in final code
-
-### Log Format Standards
-- **Structure**: JSON format with consistent field names
-- **Required fields**: timestamp, level, message, module, function
-- **Optional fields**: user_id, session_id, request_id, execution_time
-- **Example format**:
-```json
-{
-  "timestamp": "2024-01-15T10:30:00.123Z",
-  "level": "INFO",
-  "message": "User authentication successful",
-  "module": "auth.services",
-  "function": "authenticate_user",
-  "user_id": "user_123",
-  "execution_time_ms": 45
-}
-```
-
-### Mandatory Log Levels
-- **DEBUG**: Detailed diagnostic information (development only)
-- **INFO**: General information about program execution
-- **WARNING**: Potentially harmful situations that should be noted
-- **ERROR**: Error events that allow the application to continue
-- **CRITICAL**: Serious errors that may cause the application to abort
-
-### AI Action Logging (Explainability & Traceability)
-- **AI Decision Logs**: Log all AI-driven decisions with reasoning
-- **Input/Output Tracking**: Log inputs and outputs for AI operations
-- **Model Information**: Include model version, parameters used
-- **Confidence Scores**: Log confidence levels when available
-- **Execution Path**: Track the decision-making process step by step
-
-#### AI Log Example:
-```python
-logger.info(
-    "AI decision executed",
-    extra={
-        "ai_model": "gpt-4",
-        "operation": "code_generation",
-        "input_tokens": 150,
-        "output_tokens": 75,
-        "confidence": 0.92,
-        "reasoning": "Generated based on user requirements and best practices",
-        "execution_time_ms": 1200
-    }
-)
-```
+## Python Logging Standards
 
 ### Logging Configuration
 ```python
 import logging
 import json
 from datetime import datetime
+from typing import Any, Dict
 
 class JSONFormatter(logging.Formatter):
-    def format(self, record):
+    """Custom JSON formatter for structured logging."""
+    
+    def format(self, record: logging.LogRecord) -> str:
         log_entry = {
             "timestamp": datetime.utcnow().isoformat() + "Z",
             "level": record.levelname,
             "message": record.getMessage(),
             "module": record.module,
             "function": record.funcName,
-            "line": record.lineno
+            "line": record.lineno,
+            "process": record.process,
+            "thread": record.thread,
         }
+        
+        # Add extra data if present
         if hasattr(record, 'extra_data'):
             log_entry.update(record.extra_data)
-        return json.dumps(log_entry)
+            
+        return json.dumps(log_entry, ensure_ascii=False)
 
-# Configure logger
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(message)s',
-    handlers=[
-        logging.StreamHandler()
-    ]
-)
-logger = logging.getLogger(__name__)
-logger.handlers[0].setFormatter(JSONFormatter())
+def setup_logger(name: str, level: str = "INFO") -> logging.Logger:
+    """Set up structured JSON logger."""
+    logger = logging.getLogger(name)
+    logger.setLevel(getattr(logging, level.upper()))
+    
+    if not logger.handlers:
+        handler = logging.StreamHandler()
+        handler.setFormatter(JSONFormatter())
+        logger.addHandler(handler)
+    
+    return logger
 ```
 
-### Strict Logging Rules
-- ❌ **NEVER** use `print()` statements in production code
-- ❌ **NEVER** log sensitive information (passwords, API keys, personal data)
-- ❌ **NEVER** use French or other languages in log messages
-- ❌ **NEVER** ignore logging configuration in CI/CD
-- ✅ **ALWAYS** use appropriate log levels
-- ✅ **ALWAYS** include context information in logs
-- ✅ **ALWAYS** log AI decisions for transparency
-- ✅ **ALWAYS** structure logs as JSON in production
+### Context Managers and Decorators
+```python
+import functools
+from contextlib import contextmanager
+from typing import Generator, Any
 
-## Recommended Tools
-- **black**: Automatic code formatting
-- **isort**: Import organization
-- **mypy**: Static type checking
-- **pylint/flake8**: Static code analysis
+@contextmanager
+def log_execution_time(operation: str) -> Generator[None, None, None]:
+    """Context manager to log execution time."""
+    start_time = time.time()
+    logger.info(f"Starting operation: {operation}")
+    
+    try:
+        yield
+    except Exception as e:
+        logger.error(f"Operation failed: {operation}", extra={"error": str(e)})
+        raise
+    finally:
+        execution_time = time.time() - start_time
+        logger.info(
+            f"Operation completed: {operation}",
+            extra={"execution_time_ms": execution_time * 1000}
+        )
 
-## Language Policy
-- ✅ **ALWAYS** use English for variable/function/class names
-- ✅ **ALWAYS** write docstrings in English
-- ✅ **ALWAYS** write comments in English
-- ✅ **ALWAYS** use English error messages
-- ❌ **NEVER** use French or other languages in code 
+def log_function_calls(func):
+    """Decorator to log function calls with parameters."""
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        logger.debug(
+            f"Calling function: {func.__name__}",
+            extra={
+                "function": func.__name__,
+                "args": str(args),
+                "kwargs": str(kwargs)
+            }
+        )
+        try:
+            result = func(*args, **kwargs)
+            logger.debug(f"Function completed: {func.__name__}")
+            return result
+        except Exception as e:
+            logger.error(
+                f"Function failed: {func.__name__}",
+                extra={"error": str(e), "function": func.__name__}
+            )
+            raise
+    return wrapper
+```
+
+## Python Dependencies Management
+
+### Package Management with uv
+- **Use uv exclusively**: For dependency management and virtual environments
+- **pyproject.toml**: Centralize all project configuration
+- **Lock file**: Always commit `uv.lock` for reproducible builds
+- **Virtual environments**: Use `uv sync` for automatic environment management
+
+```toml
+# pyproject.toml
+[project]
+name = "hubspot-mcp-server"
+version = "0.1.0"
+description = "HubSpot MCP Server for Claude Desktop"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.104.0",
+    "uvicorn>=0.24.0",
+    "pydantic>=2.5.0",
+    "httpx>=0.25.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "black>=23.0.0",
+    "isort>=5.12.0",
+    "mypy>=1.7.0",
+    "flake8>=6.0.0",
+    "bandit>=1.7.0",
+]
+
+[tool.black]
+line-length = 88
+target-version = ['py312']
+include = '\.pyi?$'
+
+[tool.isort]
+profile = "black"
+line_length = 88
+multi_line_output = 3
+
+[tool.mypy]
+python_version = "3.12"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+```
+
+## Python Performance and Best Practices
+
+### Memory Management
+```python
+# Use generators for large datasets
+def process_large_dataset(data: List[Dict]) -> Generator[Dict, None, None]:
+    """Process large dataset efficiently using generators."""
+    for item in data:
+        yield process_item(item)
+
+# Context managers for resource management
+class DatabaseConnection:
+    def __enter__(self):
+        self.connection = create_connection()
+        return self.connection
+    
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.connection.close()
+
+# Use dataclasses for data structures
+from dataclasses import dataclass
+from typing import Optional
+
+@dataclass(frozen=True)
+class User:
+    """Immutable user data structure."""
+    id: int
+    email: str
+    name: str
+    created_at: datetime
+    is_active: bool = True
+```
+
+### Async Programming Best Practices
+```python
+import asyncio
+from typing import List
+import aiohttp
+
+async def fetch_multiple_urls(urls: List[str]) -> List[Dict]:
+    """Fetch multiple URLs concurrently."""
+    async with aiohttp.ClientSession() as session:
+        tasks = [fetch_url(session, url) for url in urls]
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+        return [r for r in results if not isinstance(r, Exception)]
+
+async def fetch_url(session: aiohttp.ClientSession, url: str) -> Dict:
+    """Fetch single URL with error handling."""
+    try:
+        async with session.get(url) as response:
+            return await response.json()
+    except Exception as e:
+        logger.error(f"Failed to fetch {url}: {e}")
+        raise
+```
+
+## Python-Specific Quality Tools
+
+### Required Development Tools
+```bash
+# Install development tools
+uv add --dev black isort mypy flake8 bandit pytest pytest-cov
+
+# Format code
+uv run black src tests
+uv run isort src tests
+
+# Type checking
+uv run mypy src
+
+# Linting
+uv run flake8 src tests
+
+# Security scanning
+uv run bandit -r src
+
+# Run tests with coverage
+uv run pytest --cov=src --cov-report=term-missing
+```
+
+### Pre-commit Hooks
+```yaml
+# .pre-commit-config.yaml
+repos:
+  - repo: https://github.com/psf/black
+    rev: 23.9.1
+    hooks:
+      - id: black
+        language_version: python3.12
+
+  - repo: https://github.com/pycqa/isort
+    rev: 5.12.0
+    hooks:
+      - id: isort
+
+  - repo: https://github.com/pycqa/flake8
+    rev: 6.1.0
+    hooks:
+      - id: flake8
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.7.0
+    hooks:
+      - id: mypy
+        additional_dependencies: [types-all]
+```
+
+## Python-Specific Strict Rules
+
+### Mandatory Requirements
+- ✅ **ALWAYS** use type hints for all function parameters and return values
+- ✅ **ALWAYS** write docstrings for public classes and functions
+- ✅ **ALWAYS** use context managers for resource management
+- ✅ **ALWAYS** prefer composition over inheritance
+- ✅ **ALWAYS** use dataclasses or Pydantic models for data structures
+- ✅ **ALWAYS** handle exceptions explicitly and appropriately
+
+### Strict Prohibitions  
+- ❌ **NEVER** use `print()` statements in production code (use logging)
+- ❌ **NEVER** use bare `except:` clauses
+- ❌ **NEVER** use mutable default arguments
+- ❌ **NEVER** import with `*` (star imports)
+- ❌ **NEVER** use `eval()` or `exec()` without extreme caution
+- ❌ **NEVER** ignore type checker warnings without justification
+- ❌ **NEVER** commit code that doesn't pass all quality checks
+
+### Code Quality Enforcement
+- **100% test coverage** required for all new code
+- **All linting checks** must pass before commit
+- **Type checking** must pass without errors
+- **Security scans** must pass for production code
+- **Performance tests** required for critical paths
+
+This Python-specific guide supplements the general coding conventions. Always consult both documents when developing Python code for this project.
+

@@ -1,0 +1,204 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+- description: General coding conventions and best practices for all programming languages
+globs:
+  - "*"
+
+# General Coding Conventions
+
+## Core Principles
+
+### 🔄 DRY (Don't Repeat Yourself) - MANDATORY
+- **Never duplicate code**: Extract common functionality into shared modules, functions, or utilities
+- **Create reusable components**: If code appears in 2+ places, refactor into a shared function
+- **Centralize configuration**: Use configuration files, environment variables, or constants
+- **Share utilities**: Create utility libraries for common operations (logging, validation, etc.)
+- **Document dependencies**: Clearly document shared modules and their usage
+
+#### Examples of DRY Violations to Avoid:
+- ❌ Copy-pasting functions between files
+- ❌ Duplicating validation logic
+- ❌ Repeating configuration values
+- ❌ Multiple implementations of the same algorithm
+- ❌ Identical error handling patterns
+
+#### DRY Implementation Strategies:
+- ✅ Extract shared functions into utility modules
+- ✅ Use configuration files for common settings
+- ✅ Create base classes or mixins for shared behavior
+- ✅ Implement dependency injection for shared services
+- ✅ Use templates or code generation for repetitive patterns
+
+### 📝 Clear and Consistent Naming
+- **Use descriptive names**: Variables, functions, and classes should clearly express their purpose
+- **Be consistent**: Follow the same naming patterns throughout the project
+- **Avoid abbreviations**: Use full words unless the abbreviation is universally understood
+- **Use English**: All code should use English names for variables, functions, classes, and comments
+
+### 🏗️ Single Responsibility Principle
+- **One purpose per function**: Each function should do one thing well
+- **Focused classes**: Classes should have a single, well-defined responsibility
+- **Modular design**: Separate concerns into different modules or files
+
+### 📖 Self-Documenting Code
+- **Write clear code**: Code should be readable without extensive comments
+- **Use meaningful names**: Variable and function names should explain their purpose
+- **Add comments for why, not what**: Explain the reasoning behind complex logic
+- **Document public APIs**: All public functions and classes must have documentation
+
+## File and Project Organization
+
+### 📁 Directory Structure
+- **Logical grouping**: Organize files by feature or responsibility
+- **Consistent hierarchy**: Use the same organizational patterns throughout
+- **Clear separation**: Separate source code, tests, documentation, and configuration
+- **Shared utilities**: Create dedicated directories for shared/common code
+
+### 📄 File Naming
+- **Descriptive names**: File names should clearly indicate their contents
+- **Consistent conventions**: Use the same naming pattern for similar file types
+- **Avoid special characters**: Use only alphanumeric characters, hyphens, and underscores
+- **Language-specific conventions**: Follow the standard conventions for each language
+
+### 🔗 Module Dependencies
+- **Minimize coupling**: Reduce dependencies between modules
+- **Clear interfaces**: Define clean APIs between components
+- **Avoid circular dependencies**: Design modules to prevent circular imports
+- **Document dependencies**: Clearly specify what each module requires
+
+## Code Quality Standards
+
+### 🧹 Clean Code Practices
+- **Remove dead code**: Delete unused functions, variables, and imports
+- **Eliminate magic numbers**: Use named constants instead of hardcoded values
+- **Consistent formatting**: Use automated formatters and linters
+- **Short functions**: Keep functions focused and reasonably sized
+
+### 🔒 Error Handling
+- **Explicit error handling**: Don't ignore or suppress errors silently
+- **Meaningful error messages**: Provide clear, actionable error information
+- **Consistent error patterns**: Use the same error handling approach throughout
+- **Log appropriately**: Log errors with sufficient context for debugging
+
+### 🏃 Performance Considerations
+- **Optimize when needed**: Profile before optimizing, don't guess
+- **Efficient algorithms**: Choose appropriate data structures and algorithms
+- **Resource management**: Clean up resources (files, connections, memory)
+- **Avoid premature optimization**: Write clear code first, optimize later if needed
+
+## Shared Code Management
+
+### 📦 Utility Libraries
+- **Create shared utilities**: Extract common functionality into utility modules
+- **Document utility functions**: Provide clear documentation and examples
+- **Test shared code**: Shared utilities must have comprehensive tests
+- **Version shared code**: Use proper versioning for shared libraries
+
+### 🔧 Configuration Management
+- **Centralized configuration**: Use configuration files or environment variables
+- **Environment-specific configs**: Support different environments (dev, test, prod)
+- **Secure sensitive data**: Never hardcode secrets, use secure configuration methods
+- **Document configuration**: Provide examples and documentation for all configuration options
+
+### 🔄 Code Reuse Patterns
+- **Template patterns**: Create templates for common code structures
+- **Inheritance hierarchies**: Use inheritance wisely for shared behavior
+- **Composition over inheritance**: Prefer composition when appropriate
+- **Interface definitions**: Define clear interfaces for shared components
+
+## Language-Agnostic Best Practices
+
+### 📚 Documentation Requirements
+- **README files**: Every project and significant module should have a README
+- **API documentation**: Document all public interfaces
+- **Code comments**: Explain complex logic and business rules
+- **Examples**: Provide usage examples for public APIs
+
+### 🧪 Testing Standards
+- **Test coverage**: Aim for high test coverage of critical functionality
+- **Test organization**: Organize tests logically and consistently
+- **Test naming**: Use descriptive test names that explain what is being tested
+- **Test independence**: Tests should not depend on each other
+
+### 🔐 Security Practices
+- **Input validation**: Validate all external inputs
+- **Secure defaults**: Use secure configurations by default
+- **Principle of least privilege**: Grant minimal necessary permissions
+- **Regular updates**: Keep dependencies updated and secure
+
+### 🌍 Internationalization
+- **Use English**: All code, comments, and documentation should be in English
+- **Externalize strings**: Don't hardcode user-facing text
+- **Unicode support**: Handle text encoding properly
+- **Cultural considerations**: Be aware of cultural differences in data formats
+
+## Maintenance and Evolution
+
+### 🔄 Refactoring Guidelines
+- **Regular refactoring**: Continuously improve code structure
+- **Safe refactoring**: Use tests to ensure refactoring doesn't break functionality
+- **Incremental changes**: Make small, focused improvements
+- **Document changes**: Track significant refactoring decisions
+
+### 📈 Code Metrics
+- **Monitor complexity**: Track cyclomatic complexity and other metrics
+- **Review regularly**: Regularly review code quality metrics
+- **Set standards**: Define acceptable thresholds for quality metrics
+- **Automate checks**: Use automated tools to enforce quality standards
+
+### 👥 Team Collaboration
+- **Code reviews**: All code changes should be reviewed
+- **Consistent style**: Use automated formatting to ensure consistency
+- **Knowledge sharing**: Document decisions and share knowledge
+- **Onboarding**: Provide clear guidelines for new team members
+
+## Quality Assurance
+
+### ✅ Mandatory Quality Checks
+- **ALWAYS run quality checks** before committing code
+- **All tests must pass** before code integration
+- **Code must be formatted** according to project standards
+- **No linting errors** should remain in committed code
+- **Security scans** must pass for production code
+
+### 🔍 Code Review Requirements
+- **All changes require review** before merging
+- **Focus on architecture** and design decisions
+- **Check for DRY violations** and suggest refactoring
+- **Verify documentation** is updated with changes
+- **Ensure tests cover** new functionality
+
+### 📊 Continuous Improvement
+- **Regular retrospectives**: Review and improve development practices
+- **Update conventions**: Evolve practices based on team learning
+- **Tool evaluation**: Regularly assess and update development tools
+- **Training**: Provide training on best practices and new technologies
+
+## Enforcement and Compliance
+
+### 🚫 Strict Prohibitions
+- ❌ **NEVER commit code** that doesn't pass quality checks
+- ❌ **NEVER duplicate code** without justification and refactoring plan
+- ❌ **NEVER ignore linting errors** or warnings without addressing them
+- ❌ **NEVER commit secrets** or sensitive configuration data
+- ❌ **NEVER use non-English** in code, comments, or documentation
+
+### ✅ Mandatory Requirements
+- ✅ **ALWAYS extract shared functionality** into reusable components
+- ✅ **ALWAYS document public APIs** and complex logic
+- ✅ **ALWAYS write tests** for new functionality
+- ✅ **ALWAYS use descriptive names** for variables, functions, and classes
+- ✅ **ALWAYS follow project** naming and organizational conventions
+
+### 🎯 Success Criteria
+- **Zero code duplication** without documented justification
+- **All quality checks pass** automatically
+- **Documentation is current** and helpful
+- **Code is self-documenting** and maintainable
+- **Team follows conventions** consistently
+
+This document establishes the foundation for writing maintainable, high-quality code across all programming languages and projects. Language-specific conventions should supplement, not replace, these general principles.
+
