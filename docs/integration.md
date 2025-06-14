@@ -101,23 +101,43 @@ Before integrating, ensure you have:
 - [ ] **uv Package Manager**: For dependency management
 - [ ] **Network Access**: Connectivity to HubSpot API endpoints
 
+### Initial Setup
+
+**Step 1: Install Dependencies**
+
+After cloning or downloading the project, install the required dependencies:
+
+```bash
+cd /path/to/your/mcp-hubspot-project
+uv sync
+```
+
+This command installs all necessary Python packages required for the MCP server to function properly.
+
+⚠️ **Important**: This step is required before any integration method will work.
+
 ### Quick Integration Path
 
-1. **Choose Your Integration Type**
+1. **Install Dependencies**
+   ```bash
+   cd /path/to/your/mcp-hubspot-project
+   uv sync
+   ```
+
+2. **Choose Your Integration Type**
    - For Claude Desktop → [Claude Desktop Guide](claude-desktop-integration.md)
    - For custom clients → [MCP Clients Guide](mcp-clients-integration.md)
 
-2. **Configure Your Environment**
+3. **Configure Your Environment**
    - Set up your HubSpot API key
-   - Install dependencies
    - Configure your chosen client
 
-3. **Test Your Integration**
+4. **Test Your Integration**
    - Follow the [Testing Guide](integration-testing.md)
    - Validate functionality
    - Run automated tests
 
-4. **Troubleshoot if Needed**
+5. **Troubleshoot if Needed**
    - Check [Troubleshooting Guide](troubleshooting.md)
    - Review common issues
    - Apply solutions
