@@ -46,7 +46,7 @@ where = ["src"]
 include = ["hubspot_mcp*"]
 
 [project.scripts]
-hubspot-mcp-server = "main:main"
+hubspot-mcp-server = "hubspot_mcp.__main__:cli_main"
 
 [tool.black]
 line-length = 88
