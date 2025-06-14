@@ -88,8 +88,11 @@ uv pip install dist/hubspot_mcp-*.tar.gz
 # Check installation
 uv run python -c "import hubspot_mcp; print(hubspot_mcp.__version__)"
 
-# Test the CLI command (if configured)
-hubspot-mcp-server --help
+# Test the CLI command
+uv run hubspot-mcp-server --help
+
+# Or test as Python module
+uv run python -m hubspot_mcp --help
 ```
 
 ### 3. Direct Installation from Source
@@ -169,14 +172,17 @@ contacts_tool = ContactsTool(client)
 
 ### 3. Command Line Usage
 
-If you've set up entry points, you can use it directly:
+You can use the installed package in multiple ways:
 
 ```bash
-# If configured with entry points
-hubspot-mcp-server --mode sse --port 8080
+# Using the binary entry point
+uv run hubspot-mcp-server --mode sse --port 8080
 
 # Or as Python module
-uv run python -m hubspot_mcp.main --mode stdio
+uv run python -m hubspot_mcp --mode stdio
+
+# If installed globally, direct binary usage
+hubspot-mcp-server --mode sse --port 8080
 ```
 
 ## Advanced Installation Options
@@ -321,10 +327,16 @@ python -c "import hubspot_mcp; print('✅ Import successful')"
 # 2. Check version
 python -c "import hubspot_mcp; print(f'Version: {hubspot_mcp.__version__}')"
 
-# 3. Test basic functionality
-echo '{"jsonrpc": "2.0", "id": 1, "method": "tools/list"}' | python -m hubspot_mcp.main --mode stdio
+# 3. Test binary functionality
+uv run hubspot-mcp-server --help
 
-# 4. Check dependencies
+# 4. Test module functionality
+uv run python -m hubspot_mcp --help
+
+# 5. Test basic server functionality (requires HUBSPOT_API_KEY)
+echo '{"jsonrpc": "2.0", "id": 1, "method": "tools/list"}' | uv run python -m hubspot_mcp --mode stdio
+
+# 6. Check dependencies
 uv pip check
 ```
 
