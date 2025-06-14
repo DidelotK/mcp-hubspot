@@ -44,30 +44,6 @@ Start the server in SSE mode and connect via HTTP, or use stdio mode for direct 
 
 ---
 
-### 🧪 Integration Testing
-
-Comprehensive testing procedures to verify your integration works correctly.
-
-**Testing Coverage:**
-- Claude Desktop functionality tests
-- MCP client communication tests
-- Error handling and edge cases
-- Performance and load testing
-- Automated testing scripts
-
-**Key Features:**
-- Step-by-step testing procedures
-- Expected response validation
-- Automated test scripts (Python & Bash)
-- CI/CD integration examples
-
-**Quick Start:**
-Use the provided test scripts to validate your integration setup and functionality.
-
-📖 **[Complete Integration Testing Guide →](integration-testing.md)**
-
----
-
 ### 🔧 Troubleshooting
 
 Diagnose and resolve common integration issues across all platforms.
@@ -132,12 +108,7 @@ This command installs all necessary Python packages required for the MCP server 
    - Set up your HubSpot API key
    - Configure your chosen client
 
-4. **Test Your Integration**
-   - Follow the [Testing Guide](integration-testing.md)
-   - Validate functionality
-   - Run automated tests
-
-5. **Troubleshoot if Needed**
+4. **Troubleshoot if Needed**
    - Check [Troubleshooting Guide](troubleshooting.md)
    - Review common issues
    - Apply solutions
