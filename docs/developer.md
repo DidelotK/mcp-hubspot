@@ -15,8 +15,9 @@ just check
 ```
 
 This command performs:
+
 - ✅ Code formatting verification
-- 🔍 Linting and code quality checks  
+- 🔍 Linting and code quality checks
 - 🎯 Static type checking
 - 🧪 Full test suite with coverage
 - 🔒 Security vulnerability scanning
@@ -57,17 +58,20 @@ just security
 **Current Status:** ✅ 140+ tests passed with comprehensive coverage
 
 #### Coverage Requirements
+
 - **Minimum coverage**: 90%
 - **Target coverage**: 100% for new features
 - **Coverage includes**: AI/embedding functionality, cache system, all HubSpot tools
 
 #### Test Types
+
 - **Unit tests**: Individual component testing
 - **Integration tests**: HubSpot API integration
 - **AI/ML tests**: Semantic search and embedding functionality
 - **Cache tests**: TTL cache behavior validation
 
 #### Test Categories
+
 - ✅ **HubSpot API Tools**: All 14 tools thoroughly tested
 - ✅ **Cache System**: TTL cache with isolation testing
 - ✅ **Semantic Search**: AI-powered search functionality
@@ -82,6 +86,7 @@ For testing MCP client integrations and end-to-end functionality:
 📖 **[Complete Integration Testing Guide →](integration-testing.md)**
 
 This guide covers:
+
 - Claude Desktop integration testing
 - MCP client communication validation
 - Automated testing scripts
@@ -120,15 +125,77 @@ just check
 - [ ] Documentation updated (if applicable)
 - [ ] Semantic commit message prepared
 
+### Pre-commit Hooks
+
+This project uses pre-commit hooks to automatically ensure code and documentation quality:
+
+#### Setup (included in `just install-dev`)
+
+```bash
+# Install pre-commit hooks (done automatically with install-dev)
+pip install pre-commit
+pre-commit install
+```
+
+#### Available Hooks
+
+**Documentation Quality:**
+
+- **markdownlint**: Ensures consistent markdown formatting
+- **markdown-link-check**: Validates all links in documentation
+- **trailing-whitespace**: Removes trailing spaces
+- **end-of-file-fixer**: Ensures files end with newline
+
+**Code Quality:**
+
+- **black**: Automatic code formatting
+- **isort**: Import sorting and organization
+- **flake8**: Code linting and style checking
+- **mypy**: Static type checking
+
+#### Usage
+
+```bash
+# Hooks run automatically on git commit
+git commit -m "feat: add new feature"
+
+# Run all hooks manually
+just precommit
+
+# Run only documentation checks
+just lint-docs
+
+# Update hooks to latest versions
+just update-precommit
+
+# Skip hooks for emergency commits (not recommended)
+git commit --no-verify -m "emergency fix"
+```
+
+#### Configuration Files
+
+- `.pre-commit-config.yaml`: Main pre-commit configuration
+- `.markdownlint.yaml`: Markdown linting rules
+- `.markdown-link-check.json`: Link checking configuration
+
+**Benefits:**
+
+- ✅ Prevents broken links in documentation
+- ✅ Ensures consistent code formatting
+- ✅ Catches common issues before CI
+- ✅ Maintains documentation quality standards
+
 ### Quality Tools Configuration
 
 #### Testing Framework
+
 - **pytest**: Primary testing framework
 - **pytest-cov**: Coverage reporting
 - **pytest-asyncio**: Async test support
 - **pytest-mock**: Mocking utilities
 
 #### Code Quality Tools
+
 - **black**: Code formatting
 - **isort**: Import sorting
 - **ruff**: Fast Python linter
@@ -136,6 +203,7 @@ just check
 - **bandit**: Security vulnerability scanner
 
 #### CI/CD Pipeline
+
 - Automated testing on Python 3.12 and 3.13
 - Coverage reporting and enforcement
 - Quality gate: all checks must pass
@@ -143,6 +211,7 @@ just check
 ### Performance Testing
 
 The test suite includes performance benchmarks for:
+
 - API response times
 - Cache hit/miss ratios
 - Semantic search query speed
@@ -151,18 +220,21 @@ The test suite includes performance benchmarks for:
 ### Contributing Guidelines
 
 #### Code Standards
+
 - Follow PEP 8 style guidelines
 - Use type hints for all functions
 - Write docstrings for public APIs
 - Maintain test coverage above 90%
 
-#### Testing Requirements  
+#### Testing Requirements
+
 - Write tests before implementing features (TDD)
 - Test both success and error scenarios
 - Mock external dependencies (HubSpot API)
 - Include performance considerations
 
 #### Documentation
+
 - Update relevant documentation files
 - Include examples for new features
 - Maintain Tools documentation accuracy
@@ -172,18 +244,21 @@ The test suite includes performance benchmarks for:
 #### Common Issues
 
 **Import Errors:**
+
 ```bash
 # Ensure proper installation
 just install-dev
 ```
 
 **API Key Issues:**
+
 ```bash
 # Set test environment
 export HUBSPOT_API_KEY="test-key-for-mocking"
 ```
 
 **Cache Issues:**
+
 ```bash
 # Clear cache before tests
 just test  # Automatically handles cache isolation
@@ -205,6 +280,7 @@ uv run pytest --pdb
 ### Continuous Integration
 
 The project uses GitHub Actions for:
+
 - Multi-version Python testing (3.12, 3.13)
 - Quality gate enforcement
 - Coverage reporting to Codecov
@@ -220,17 +296,20 @@ The project uses a secure approach for handling sensitive information:
 ### 🛡️ **Local Development Setup**
 
 1. **Copy the example configuration:**
+
    ```bash
    cp .env.example .env.local
    ```
 
 2. **Edit `.env.local` with your real secrets:**
+
    ```bash
    # Replace with your actual HubSpot API key
    HUBSPOT_API_KEY="pat-na1-your-actual-api-key-here"
    ```
 
 3. **The environment loads automatically with direnv:**
+
    ```bash
    direnv allow  # Enables automatic loading
    ```
@@ -250,9 +329,8 @@ The project uses a secure approach for handling sensitive information:
 - **Git history** has been cleaned of any exposed secrets
 - **Production deployments** use Kubernetes secrets via External Secrets Operator
 
-
 ## 🔗 Related Documentation
 
 - [Contributing Guide](contributing.md) - Detailed contribution process
 - [Local Installation Guide](installation-local-stdio.md) - Setup instructions
-- [Integration Guide](integration.md) - MCP client configuration 
+- [Integration Guide](integration.md) - MCP client configuration

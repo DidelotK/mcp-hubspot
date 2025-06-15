@@ -24,6 +24,7 @@ A complete documentation of the tools can be found here : [Tools documentation](
 **Once fully installed and configured** (following the complete installation guides), use natural language phrases with your MCP client:
 
 ### 🗣️ **Natural Language Queries**
+
 - *"List my HubSpot contacts"*
 - *"Find tech sector companies"*
 - *"Show current deals"*
@@ -32,6 +33,7 @@ A complete documentation of the tools can be found here : [Tools documentation](
 - *"What contact properties are available?"*
 
 ### 🤖 **AI-Powered Semantic Search**
+
 - *"Find software engineers"* → matches "Developer", "Programmer", "Software Architect"
 - *"Search for enterprise clients"* → finds large companies without exact keywords
 - *"Technology companies in Paris"* → contextual location and industry search
@@ -68,11 +70,14 @@ A complete documentation of the differents usage can be found here : [Usage exam
 | **[Remote Deployment (SSE)](docs/installation-remote-sse.md)** | Deploy to Kubernetes for production use |
 | **[Environment Setup](docs/environment-setup.md)** | Advanced environment configuration |
 
+**📋 Quality Assurance**: Pre-commit hooks ensure automatic code formatting, documentation linting, and broken link checking on every commit. Install with `just install-dev`.
+
 ---
 
 ## 🤝 Contributing
 
 Check the [contributing guide](docs/contributing.md) for:
+
 - Development standards
 - Tool creation process
 - Code and testing conventions

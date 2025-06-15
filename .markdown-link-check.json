@@ -1,0 +1,54 @@
+{
+  "timeout": "10s",
+  "retryOn429": true,
+  "retryCount": 3,
+  "fallbackRetryDelay": "30s",
+  "aliveStatusCodes": [200, 206, 301, 302, 403, 999],
+  "ignorePatterns": [
+    {
+      "pattern": "^http://localhost"
+    },
+    {
+      "pattern": "^https://localhost"
+    },
+    {
+      "pattern": "^http://127.0.0.1"
+    },
+    {
+      "pattern": "^https://127.0.0.1"
+    },
+    {
+      "pattern": "^mailto:"
+    },
+    {
+      "pattern": "YOUR_HUBSPOT_API_KEY_HERE"
+    },
+    {
+      "pattern": "pat-na1-your-actual-api-key-here"
+    },
+    {
+      "pattern": "ABSOLUTE_PATH_TO_YOUR_PROJECT"
+    }
+  ],
+  "httpHeaders": [
+    {
+      "urls": ["https://github.com", "https://api.github.com"],
+      "headers": {
+        "Accept": "application/vnd.github.v3+json",
+        "User-Agent": "markdown-link-check"
+      }
+    },
+    {
+      "urls": ["https://developers.hubspot.com"],
+      "headers": {
+        "User-Agent": "markdown-link-check"
+      }
+    }
+  ],
+  "replacementPatterns": [
+    {
+      "pattern": "^/",
+      "replacement": "{{BASEURL}}/"
+    }
+  ]
+}

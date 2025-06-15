@@ -7,7 +7,7 @@ default:
     @echo ""
     @echo "📋 HELP & SETUP:"
     @echo "  just help-setup     # Show setup commands"
-    @echo "  just install        # Install dependencies" 
+    @echo "  just install        # Install dependencies"
     @echo "  just install-dev    # Install development dependencies"
     @echo "  just info           # Show project info"
     @echo ""
@@ -31,6 +31,7 @@ default:
     @echo "  just help-dev       # Show development commands"
     @echo "  just format         # Format code"
     @echo "  just lint           # Run linting"
+    @echo "  just lint-docs      # Lint documentation"
     @echo "  just type-check     # Type checking"
     @echo "  just check          # All quality checks"
     @echo ""
@@ -91,6 +92,11 @@ install:
 # Install development dependencies
 install-dev:
     uv sync --dev
+    @echo "🔧 Installing pre-commit hooks..."
+    pip install pre-commit
+    pre-commit install
+    @echo "✅ Pre-commit hooks installed successfully"
+    @echo "💡 Run 'just lint-docs' to check documentation"
 
 # Run code quality checks
 lint:
@@ -106,6 +112,22 @@ type-check:
 format:
     uv run black src tests
     uv run isort src tests
+
+# Run all pre-commit hooks manually
+precommit:
+    @echo "🔍 Running all pre-commit hooks..."
+    pre-commit run --all-files
+
+# Lint documentation only
+lint-docs:
+    @echo "📝 Linting documentation..."
+    pre-commit run markdownlint --all-files
+    pre-commit run markdown-link-check --all-files
+
+# Update pre-commit hooks to latest versions
+update-precommit:
+    @echo "⬆️ Updating pre-commit hooks..."
+    pre-commit autoupdate
 
 # Run security checks
 security:
@@ -288,7 +310,7 @@ help-setup:
     @echo "  2. Set HUBSPOT_API_KEY environment variable"
     @echo "  3. just setup-claude"
 
-# Show detailed Claude Desktop commands  
+# Show detailed Claude Desktop commands
 help-claude:
     @echo "📱 CLAUDE DESKTOP COMMANDS:"
     @echo "  just setup-claude   # Setup Claude config with HubSpot MCP"
@@ -322,13 +344,19 @@ help-mcp:
 help-dev:
     @echo "🛠️ DEVELOPMENT COMMANDS:"
     @echo "  just format         # Format code with black + isort"
-    @echo "  just lint           # Run linting (ruff + custom scripts)"
+    @echo "  just lint           # Run linting (flake8 + isort + black)"
+    @echo "  just lint-docs      # Lint documentation (markdown + links)"
     @echo "  just type-check     # Static type checking with mypy"
     @echo "  just security       # Security scan with bandit"
     @echo "  just check          # Run ALL quality checks"
     @echo ""
+    @echo "🔧 Pre-commit hooks:"
+    @echo "  just precommit      # Run all pre-commit hooks manually"
+    @echo "  just update-precommit # Update hooks to latest versions"
+    @echo ""
     @echo "⚡ Quick development:"
-    @echo "  just check  # Runs format + lint + type-check + test + security"
+    @echo "  just check     # Runs format + lint + type-check + test + security"
+    @echo "  just lint-docs # Check documentation quality and links"
 
 # Show detailed testing commands
 help-test:
@@ -357,4 +385,4 @@ help-build:
     @echo "  - IMAGE_REGISTRY (e.g., rg.fr-par.scw.cloud/keltio-public)"
     @echo "  - IMAGE_NAME (e.g., hubspot-mcp-server)"
     @echo "  - IMAGE_TAG (e.g., 0.1.0)"
-    @echo "  - REGISTRY_PASSWORD (for authentication)" 
+    @echo "  - REGISTRY_PASSWORD (for authentication)"
