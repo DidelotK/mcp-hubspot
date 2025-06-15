@@ -666,3 +666,211 @@ class HubSpotClient:
             response.raise_for_status()
             data = response.json()
             return data.get("results", [])
+
+    async def get_all_contacts_with_pagination(
+        self, *, extra_properties: Optional[List[str]] = None, max_entities: int = 0
+    ) -> List[Dict[str, Any]]:
+        """Retrieve ALL contacts using pagination with all specified properties.
+
+        Args:
+            extra_properties: List of additional properties to include
+            max_entities: Maximum number of entities to load (0 = no limit)
+
+        Returns:
+            List[Dict[str, Any]]: List of all contact dictionaries
+
+        Raises:
+            httpx.HTTPStatusError: If the API request fails
+        """
+        all_contacts = []
+        after = None
+        page_size = 100  # HubSpot API limit
+
+        while True:
+            # Get contacts page with pagination info
+            page_data = await self._get_contacts_page_with_paging(
+                limit=page_size, after=after, extra_properties=extra_properties
+            )
+
+            contacts = page_data.get("results", [])
+            if not contacts:
+                break
+
+            all_contacts.extend(contacts)
+
+            # Check maximum limit
+            if max_entities > 0 and len(all_contacts) >= max_entities:
+                all_contacts = all_contacts[:max_entities]
+                break
+
+            # Get next page cursor
+            paging = page_data.get("paging", {})
+            next_page = paging.get("next", {})
+            after = next_page.get("after")
+
+            if not after:
+                # No more pages
+                break
+
+        return all_contacts
+
+    async def get_all_companies_with_pagination(
+        self, *, extra_properties: Optional[List[str]] = None, max_entities: int = 0
+    ) -> List[Dict[str, Any]]:
+        """Retrieve ALL companies using pagination with all specified properties.
+
+        Args:
+            extra_properties: List of additional properties to include
+            max_entities: Maximum number of entities to load (0 = no limit)
+
+        Returns:
+            List[Dict[str, Any]]: List of all company dictionaries
+
+        Raises:
+            httpx.HTTPStatusError: If the API request fails
+        """
+        all_companies = []
+        after = None
+        page_size = 100  # HubSpot API limit
+
+        while True:
+            # Get companies page with pagination info
+            page_data = await self._get_companies_page_with_paging(
+                limit=page_size, after=after, extra_properties=extra_properties
+            )
+
+            companies = page_data.get("results", [])
+            if not companies:
+                break
+
+            all_companies.extend(companies)
+
+            # Check maximum limit
+            if max_entities > 0 and len(all_companies) >= max_entities:
+                all_companies = all_companies[:max_entities]
+                break
+
+            # Get next page cursor
+            paging = page_data.get("paging", {})
+            next_page = paging.get("next", {})
+            after = next_page.get("after")
+
+            if not after:
+                # No more pages
+                break
+
+        return all_companies
+
+    async def _get_contacts_page_with_paging(
+        self,
+        limit: int = 100,
+        after: Optional[str] = None,
+        *,
+        extra_properties: Optional[List[str]] = None,
+    ) -> Dict[str, Any]:
+        """Get a single page of contacts with pagination info.
+
+        Args:
+            limit: Maximum number of contacts to retrieve (max 100)
+            after: Pagination cursor to get the next set of results
+            extra_properties: List of additional properties to include
+
+        Returns:
+            Dict containing 'results' and 'paging' information
+
+        Raises:
+            httpx.HTTPStatusError: If the API request fails
+        """
+        url = f"{self.base_url}/crm/v3/objects/contacts"
+
+        default_props: List[str] = [
+            "firstname",
+            "lastname",
+            "email",
+            "company",
+            "phone",
+            "createdate",
+            "lastmodifieddate",
+        ]
+
+        # Merge and de-duplicate properties
+        if extra_properties:
+            default_props.extend(extra_properties)
+        # Preserve order but ensure uniqueness
+        seen: set[str] = set()
+        merged_props: List[str] = []
+        for prop in default_props:
+            if prop not in seen:
+                seen.add(prop)
+                merged_props.append(prop)
+
+        params = {
+            "limit": min(limit, 100),  # HubSpot caps at 100
+            "properties": ",".join(merged_props),
+        }
+
+        # Add pagination cursor if provided
+        if after:
+            params["after"] = after
+
+        async with httpx.AsyncClient() as client:
+            response = await client.get(url, headers=self.headers, params=params)
+            response.raise_for_status()
+            return response.json()  # Return full response including paging info
+
+    async def _get_companies_page_with_paging(
+        self,
+        limit: int = 100,
+        after: Optional[str] = None,
+        *,
+        extra_properties: Optional[List[str]] = None,
+    ) -> Dict[str, Any]:
+        """Get a single page of companies with pagination info.
+
+        Args:
+            limit: Maximum number of companies to retrieve (max 100)
+            after: Pagination cursor to get the next set of results
+            extra_properties: List of additional properties to include
+
+        Returns:
+            Dict containing 'results' and 'paging' information
+
+        Raises:
+            httpx.HTTPStatusError: If the API request fails
+        """
+        url = f"{self.base_url}/crm/v3/objects/companies"
+
+        default_props: List[str] = [
+            "name",
+            "domain",
+            "city",
+            "state",
+            "country",
+            "industry",
+            "createdate",
+            "lastmodifieddate",
+        ]
+
+        if extra_properties:
+            default_props.extend(extra_properties)
+
+        seen: set[str] = set()
+        merged_props: List[str] = []
+        for prop in default_props:
+            if prop not in seen:
+                seen.add(prop)
+                merged_props.append(prop)
+
+        params = {
+            "limit": min(limit, 100),  # HubSpot caps at 100
+            "properties": ",".join(merged_props),
+        }
+
+        # Add pagination cursor if provided
+        if after:
+            params["after"] = after
+
+        async with httpx.AsyncClient() as client:
+            response = await client.get(url, headers=self.headers, params=params)
+            response.raise_for_status()
+            return response.json()  # Return full response including paging info

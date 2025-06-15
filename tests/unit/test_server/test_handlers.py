@@ -327,8 +327,8 @@ def test_handle_list_tools_count() -> None:
     handlers = MCPHandlers(client)
     tools: List[Tool] = asyncio.run(handlers.handle_list_tools())
 
-    # Should have exactly 16 tools after adding semantic search and embedding management tools
-    assert len(tools) == 16
+    # Should have exactly 17 tools after adding semantic search, embedding management, and bulk cache loader tools
+    assert len(tools) == 17
 
     # Extract tool names
     tool_names = [tool.name for tool in tools]

@@ -7,6 +7,7 @@ import mcp.types as types
 
 from ..client import HubSpotClient
 from ..tools import (
+    BulkCacheLoaderTool,
     CacheManagementTool,
     CompaniesTool,
     CompanyPropertiesTool,
@@ -42,6 +43,7 @@ class MCPHandlers:
             client: The HubSpot client instance to use for API calls
         """
         self.client = client
+        self.bulk_cache_loader_tool = BulkCacheLoaderTool(client)
         self.cache_management_tool = CacheManagementTool(client)
         self.contacts_tool = ContactsTool(client)
         self.companies_tool = CompaniesTool(client)
@@ -61,6 +63,7 @@ class MCPHandlers:
 
         # Tools mapping
         self.tools_map: Dict[str, Any] = {
+            "load_hubspot_entities_to_cache": self.bulk_cache_loader_tool,
             "manage_hubspot_cache": self.cache_management_tool,
             "list_hubspot_contacts": self.contacts_tool,
             "list_hubspot_companies": self.companies_tool,

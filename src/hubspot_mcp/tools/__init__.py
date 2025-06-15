@@ -1,5 +1,6 @@
 """Module containing MCP tools for HubSpot."""
 
+from .bulk_cache_loader import BulkCacheLoaderTool
 from .cache_management_tool import CacheManagementTool
 from .companies import CompaniesTool
 from .company_properties_tool import CompanyPropertiesTool
@@ -19,6 +20,7 @@ from .semantic_search_tool import SemanticSearchTool
 from .update_deal_tool import UpdateDealTool
 
 __all__ = [
+    "BulkCacheLoaderTool",
     "CacheManagementTool",
     "ContactsTool",
     "CompaniesTool",
