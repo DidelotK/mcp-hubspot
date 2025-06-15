@@ -96,4 +96,5 @@ strict_equality = true
 dev = [
     "fast-agent-mcp>=0.2.30",
     "types-cachetools>=6.0.0.20250525",
+    "types-pyyaml>=6.0.12.20250516",
 ]

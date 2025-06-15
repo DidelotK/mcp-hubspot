@@ -6,7 +6,8 @@ functionality in the HubSpot MCP Server.
 """
 
 import json
-from unittest.mock import AsyncMock, Mock
+import os
+from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
 
@@ -381,3 +382,181 @@ class TestAuthenticationMiddleware:
             assert (
                 send_mock.call_count == 2
             ), f"Path {path} should require authentication"
+
+
+class TestFaissDataSecurity:
+    """Test cases for FAISS data endpoint security configuration."""
+
+    @patch.dict(os.environ, {}, clear=True)
+    def test_faiss_data_secure_by_default(self):
+        """Test that /faiss-data is secured by default when FAISS_DATA_SECURE is not set."""
+        app_mock = Mock()
+        auth_key = "test-key-123"
+
+        middleware = AuthenticationMiddleware(app_mock, auth_key)
+
+        # /faiss-data should NOT be in exempt_paths by default (secured)
+        assert "/faiss-data" not in middleware.exempt_paths
+        assert middleware.exempt_paths == {"/health", "/ready"}
+
+    @patch.dict(os.environ, {"FAISS_DATA_SECURE": "true"}, clear=True)
+    def test_faiss_data_secure_when_explicitly_true(self):
+        """Test that /faiss-data is secured when FAISS_DATA_SECURE=true."""
+        app_mock = Mock()
+        auth_key = "test-key-123"
+
+        middleware = AuthenticationMiddleware(app_mock, auth_key)
+
+        # /faiss-data should NOT be in exempt_paths (secured)
+        assert "/faiss-data" not in middleware.exempt_paths
+        assert middleware.exempt_paths == {"/health", "/ready"}
+
+    @patch.dict(os.environ, {"FAISS_DATA_SECURE": "false"}, clear=True)
+    def test_faiss_data_unsecured_when_false(self):
+        """Test that /faiss-data is unsecured when FAISS_DATA_SECURE=false."""
+        app_mock = Mock()
+        auth_key = "test-key-123"
+
+        middleware = AuthenticationMiddleware(app_mock, auth_key)
+
+        # /faiss-data should be in exempt_paths (unsecured)
+        assert "/faiss-data" in middleware.exempt_paths
+        assert middleware.exempt_paths == {"/health", "/ready", "/faiss-data"}
+
+    @patch.dict(os.environ, {"FAISS_DATA_SECURE": "0"}, clear=True)
+    def test_faiss_data_unsecured_when_zero(self):
+        """Test that /faiss-data is unsecured when FAISS_DATA_SECURE=0."""
+        app_mock = Mock()
+        auth_key = "test-key-123"
+
+        middleware = AuthenticationMiddleware(app_mock, auth_key)
+
+        # /faiss-data should be in exempt_paths (unsecured)
+        assert "/faiss-data" in middleware.exempt_paths
+        assert middleware.exempt_paths == {"/health", "/ready", "/faiss-data"}
+
+    @patch.dict(os.environ, {"FAISS_DATA_SECURE": "no"}, clear=True)
+    def test_faiss_data_unsecured_when_no(self):
+        """Test that /faiss-data is unsecured when FAISS_DATA_SECURE=no."""
+        app_mock = Mock()
+        auth_key = "test-key-123"
+
+        middleware = AuthenticationMiddleware(app_mock, auth_key)
+
+        # /faiss-data should be in exempt_paths (unsecured)
+        assert "/faiss-data" in middleware.exempt_paths
+        assert middleware.exempt_paths == {"/health", "/ready", "/faiss-data"}
+
+    @patch.dict(os.environ, {"FAISS_DATA_SECURE": "off"}, clear=True)
+    def test_faiss_data_unsecured_when_off(self):
+        """Test that /faiss-data is unsecured when FAISS_DATA_SECURE=off."""
+        app_mock = Mock()
+        auth_key = "test-key-123"
+
+        middleware = AuthenticationMiddleware(app_mock, auth_key)
+
+        # /faiss-data should be in exempt_paths (unsecured)
+        assert "/faiss-data" in middleware.exempt_paths
+        assert middleware.exempt_paths == {"/health", "/ready", "/faiss-data"}
+
+    @patch.dict(os.environ, {"FAISS_DATA_SECURE": "FALSE"}, clear=True)
+    def test_faiss_data_case_insensitive(self):
+        """Test that FAISS_DATA_SECURE is case insensitive."""
+        app_mock = Mock()
+        auth_key = "test-key-123"
+
+        middleware = AuthenticationMiddleware(app_mock, auth_key)
+
+        # /faiss-data should be in exempt_paths (case insensitive)
+        assert "/faiss-data" in middleware.exempt_paths
+        assert middleware.exempt_paths == {"/health", "/ready", "/faiss-data"}
+
+    @patch.dict(os.environ, {"FAISS_DATA_SECURE": "invalid_value"}, clear=True)
+    def test_faiss_data_secure_with_invalid_value(self):
+        """Test that /faiss-data is secured when FAISS_DATA_SECURE has invalid value."""
+        app_mock = Mock()
+        auth_key = "test-key-123"
+
+        middleware = AuthenticationMiddleware(app_mock, auth_key)
+
+        # /faiss-data should NOT be in exempt_paths (secured by default for invalid values)
+        assert "/faiss-data" not in middleware.exempt_paths
+        assert middleware.exempt_paths == {"/health", "/ready"}
+
+    @patch.dict(os.environ, {"FAISS_DATA_SECURE": "false"}, clear=True)
+    @pytest.mark.asyncio
+    async def test_faiss_data_bypasses_auth_when_unsecured(self):
+        """Test that /faiss-data bypasses authentication when unsecured."""
+        app_mock = AsyncMock(return_value=None)
+        auth_key = "test-key-123"
+        middleware = AuthenticationMiddleware(app_mock, auth_key)
+
+        scope = {"type": "http", "path": "/faiss-data"}
+        receive_mock = AsyncMock()
+        send_mock = AsyncMock()
+
+        await middleware(scope, receive_mock, send_mock)
+
+        # Should call the app directly (bypass auth)
+        app_mock.assert_called_once_with(scope, receive_mock, send_mock)
+        send_mock.assert_not_called()
+
+    @patch.dict(os.environ, {"FAISS_DATA_SECURE": "true"}, clear=True)
+    @pytest.mark.asyncio
+    async def test_faiss_data_requires_auth_when_secured(self):
+        """Test that /faiss-data requires authentication when secured."""
+        app_mock = AsyncMock(return_value=None)
+        auth_key = "test-key-123"
+        middleware = AuthenticationMiddleware(app_mock, auth_key)
+
+        scope = {"type": "http", "path": "/faiss-data", "headers": []}
+        receive_mock = AsyncMock()
+        send_mock = AsyncMock()
+
+        await middleware(scope, receive_mock, send_mock)
+
+        # Should NOT call the app (requires auth)
+        app_mock.assert_not_called()
+        # Should send 401 response
+        assert send_mock.call_count == 2
+
+    @patch.dict(os.environ, {"FAISS_DATA_SECURE": "true"}, clear=True)
+    @pytest.mark.asyncio
+    async def test_faiss_data_successful_auth_when_secured(self):
+        """Test that /faiss-data works with proper auth when secured."""
+        app_mock = AsyncMock(return_value=None)
+        auth_key = "test-key-123"
+        middleware = AuthenticationMiddleware(app_mock, auth_key)
+
+        scope = {
+            "type": "http",
+            "path": "/faiss-data",
+            "headers": [(b"x-api-key", b"test-key-123")],
+        }
+        receive_mock = AsyncMock()
+        send_mock = AsyncMock()
+
+        await middleware(scope, receive_mock, send_mock)
+
+        # Should call the app (auth successful)
+        app_mock.assert_called_once_with(scope, receive_mock, send_mock)
+        send_mock.assert_not_called()
+
+    @patch.dict(os.environ, {}, clear=True)
+    @pytest.mark.asyncio
+    async def test_faiss_data_requires_auth_by_default(self):
+        """Test that /faiss-data requires auth by default (when env var not set)."""
+        app_mock = AsyncMock(return_value=None)
+        auth_key = "test-key-123"
+        middleware = AuthenticationMiddleware(app_mock, auth_key)
+
+        scope = {"type": "http", "path": "/faiss-data", "headers": []}
+        receive_mock = AsyncMock()
+        send_mock = AsyncMock()
+
+        await middleware(scope, receive_mock, send_mock)
+
+        # Should NOT call the app (requires auth by default)
+        app_mock.assert_not_called()
+        # Should send 401 response
+        assert send_mock.call_count == 2

@@ -17,6 +17,7 @@ Both deployment modes use these core environment variables:
 | `PORT` | Port for SSE mode | ❌ No | `8080` |
 | `MCP_AUTH_KEY` | Authentication key for SSE mode | ❌ No | - |
 | `MCP_AUTH_HEADER` | Authentication header name | ❌ No | `X-API-Key` |
+| `FAISS_DATA_SECURE` | Secure FAISS data endpoint (true/false) | ❌ No | `true` |
 
 ### HubSpot API Configuration
 
@@ -29,7 +30,7 @@ Both deployment modes use these core environment variables:
 
 2. **Required Scopes**:
 
-   ```
+   ```text
    CRM Scopes:
    - crm.objects.contacts.read
    - crm.objects.companies.read
@@ -47,7 +48,7 @@ Both deployment modes use these core environment variables:
 
 HubSpot API keys follow this format:
 
-```
+```text
 pat-na1-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 ```
 
@@ -233,10 +234,37 @@ Remote mode uses header-based authentication for security:
 
 #### Exempt Endpoints
 
-These endpoints don't require authentication:
+These endpoints don't require authentication by default:
 
 - `/health` - Health check
 - `/ready` - Readiness check
+
+#### FAISS Data Endpoint Security
+
+The `/faiss-data` endpoint security can be controlled via the `FAISS_DATA_SECURE` environment variable:
+
+**Secured by default (recommended):**
+
+```bash
+# /faiss-data requires authentication (default behavior)
+export FAISS_DATA_SECURE="true"  # or omit the variable
+```
+
+**Unsecured access:**
+
+```bash
+# /faiss-data bypasses authentication
+export FAISS_DATA_SECURE="false"
+```
+
+**Supported values for unsecured access:**
+
+- `false`
+- `0`
+- `no`
+- `off`
+
+Any other value (including unset) defaults to secured mode.
 
 #### Example Usage
 

@@ -1,0 +1,46 @@
+# FastAgent Configuration File for HubSpot SSE Example
+
+# Default Model Configuration
+default_model: gpt-4o-mini
+
+# Logging and Console Configuration
+logger:
+    level: "info"
+    progress_display: true
+    show_chat: true
+    show_tools: true
+    truncate_tools: true
+
+# MCP Servers Configuration
+mcp:
+    servers:
+        hubspot-sse:
+            # SSE connection configuration
+            transport:
+                type: "sse"
+                url: "http://localhost:8080/sse"
+                headers:
+                    # Authentication header for MCP server (default header name is X-API-Key)
+                    X-API-Key: "${MCP_AUTH_KEY}"
+                    Content-Type: "application/json"
+                    User-Agent: "FastAgent-SSE/1.0"
+                timeout: 30
+                retry_attempts: 3
+                retry_delay: 2
+            # Environment variables for the server
+            env:
+                HUBSPOT_API_KEY: "${HUBSPOT_API_KEY}"
+                HUBSPOT_API_URL: "https://api.hubapi.com"
+                MCP_SERVER_NAME: "hubspot-mcp-server"
+                MCP_SERVER_VERSION: "1.0.0"
+                LOG_LEVEL: "INFO"
+
+# Optional: Global environment variables
+environment:
+    # FastAgent specific settings
+    FASTAGENT_ENABLE_LOGGING: "true"
+    FASTAGENT_LOG_LEVEL: "INFO"
+
+    # MCP Client settings
+    MCP_CLIENT_TIMEOUT: "30"
+    MCP_CLIENT_RETRY_ATTEMPTS: "3"

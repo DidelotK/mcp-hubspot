@@ -1,0 +1,22 @@
+# HubSpot FastAgent SSE Example Requirements
+#
+# This file lists the dependencies needed to run the FastAgent SSE example.
+# Install with: pip install -r requirements.txt
+
+# FastAgent - AI Agent framework with MCP support
+mcp-agent>=0.1.0
+
+# HTTP client for SSE connections and health checks
+httpx>=0.25.0
+
+# YAML parsing for configuration files
+PyYAML>=6.0
+
+# Optional: Enhanced console output (if you want colored logs)
+rich>=13.0.0
+
+# Optional: Better async support for development
+asyncio-mqtt>=0.11.0
+
+# Optional: Additional utilities
+python-dotenv>=1.0.0

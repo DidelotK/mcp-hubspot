@@ -78,7 +78,15 @@ class AuthenticationMiddleware:
         self.app = app
         self.auth_key = auth_key
         self.header_name = header_name
-        self.exempt_paths = {"/health", "/ready"}  # Paths that don't require auth
+
+        # Base exempt paths (always unsecured)
+        self.exempt_paths = {"/health", "/ready"}
+
+        # Add /faiss-data to exempt paths if FAISS_DATA_SECURE is set to false
+        # By default, /faiss-data is secured (FAISS_DATA_SECURE=true)
+        faiss_data_secure = os.getenv("FAISS_DATA_SECURE", "true").lower()
+        if faiss_data_secure in ("false", "0", "no", "off"):
+            self.exempt_paths.add("/faiss-data")
 
     async def __call__(self, scope, receive, send):
         """ASGI middleware call."""
