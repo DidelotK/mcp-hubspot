@@ -254,5 +254,5 @@ The project uses a secure approach for handling sensitive information:
 ## 🔗 Related Documentation
 
 - [Contributing Guide](contributing.md) - Detailed contribution process
-- [Installation Guide](installation.md) - Setup instructions
+- [Local Installation Guide](installation-local-stdio.md) - Setup instructions
 - [Integration Guide](integration.md) - MCP client configuration 

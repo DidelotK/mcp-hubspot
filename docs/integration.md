@@ -68,7 +68,7 @@ This server can be deployed in **two different ways** depending on your needs:
 - uv (package manager)
 - HubSpot API key with CRM permissions
 
-→ **[Complete Local Installation Guide](docs/installation-local-stdio.md)**
+→ **[Complete Local Installation Guide](installation-local-stdio.md)**
 
 ### For Production/Team Deployment (Recommended: Remote)
 **What this involves:**
@@ -85,7 +85,7 @@ This server can be deployed in **two different ways** depending on your needs:
 - Cert-Manager
 - External DNS
 
-→ **[Complete Remote Deployment Guide](docs/installation-remote-sse.md)**
+→ **[Complete Remote Deployment Guide](installation-remote-sse.md)**
 
 ---
 

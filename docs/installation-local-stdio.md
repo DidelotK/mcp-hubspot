@@ -407,7 +407,7 @@ After successful local installation:
 
 ## Related Documentation
 
-- [Installation Guide](installation.md) - Standard installation methods
+- [Remote Installation Guide](installation-remote-sse.md) - Remote deployment methods
 - [Developer Guide](developer.md) - Development setup and workflow
 - [Integration Guide](integration.md) - Client configuration
 - [Contributing Guide](contributing.md) - Contribution guidelines 
