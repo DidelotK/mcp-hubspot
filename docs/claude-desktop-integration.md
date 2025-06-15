@@ -29,11 +29,11 @@ The HubSpot MCP Server can be used with Claude Desktop in two different ways:
 - HubSpot API key
 - Git (for cloning the repository)
 
-### Step 1: Install the Server
+### Step 1: Install the MCP Server Prerequisites
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-org/mcp-hubspot.git
+git clone https://github.com/DidelotK/mcp-hubspot
 cd mcp-hubspot
 
 # Install dependencies
@@ -43,20 +43,7 @@ uv sync
 uv run hubspot-mcp-server --help
 ```
 
-### Step 2: Configure Environment
-
-```bash
-# Copy environment template
-cp .env.example .env.local
-
-# Edit .env.local with your HubSpot API key
-HUBSPOT_API_KEY="pat-na1-your-actual-api-key-here"
-
-# Enable automatic environment loading
-direnv allow
-```
-
-### Step 3: Claude Desktop Configuration
+### Step 2: Configure Claude Desktop
 
 **Location**: `~/.config/Claude/claude_desktop_config.json`
 
@@ -70,11 +57,10 @@ Choose the appropriate configuration file from the examples:
 **Important**: 
 - Copy the example file content to your Claude Desktop configuration
 - Replace placeholder values with your actual paths and API keys
-- Replace `/ABSOLUTE_PATH_TO_YOUR_PROJECT` with your project path
 
-### Step 4: Test stdio Configuration
+### Step 3: Test stdio Configuration
 
-1. **Restart Claude Desktop**
+1. **Restart Claude Desktop** : Make sur all process of Claude Desktop are stopped during restart
 2. **Check MCP Status**: Look for MCP connection indicators in Claude Desktop
 3. **Test Basic Commands**: 
    - "List my HubSpot contacts"
@@ -107,6 +93,16 @@ npx mcp-remote --help
 #### Local SSE Server (for testing):
 
 ```bash
+# Clone the repository
+git clone https://github.com/DidelotK/mcp-hubspot
+cd mcp-hubspot
+
+# Install dependencies
+uv sync
+
+# Test the installation
+uv run hubspot-mcp-server --help
+
 # Start local SSE server
 MCP_AUTH_KEY="your-auth-key-here" \
 HUBSPOT_API_KEY="pat-na1-your-actual-api-key-here" \
@@ -141,30 +137,6 @@ Choose the appropriate SSE configuration file from the examples:
 2. **Restart Claude Desktop**
 
 3. **Test MCP Connection**: Try the same commands as in stdio mode
-
----
-
-## 🔧 Configuration Examples
-
-All configuration examples are available in the repository. Choose the one that matches your use case:
-
-| Use Case | File | Description |
-|----------|------|-------------|
-| **Local Development (stdio)** | [`claude_desktop_config_stdio.example.json`](../examples/claude/claude_desktop_config_stdio.example.json) | Direct uv command, best for development |
-| **Local Development (script)** | [`claude_desktop_config_stdio_with_launch_script.example.json`](../examples/claude/claude_desktop_config_stdio_with_launch_script.example.json) | Uses wrapper script for simplified setup |
-| **Local SSE Testing** | [`claude_desktop_config_sse_local.example.json`](../examples/claude/claude_desktop_config_sse_local.example.json) | Local SSE server for testing |
-| **Production SSE** | [`claude_desktop_config_sse.example.json`](../examples/claude/claude_desktop_config_sse.example.json) | Remote SSE server configuration |
-| **MCP Inspector** | [`mcp.json`](../mcp.json) | Multiple server configurations for debugging |
-
-### How to Use the Examples
-
-1. **Choose the appropriate example** file from the table above
-2. **Copy the content** to your Claude Desktop configuration file (`~/.config/Claude/claude_desktop_config.json`)
-3. **Replace placeholders** with your actual values:
-   - `YOUR_HUBSPOT_API_KEY_HERE` → Your actual HubSpot API key
-   - `/ABSOLUTE_PATH_TO_YOUR_PROJECT` → Your project directory path
-   - `your-domain.com` → Your production server domain
-4. **Restart Claude Desktop** to apply changes
 
 ---
 
@@ -255,29 +227,6 @@ npx mcp-remote http://localhost:8080/sse --header "X-API-Key: your-key"
 
 ---
 
-## 📋 Configuration Files Reference
-
-### Example Configuration Files
-
-The repository includes several example configuration files in the `examples/claude/` directory:
-
-| File | Purpose | Mode |
-|------|---------|------|
-| `claude_desktop_config_stdio.example.json` | Standard stdio development setup | stdio |
-| `claude_desktop_config_stdio_with_launch_script.example.json` | Script-based stdio setup | stdio |
-| `claude_desktop_config_sse_local.example.json` | Local SSE development | SSE |
-| `claude_desktop_config_sse.example.json` | Production SSE deployment | SSE |
-
-### Additional Files
-
-| File | Purpose | Location |
-|------|---------|----------|
-| `mcp.json` | MCP Inspector configuration with multiple servers | Root directory |
-| `.env.example` | Environment variables template | Root directory |
-| `.envrc` | Direnv configuration for automatic loading | Root directory |
-
----
-
 ## 🚀 Quick Setup Scripts
 
 ### stdio Mode Quick Setup
@@ -333,13 +282,3 @@ echo "✅ Claude Desktop configured for SSE mode using example file"
 echo "🔄 Please restart Claude Desktop" 
 echo "🌐 SSE server running on http://localhost:8080"
 ```
-
----
-
-## 📖 Related Documentation
-
-- [Installation Guide - Local stdio](installation-local-stdio.md)
-- [Installation Guide - Remote SSE](installation-remote-sse.md)
-- [Configuration Guide](configuration.md)
-- [API Reference](api-reference.md)
-- [Troubleshooting Guide](troubleshooting.md) 
