@@ -109,17 +109,13 @@ deploy_helm_chart() {
     export HELM_DRIVER="$HELM_DRIVER"
     log_info "  Helm configuration: max history=$HELM_MAX_HISTORY, driver=$HELM_DRIVER"
 
-    # Clean Helm cache to avoid large file issues
-    log_info "  Cleaning Helm cache..."
-    helm cache clean
-
     # Remove existing dependencies to force clean download
     log_info "  Cleaning existing chart dependencies..."
     rm -rf charts/* Chart.lock
 
     # Update dependencies to pull from OCI
-    log_info "  Update Helm chart dependencies..."
-    helm dependency update . --skip-refresh
+    # log_info "  Update Helm chart dependencies..."
+    helm dependency build .
 
     log_info "  Deploy Helm chart..."
     # Deploy directly with Helm using the local chart with optimizations
@@ -130,7 +126,6 @@ deploy_helm_chart() {
         --set image.tag="$IMAGE_TAG" \
         --set ingress.hosts[0].host="$DOMAIN" \
         --set ingress.tls[0].hosts[0]="$DOMAIN" \
-        --max-history="$HELM_MAX_HISTORY" \
         --wait \
         --timeout=600s
 

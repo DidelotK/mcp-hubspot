@@ -514,6 +514,249 @@ class TestPaginationMethods:
             assert properties_list.count("name") == 1
 
     @pytest.mark.asyncio
+    async def test_get_all_deals_with_pagination_single_page(self, mock_hubspot_client):
+        """Test get_all_deals_with_pagination with single page."""
+        mock_response_data = {
+            "results": [
+                {
+                    "id": "1",
+                    "properties": {
+                        "dealname": "Deal A",
+                        "amount": "10000",
+                        "dealstage": "presentation",
+                    },
+                },
+                {
+                    "id": "2",
+                    "properties": {
+                        "dealname": "Deal B",
+                        "amount": "5000",
+                        "dealstage": "qualification",
+                    },
+                },
+            ],
+            "paging": {},
+        }
+
+        mock_response_obj = Mock()
+        mock_response_obj.status_code = 200
+        mock_response_obj.json.return_value = mock_response_data
+        mock_response_obj.raise_for_status = Mock()
+
+        with patch("httpx.AsyncClient.get", new_callable=AsyncMock) as mock_get:
+            mock_get.return_value = mock_response_obj
+
+            result = await mock_hubspot_client.get_all_deals_with_pagination()
+
+            assert len(result) == 2
+            assert result[0]["id"] == "1"
+            assert result[1]["id"] == "2"
+
+    @pytest.mark.asyncio
+    async def test_get_all_deals_with_pagination_multiple_pages(
+        self, mock_hubspot_client
+    ):
+        """Test get_all_deals_with_pagination with multiple pages."""
+        page1_response = {
+            "results": [
+                {"id": "1", "properties": {"dealname": "Deal A"}},
+                {"id": "2", "properties": {"dealname": "Deal B"}},
+            ],
+            "paging": {"next": {"after": "deal_cursor"}},
+        }
+
+        page2_response = {
+            "results": [
+                {"id": "3", "properties": {"dealname": "Deal C"}},
+                {"id": "4", "properties": {"dealname": "Deal D"}},
+            ],
+            "paging": {},
+        }
+
+        with patch("httpx.AsyncClient.get", new_callable=AsyncMock) as mock_get:
+            # Create separate mock responses for each call
+            mock_response_1 = Mock()
+            mock_response_1.status_code = 200
+            mock_response_1.json.return_value = page1_response
+            mock_response_1.raise_for_status = Mock()
+
+            mock_response_2 = Mock()
+            mock_response_2.status_code = 200
+            mock_response_2.json.return_value = page2_response
+            mock_response_2.raise_for_status = Mock()
+
+            mock_get.side_effect = [mock_response_1, mock_response_2]
+
+            result = await mock_hubspot_client.get_all_deals_with_pagination()
+
+            assert len(result) == 4
+            assert mock_get.call_count == 2
+
+            # Verify pagination cursor was used
+            second_call_args = mock_get.call_args_list[1]
+            assert second_call_args[1]["params"]["after"] == "deal_cursor"
+
+    @pytest.mark.asyncio
+    async def test_get_all_deals_with_pagination_max_entities_limit(
+        self, mock_hubspot_client
+    ):
+        """Test get_all_deals_with_pagination with max_entities limit."""
+        page_response = {
+            "results": [
+                {"id": "1", "properties": {"dealname": "Deal A"}},
+                {"id": "2", "properties": {"dealname": "Deal B"}},
+                {"id": "3", "properties": {"dealname": "Deal C"}},
+                {"id": "4", "properties": {"dealname": "Deal D"}},
+                {"id": "5", "properties": {"dealname": "Deal E"}},
+            ],
+            "paging": {"next": {"after": "cursor"}},
+        }
+
+        mock_response_obj = Mock()
+        mock_response_obj.status_code = 200
+        mock_response_obj.json.return_value = page_response
+        mock_response_obj.raise_for_status = Mock()
+
+        with patch("httpx.AsyncClient.get", new_callable=AsyncMock) as mock_get:
+            mock_get.return_value = mock_response_obj
+
+            # Limit to 3 entities
+            result = await mock_hubspot_client.get_all_deals_with_pagination(
+                max_entities=3
+            )
+
+            assert len(result) == 3
+            assert result[0]["id"] == "1"
+            assert result[2]["id"] == "3"
+            # Should only call once since we hit the limit
+            mock_get.assert_called_once()
+
+    @pytest.mark.asyncio
+    async def test_get_all_deals_with_pagination_empty_results(
+        self, mock_hubspot_client
+    ):
+        """Test get_all_deals_with_pagination with empty results."""
+        empty_response = {"results": [], "paging": {}}
+
+        mock_response_obj = Mock()
+        mock_response_obj.status_code = 200
+        mock_response_obj.json.return_value = empty_response
+        mock_response_obj.raise_for_status = Mock()
+
+        with patch("httpx.AsyncClient.get", new_callable=AsyncMock) as mock_get:
+            mock_get.return_value = mock_response_obj
+
+            result = await mock_hubspot_client.get_all_deals_with_pagination()
+
+            assert len(result) == 0
+            mock_get.assert_called_once()
+
+    @pytest.mark.asyncio
+    async def test_get_deals_page_with_paging_basic(self, mock_hubspot_client):
+        """Test _get_deals_page_with_paging basic functionality."""
+        mock_response_data = {
+            "results": [{"id": "1", "properties": {"dealname": "Deal A"}}],
+            "paging": {"next": {"after": "deal_cursor123"}},
+        }
+
+        mock_response_obj = Mock()
+        mock_response_obj.status_code = 200
+        mock_response_obj.json.return_value = mock_response_data
+        mock_response_obj.raise_for_status = Mock()
+
+        with patch("httpx.AsyncClient.get", new_callable=AsyncMock) as mock_get:
+            mock_get.return_value = mock_response_obj
+
+            result = await mock_hubspot_client._get_deals_page_with_paging(limit=75)
+
+            assert result == mock_response_data
+            mock_get.assert_called_once()
+
+            # Verify the API call parameters
+            call_args = mock_get.call_args
+            assert call_args[1]["params"]["limit"] == 75
+            assert "properties" in call_args[1]["params"]
+
+    @pytest.mark.asyncio
+    async def test_get_deals_page_with_paging_with_after_cursor(
+        self, mock_hubspot_client
+    ):
+        """Test _get_deals_page_with_paging with after cursor."""
+        mock_response_data = {
+            "results": [{"id": "2", "properties": {"dealname": "Deal B"}}],
+            "paging": {},
+        }
+
+        mock_response_obj = Mock()
+        mock_response_obj.status_code = 200
+        mock_response_obj.json.return_value = mock_response_data
+        mock_response_obj.raise_for_status = Mock()
+
+        with patch("httpx.AsyncClient.get", new_callable=AsyncMock) as mock_get:
+            mock_get.return_value = mock_response_obj
+
+            result = await mock_hubspot_client._get_deals_page_with_paging(
+                limit=50, after="deal_test_cursor"
+            )
+
+            assert result == mock_response_data
+
+            # Verify after cursor was included
+            call_args = mock_get.call_args
+            assert call_args[1]["params"]["after"] == "deal_test_cursor"
+
+    @pytest.mark.asyncio
+    async def test_get_deals_page_with_paging_with_extra_properties(
+        self, mock_hubspot_client
+    ):
+        """Test _get_deals_page_with_paging with extra properties and deduplication."""
+        mock_response_data = {
+            "results": [
+                {
+                    "id": "1",
+                    "properties": {
+                        "dealname": "Deal A",
+                        "amount": "10000",
+                        "custom_deal_field": "value",
+                    },
+                }
+            ],
+            "paging": {},
+        }
+
+        mock_response_obj = Mock()
+        mock_response_obj.status_code = 200
+        mock_response_obj.json.return_value = mock_response_data
+        mock_response_obj.raise_for_status = Mock()
+
+        with patch("httpx.AsyncClient.get", new_callable=AsyncMock) as mock_get:
+            mock_get.return_value = mock_response_obj
+
+            # Include duplicate properties to test deduplication
+            result = await mock_hubspot_client._get_deals_page_with_paging(
+                extra_properties=[
+                    "amount",
+                    "dealname",
+                    "custom_deal_field",
+                    "dealname",
+                ]
+            )
+
+            assert result == mock_response_data
+
+            # Verify properties parameter and deduplication
+            call_args = mock_get.call_args
+            properties_param = call_args[1]["params"]["properties"]
+            properties_list = properties_param.split(",")
+
+            # Should include standard properties plus extra ones, deduplicated
+            assert "dealname" in properties_list
+            assert "amount" in properties_list
+            assert "custom_deal_field" in properties_list
+            # dealname should only appear once (deduplication test)
+            assert properties_list.count("dealname") == 1
+
+    @pytest.mark.asyncio
     async def test_pagination_error_handling(self, mock_hubspot_client):
         """Test error handling in pagination methods."""
         mock_response_obj = Mock()

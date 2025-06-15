@@ -112,6 +112,82 @@ class TestBulkCacheLoaderTool:
             },
         ]
 
+    @pytest.fixture
+    def sample_deals(self):
+        """Sample deal data."""
+        return [
+            {
+                "id": "1",
+                "properties": {
+                    "dealname": "Big Enterprise Deal",
+                    "amount": "50000",
+                    "dealstage": "presentation",
+                    "pipeline": "default",
+                    "closedate": "2024-06-01T00:00:00.000Z",
+                    "createdate": "2024-01-01T00:00:00.000Z",
+                },
+            },
+            {
+                "id": "2",
+                "properties": {
+                    "dealname": "Small Business Deal",
+                    "amount": "5000",
+                    "dealstage": "qualification",
+                    "pipeline": "default",
+                    "closedate": "2024-04-15T00:00:00.000Z",
+                    "createdate": "2024-01-02T00:00:00.000Z",
+                },
+            },
+        ]
+
+    @pytest.fixture
+    def sample_deal_properties(self):
+        """Sample deal property definitions."""
+        return [
+            {
+                "name": "dealname",
+                "label": "Deal Name",
+                "type": "string",
+                "fieldType": "text",
+                "calculated": False,
+            },
+            {
+                "name": "amount",
+                "label": "Amount",
+                "type": "number",
+                "fieldType": "number",
+                "calculated": False,
+            },
+            {
+                "name": "dealstage",
+                "label": "Deal Stage",
+                "type": "enumeration",
+                "fieldType": "select",
+                "calculated": False,
+            },
+            {
+                "name": "pipeline",
+                "label": "Pipeline",
+                "type": "enumeration",
+                "fieldType": "select",
+                "calculated": False,
+            },
+            {
+                "name": "hs_forecast_amount",
+                "label": "Forecast Amount",
+                "type": "number",
+                "fieldType": "number",
+                "calculated": True,  # Should be filtered out
+            },
+            {
+                "name": "id",  # System property - should be filtered out
+                "label": "Deal ID",
+                "type": "string",
+                "fieldType": "text",
+                "calculated": False,
+            },
+        ]
+
     def test_tool_definition(self, tool):
         """Test tool definition."""
         definition = tool.get_tool_definition()
@@ -129,7 +205,7 @@ class TestBulkCacheLoaderTool:
 
         # Check entity_type enum
         entity_type_schema = schema["properties"]["entity_type"]
-        assert entity_type_schema["enum"] == ["contacts", "companies"]
+        assert entity_type_schema["enum"] == ["contacts", "companies", "deals"]
 
     @pytest.mark.asyncio
     async def test_execute_invalid_entity_type(self, tool):
@@ -138,7 +214,9 @@ class TestBulkCacheLoaderTool:
 
         assert len(result) == 1
         assert "❌ **Error**" in result[0].text
-        assert "entity_type must be 'contacts' or 'companies'" in result[0].text
+        assert (
+            "entity_type must be 'contacts', 'companies', or 'deals'" in result[0].text
+        )
 
     @pytest.mark.asyncio
     async def test_execute_contacts_success(
@@ -246,6 +324,74 @@ class TestBulkCacheLoaderTool:
         tool._cached_client_call.assert_any_call(
             "get_all_companies_with_pagination",
             extra_properties=["firstname", "lastname", "email"],  # Filtered properties
+            max_entities=5000,
+        )
+
+    @pytest.mark.asyncio
+    async def test_execute_deals_success(
+        self, tool, sample_deal_properties, sample_deals
+    ):
+        """Test successful execution for deals."""
+        # Mock the cached client calls
+        tool._cached_client_call = AsyncMock()
+        tool._cached_client_call.side_effect = [
+            sample_deal_properties,  # get_deal_properties
+            sample_deals,  # get_all_deals_with_pagination
+        ]
+
+        # Mock embedding functionality
+        tool.enable_embeddings = True
+        tool._embedding_manager = Mock()
+        tool._build_embedding_index_from_entities = AsyncMock(
+            return_value={
+                "success": True,
+                "entities_indexed": len(sample_deals),
+                "index_stats": {
+                    "total_entities": len(sample_deals),
+                    "dimension": 384,
+                    "index_type": "flat",
+                },
+            }
+        )
+
+        result = await tool.execute(
+            {
+                "entity_type": "deals",
+                "build_embeddings": True,
+                "max_entities": 5000,
+            }
+        )
+
+        assert len(result) == 1
+        result_text = result[0].text
+
+        # Check main sections
+        assert "🚀 **Bulk Loading Deals to Cache**" in result_text
+        assert "📋 **Step 1**: Retrieving all deals properties" in result_text
+        assert (
+            "📥 **Step 2**: Loading all deals with complete property data"
+            in result_text
+        )
+        assert (
+            "🧠 **Step 3**: Building FAISS embeddings for semantic search"
+            in result_text
+        )
+        assert "🎉 **Cache Loading Complete**" in result_text
+
+        # Check data counts
+        assert f"Loaded {len(sample_deals)} deals" in result_text
+        assert "Built embeddings for 2 deals" in result_text
+
+        # Verify calls
+        tool._cached_client_call.assert_any_call("get_deal_properties")
+        tool._cached_client_call.assert_any_call(
+            "get_all_deals_with_pagination",
+            extra_properties=[
+                "dealname",
+                "amount",
+                "dealstage",
+                "pipeline",
+            ],  # Filtered properties
             max_entities=5000,
         )
 

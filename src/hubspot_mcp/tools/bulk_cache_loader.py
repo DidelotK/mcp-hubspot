@@ -24,13 +24,13 @@ class BulkCacheLoaderTool(EnhancedBaseTool):
         """Return the bulk cache loader tool definition."""
         return types.Tool(
             name="load_hubspot_entities_to_cache",
-            description="Bulk load all HubSpot contacts or companies into cache with complete property data for optimized FAISS searches. Recommended to run once daily or when simple searches don't return expected information to ensure FAISS searches have access to complete, up-to-date data.",
+            description="Bulk load all HubSpot contacts, companies, or deals into cache with complete property data for optimized FAISS searches. Recommended to run once daily or when simple searches don't return expected information to ensure FAISS searches have access to complete, up-to-date data.",
             inputSchema={
                 "type": "object",
                 "properties": {
                     "entity_type": {
                         "type": "string",
-                        "enum": ["contacts", "companies"],
+                        "enum": ["contacts", "companies", "deals"],
                         "description": "Type of entities to load into cache",
                     },
                     "build_embeddings": {
@@ -57,11 +57,11 @@ class BulkCacheLoaderTool(EnhancedBaseTool):
             build_embeddings = arguments.get("build_embeddings", True)
             max_entities = arguments.get("max_entities", 10000)
 
-            if entity_type not in ["contacts", "companies"]:
+            if entity_type not in ["contacts", "companies", "deals"]:
                 return [
                     types.TextContent(
                         type="text",
-                        text="❌ **Error**: entity_type must be 'contacts' or 'companies'",
+                        text="❌ **Error**: entity_type must be 'contacts', 'companies', or 'deals'",
                     )
                 ]
 
@@ -74,6 +74,8 @@ class BulkCacheLoaderTool(EnhancedBaseTool):
                 properties_method = "get_contact_properties"
             elif entity_type == "companies":
                 properties_method = "get_company_properties"
+            elif entity_type == "deals":
+                properties_method = "get_deal_properties"
             else:
                 properties_method = f"get_{entity_type[:-1]}_properties"  # Fallback
             properties = await self._cached_client_call(properties_method)

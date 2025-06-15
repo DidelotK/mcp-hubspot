@@ -885,6 +885,53 @@ class HubSpotClient:
 
         return all_companies
 
+    async def get_all_deals_with_pagination(
+        self, *, extra_properties: Optional[List[str]] = None, max_entities: int = 0
+    ) -> List[Dict[str, Any]]:
+        """Get all deals using pagination with all specified properties.
+
+        Args:
+            extra_properties: List of additional properties to include
+            max_entities: Maximum number of entities to load (0 = no limit)
+
+        Returns:
+            List[Dict[str, Any]]: List of all deal dictionaries
+
+        Raises:
+            httpx.HTTPStatusError: If the API request fails
+        """
+        all_deals = []
+        after = None
+        page_size = 100  # HubSpot API limit
+
+        while True:
+            # Get deals page with pagination info
+            page_data = await self._get_deals_page_with_paging(
+                limit=page_size, after=after, extra_properties=extra_properties
+            )
+
+            deals = page_data.get("results", [])
+            if not deals:
+                break
+
+            all_deals.extend(deals)
+
+            # Check maximum limit
+            if max_entities > 0 and len(all_deals) >= max_entities:
+                all_deals = all_deals[:max_entities]
+                break
+
+            # Get next page cursor
+            paging = page_data.get("paging", {})
+            next_page = paging.get("next", {})
+            after = next_page.get("after")
+
+            if not after:
+                # No more pages
+                break
+
+        return all_deals
+
     async def _get_contacts_page_with_paging(
         self,
         limit: int = 100,
@@ -920,6 +967,59 @@ class HubSpotClient:
         # Use the new property merging system that auto-loads all properties
         merged_props = await self._merge_properties(
             default_props, extra_properties, "contacts"
+        )
+
+        params = {
+            "limit": min(limit, 100),  # HubSpot caps at 100
+            "properties": ",".join(merged_props),
+        }
+
+        # Add pagination cursor if provided
+        if after:
+            params["after"] = after
+
+        async with httpx.AsyncClient() as client:
+            response = await client.get(url, headers=self.headers, params=params)
+            response.raise_for_status()
+            return response.json()  # Return full response including paging info
+
+    async def _get_deals_page_with_paging(
+        self,
+        limit: int = 100,
+        after: Optional[str] = None,
+        *,
+        extra_properties: Optional[List[str]] = None,
+    ) -> Dict[str, Any]:
+        """Get a single page of deals with pagination info.
+
+        Args:
+            limit: Maximum number of deals to retrieve (max 100)
+            after: Pagination cursor to get the next set of results
+            extra_properties: List of additional properties to include
+
+        Returns:
+            Dict containing 'results' and 'paging' information with all available
+                properties automatically loaded (if auto_load_properties=True)
+
+        Raises:
+            httpx.HTTPStatusError: If the API request fails
+        """
+        url = f"{self.base_url}/crm/v3/objects/deals"
+
+        default_props: List[str] = [
+            "dealname",
+            "amount",
+            "dealstage",
+            "pipeline",
+            "closedate",
+            "createdate",
+            "lastmodifieddate",
+            "hubspot_owner_id",
+        ]
+
+        # Use the new property merging system that auto-loads all properties
+        merged_props = await self._merge_properties(
+            default_props, extra_properties, "deals"
         )
 
         params = {

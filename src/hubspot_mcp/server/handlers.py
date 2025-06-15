@@ -65,24 +65,24 @@ class MCPHandlers:
 
         # Tools mapping
         self.tools_map: Dict[str, Any] = {
+            "semantic_search_hubspot": self.semantic_search_tool,
             "load_hubspot_entities_to_cache": self.bulk_cache_loader_tool,
-            "manage_hubspot_cache": self.cache_management_tool,
             "list_hubspot_contacts": self.contacts_tool,
-            "list_hubspot_companies": self.companies_tool,
-            "list_hubspot_deals": self.deals_tool,
-            "create_deal": self.create_deal_tool,
-            "list_hubspot_engagements": self.engagements_tool,
-            "get_deal_by_name": self.deal_by_name_tool,
             "get_hubspot_contact_properties": self.contact_properties_tool,
+            "list_hubspot_companies": self.companies_tool,
             "get_hubspot_company_properties": self.company_properties_tool,
-            "get_hubspot_deal_properties": self.deal_properties_tool,
+            "list_hubspot_deals": self.deals_tool,
+            "get_deal_by_name": self.deal_by_name_tool,
+            "create_deal": self.create_deal_tool,
             "update_deal": self.update_deal_tool,
+            "get_hubspot_deal_properties": self.deal_properties_tool,
+            "list_hubspot_engagements": self.engagements_tool,
             "search_hubspot_deals": self.search_deals_tool,
             "search_hubspot_contacts": self.search_contacts_tool,
             "search_hubspot_companies": self.search_companies_tool,
-            "semantic_search_hubspot": self.semantic_search_tool,
-            "manage_hubspot_embeddings": self.embedding_management_tool,
+            "manage_hubspot_cache": self.cache_management_tool,
             "browse_hubspot_indexed_data": self.faiss_data_tool,
+            "manage_hubspot_embeddings": self.embedding_management_tool,
         }
 
     async def handle_list_tools(self) -> List[types.Tool]:
