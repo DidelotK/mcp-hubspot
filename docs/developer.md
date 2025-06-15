@@ -165,7 +165,7 @@ The test suite includes performance benchmarks for:
 #### Documentation
 - Update relevant documentation files
 - Include examples for new features
-- Maintain Tools accuracy
+- Maintain Tools documentation accuracy
 
 ### Troubleshooting Tests
 
@@ -213,9 +213,46 @@ The project uses GitHub Actions for:
 
 All pull requests must pass the complete CI pipeline before merging.
 
+## 🔐 Secure Environment Configuration
+
+The project uses a secure approach for handling sensitive information:
+
+### 🛡️ **Local Development Setup**
+
+1. **Copy the example configuration:**
+   ```bash
+   cp .env.example .env.local
+   ```
+
+2. **Edit `.env.local` with your real secrets:**
+   ```bash
+   # Replace with your actual HubSpot API key
+   HUBSPOT_API_KEY="pat-na1-your-actual-api-key-here"
+   ```
+
+3. **The environment loads automatically with direnv:**
+   ```bash
+   direnv allow  # Enables automatic loading
+   ```
+
+### 🔒 **Security Features**
+
+- ✅ **`.env.local`** - Contains your real secrets (never committed)
+- ✅ **`.env.example`** - Safe template file (committed to git)
+- ✅ **`.envrc`** - Automatically sources `.env.local` if available
+- ✅ **Git protection** - `.env.local` is in `.gitignore`
+- ✅ **Clean history** - All secrets removed from Git history
+
+### ⚠️ **Important Security Notes**
+
+- **Never commit** `.env.local` - it contains your real API keys
+- **Always use** `.env.example` as a template for new setups
+- **Git history** has been cleaned of any exposed secrets
+- **Production deployments** use Kubernetes secrets via External Secrets Operator
+
+
 ## 🔗 Related Documentation
 
 - [Contributing Guide](contributing.md) - Detailed contribution process
-- [Tools](tools.md) - Complete tool documentation  
-- [Installation Guide](installation-local-stdio.md) - Setup instructions
+- [Installation Guide](installation.md) - Setup instructions
 - [Integration Guide](integration.md) - MCP client configuration 

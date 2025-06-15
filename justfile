@@ -234,9 +234,9 @@ info:
     @echo "Project dependencies:"
     @uv tree
 
-# Run the basic MCP client example (requires HUBSPOT_API_KEY env var)
-example-basic:
-    uv run python examples/basic/test_mcp_client.py
+# Run the python MCP client example (requires HUBSPOT_API_KEY env var)
+example-mcp-client:
+    uv run python examples/python-stdio-mcp-client/mcp_client.py
 
 # Kill all Claude Desktop processes
 kill-claude:
@@ -308,8 +308,8 @@ help-mcp:
     @echo "  just server-stdio   # Start in stdio mode (for Claude Desktop)"
     @echo "  just server-sse     # Start in SSE mode on port 8080"
     @echo "  just server-sse-custom HOST PORT  # Custom host/port"
-    @echo "  just test-mcp       # Test MCP configuration"
-    @echo "  just example-basic  # Run basic example client"
+    @echo "  just test-mcp           # Test MCP configuration"
+    @echo "  just example-mcp-client # Run python example MCP client"
     @echo ""
     @echo "🔧 Environment setup:"
     @echo "  export HUBSPOT_API_KEY='your-key-here'"

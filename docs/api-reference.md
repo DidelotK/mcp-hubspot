@@ -1,4 +1,4 @@
-# API Reference - MCP Tools
+# MCP Tools
 
 This MCP server exposes 11 tools to interact with the HubSpot API.
 

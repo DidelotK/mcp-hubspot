@@ -608,7 +608,6 @@ Monitor performance through:
 
 - **[Local Installation Guide](installation-local-stdio.md)** - For local development
 - **[Configuration Guide](configuration.md)** - Environment setup
-- **[Tools](tools.md)** - Complete tool documentation
 - **[Troubleshooting](troubleshooting.md)** - Common issues and solutions
 - **[Developer Guide](developer.md)** - Development workflow
 

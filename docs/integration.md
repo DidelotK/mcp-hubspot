@@ -4,114 +4,30 @@
 
 This guide provides a comprehensive overview of integrating the HubSpot MCP Server with various clients and platforms. The integration documentation has been organized into dedicated guides for easier navigation and reference.
 
-## Integration Types
+## 🔀 Installation Approaches
 
-### 🖥️ Claude Desktop Integration
+This server can be deployed in **two different ways** depending on your needs:
 
-The most common integration method for individual users and development work.
+### 🏠 **Local Installation (stdio mode)**
+**Best for:** Local development, and direct client integration
 
-**Key Features:**
-- Native Claude Desktop support
-- Simple JSON configuration
-- Environment variable management
-- Automatic tool discovery
+- ✅ Direct integration with Claude Desktop or any local MCP Client
+- ✅ Runs locally on your machine
+- ✅ Perfect for personal use
+- ✅ Uses stdio protocol for communication
+- ⚠️ **Requires MCP client configuration** (like Claude Desktop)
 
-**Quick Start:**
-Configure Claude Desktop by adding the server to your configuration file with your HubSpot API key.
+### 🌐 **Remote Deployment (SSE mode)**
+**Best for:** Production environments, team usage, scalable deployments
 
-📖 **[Complete Claude Desktop Integration Guide →](claude-desktop-integration.md)**
-
----
-
-### 🔌 MCP Clients Integration
-
-Integration with other Model Context Protocol clients and custom applications.
-
-**Supported Modes:**
-- **SSE Mode**: HTTP-based communication for web applications
-- **stdio Mode**: Standard input/output for command-line tools and scripts
-
-**Key Features:**
-- RESTful API endpoints
-- JSON-RPC 2.0 protocol
-- Cross-platform compatibility
-- Custom client development support
-
-**Quick Start:**
-Start the server in SSE mode and connect via HTTP, or use stdio mode for direct communication.
-
-📖 **[Complete MCP Clients Integration Guide →](mcp-clients-integration.md)**
+- ✅ Production-ready Kubernetes deployment
+- ✅ Scalable and highly available
+- ✅ SSE (Server-Sent Events) protocol
+- ✅ Authentication and security
+- ✅ Multi-user support
+- ⚠️ **Requires Kubernetes cluster and infrastructure setup**
 
 ---
-
-### 🔧 Troubleshooting
-
-Diagnose and resolve common integration issues across all platforms.
-
-**Common Issues Covered:**
-- Claude Desktop tool recognition problems
-- API authentication failures
-- Network connectivity issues
-- Performance and memory problems
-- Configuration and setup errors
-
-**Key Features:**
-- Symptom-based problem identification
-- Step-by-step solution procedures
-- Advanced debugging techniques
-- Recovery and maintenance procedures
-
-**Quick Start:**
-Identify your issue symptoms and follow the corresponding troubleshooting steps.
-
-📖 **[Complete Troubleshooting Guide →](troubleshooting.md)**
-
-## Getting Started
-
-### Prerequisites
-
-Before integrating, ensure you have:
-
-- [ ] **HubSpot API Key**: Valid private app API key with required permissions
-- [ ] **Python 3.12+**: Required runtime environment
-- [ ] **uv Package Manager**: For dependency management
-- [ ] **Network Access**: Connectivity to HubSpot API endpoints
-
-### Initial Setup
-
-**Step 1: Install Dependencies**
-
-After cloning or downloading the project, install the required dependencies:
-
-```bash
-cd /path/to/your/mcp-hubspot-project
-uv sync
-```
-
-This command installs all necessary Python packages required for the MCP server to function properly.
-
-⚠️ **Important**: This step is required before any integration method will work.
-
-### Quick Integration Path
-
-1. **Install Dependencies**
-   ```bash
-   cd /path/to/your/mcp-hubspot-project
-   uv sync
-   ```
-
-2. **Choose Your Integration Type**
-   - For Claude Desktop → [Claude Desktop Guide](claude-desktop-integration.md)
-   - For custom clients → [MCP Clients Guide](mcp-clients-integration.md)
-
-3. **Configure Your Environment**
-   - Set up your HubSpot API key
-   - Configure your chosen client
-
-4. **Troubleshoot if Needed**
-   - Check [Troubleshooting Guide](troubleshooting.md)
-   - Review common issues
-   - Apply solutions
 
 ## Integration Architecture
 
@@ -136,99 +52,46 @@ This command installs all necessary Python packages required for the MCP server 
                     │   (api.hubapi.com)│
                     └───────────────────┘
 ```
+---
 
-## Configuration Examples
+## 🎯 Choose Your Installation Method
 
-### Environment Variables
+### For Claude Desktop Users (Recommended: Local)
+**What this involves:**
+- Installing Python dependencies locally
+- Configuring HubSpot API credentials
+- Setting up Claude Desktop MCP configuration
+- Server runs when Claude Desktop starts
 
-```bash
-# Required
-export HUBSPOT_API_KEY="pat-na1-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+**Prerequisites:**
+- Python 3.12+
+- uv (package manager)
+- HubSpot API key with CRM permissions
 
-# Optional
-export LOG_LEVEL="INFO"
-export CACHE_TTL="300"
-export API_TIMEOUT="30"
-```
+→ **[Complete Local Installation Guide](docs/installation-local-stdio.md)**
 
-### Basic Usage Examples
+### For Production/Team Deployment (Recommended: Remote)
+**What this involves:**
+- Kubernetes cluster setup and configuration
+- External Secrets, Ingress, DNS configuration
+- Production-grade security and monitoring
+- Helm chart deployment and management
 
-**List Contacts:**
-```
-"List my HubSpot contacts"
-"Show me the first 10 contacts"
-"Find contacts with 'john' in their name"
-```
+**Prerequisites:**
+- Kubernetes cluster (>= 1.20)
+- Helm 3
+- External Secrets Operator
+- NGINX Ingress Controller
+- Cert-Manager
+- External DNS
 
-**List Companies:**
-```
-"Show me HubSpot companies"
-"Find tech companies in HubSpot"
-"List companies with 'software' in their name"
-```
+→ **[Complete Remote Deployment Guide](docs/installation-remote-sse.md)**
 
-**List Deals:**
-```
-"Show me all deals"
-"Find deals worth more than $10,000"
-"List deals in the negotiation stage"
-```
+---
 
-## Security Considerations
+## 🔌 MCP Clients Integration
 
-### API Key Management
+**Quick Start:**
 
-- **Never commit API keys** to version control
-- **Use environment variables** for key storage
-- **Rotate API keys** regularly
-- **Limit API key permissions** to required scopes only
-
-### Network Security
-
-- **Use HTTPS** in production environments
-- **Configure firewalls** appropriately
-- **Implement rate limiting** to prevent abuse
-- **Monitor API usage** for unusual patterns
-
-## Performance Optimization
-
-### Caching
-
-The server implements intelligent caching to improve performance:
-- Contact data cached for 5 minutes
-- Company data cached for 15 minutes
-- Deal data cached for 10 minutes
-
-See [Caching Guide](caching.md) for detailed configuration.
-
-### Request Optimization
-
-- Use appropriate `limit` parameters
-- Implement pagination for large datasets
-- Use specific search filters when possible
-- Monitor HubSpot API rate limits
-
-## Support and Resources
-
-### Documentation Links
-
-- [Installation Guide](installation-local-stdio.md) - Initial setup and installation
-- [API Reference](tools.md) - Detailed API documentation
-- [Examples](usage-examples.md) - Usage examples and code samples
-- [Contributing](contributing.md) - Development and contribution guidelines
-
-### Community and Support
-
-- **GitHub Issues**: Report bugs and request features
-- **Documentation**: Comprehensive guides and references
-- **Code Examples**: Working examples for common use cases
-
-## Next Steps
-
-1. **Choose your integration method** from the guides above
-2. **Follow the step-by-step instructions** in the relevant guide
-3. **Test your integration** using the testing procedures
-4. **Refer to troubleshooting** if you encounter issues
-5. **Explore advanced features** in the API reference
-
-Each integration guide provides complete, self-contained instructions for successful setup and operation. 
+📖 **[Complete MCP Clients Integration Guide →](mcp-clients-integration.md)**
+📖 **[Dedicated Claude Integration Guide →](claude-desktop-integration.md)**

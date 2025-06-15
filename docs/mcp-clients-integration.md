@@ -328,4 +328,3 @@ tools = asyncio.run(async_mcp_call())
 
 1. Review [Integration Testing](integration-testing.md) for testing your integration
 2. Check [Troubleshooting](troubleshooting.md) for common issues
-3. See [Tools](tools.md) for detailed tool documentation 

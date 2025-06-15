@@ -65,70 +65,6 @@ echo "HUBSPOT_API_KEY=pat-na1-your-api-key-here" > .env
 echo "LOG_LEVEL=INFO" >> .env
 ```
 
-### Claude Desktop Configuration
-
-Configure Claude Desktop to use the local server:
-
-```json
-{
-  "mcpServers": {
-    "hubspot": {
-      "command": "uv",
-      "args": [
-        "run",
-        "python",
-        "-m",
-        "hubspot_mcp.main",
-        "--mode",
-        "stdio"
-      ],
-      "env": {
-        "HUBSPOT_API_KEY": "pat-na1-your-api-key-here"
-      }
-    }
-  }
-}
-```
-
-### Alternative Claude Desktop Configurations
-
-#### Using Installed Package
-
-```json
-{
-  "mcpServers": {
-    "hubspot": {
-      "command": "hubspot-mcp-server",
-      "args": ["--mode", "stdio"],
-      "env": {
-        "HUBSPOT_API_KEY": "pat-na1-your-api-key-here"
-      }
-    }
-  }
-}
-```
-
-#### Using Python Module
-
-```json
-{
-  "mcpServers": {
-    "hubspot": {
-      "command": "python",
-      "args": [
-        "-m",
-        "hubspot_mcp",
-        "--mode",
-        "stdio"
-      ],
-      "env": {
-        "HUBSPOT_API_KEY": "pat-na1-your-api-key-here"
-      }
-    }
-  }
-}
-```
-
 ### Development Configuration
 
 For development, you can set additional options:
@@ -494,5 +430,4 @@ kubectl describe externalsecret hubspot-mcp-secrets -n $NAMESPACE
 
 - **[Local Installation Guide](installation-local-stdio.md)** - Complete local setup
 - **[Remote Deployment Guide](installation-remote-sse.md)** - Kubernetes deployment
-- **[Tools](tools.md)** - Available tools and usage
 - **[Troubleshooting](troubleshooting.md)** - Common issues and solutions 

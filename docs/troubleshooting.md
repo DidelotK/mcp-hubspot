@@ -537,7 +537,6 @@ When reporting issues, include:
 - Search existing issues on GitHub
 - Review [Integration Testing Guide](integration-testing.md)
 
-
 ## Preventive Measures
 
 ### 1. Regular Maintenance
