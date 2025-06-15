@@ -90,6 +90,15 @@ async def main():
     async def handle_call_tool(name: str, arguments: dict):
         return await handlers.handle_call_tool(name, arguments)
 
+    # TODO: Add prompt handlers when MCP library supports them properly
+    # @server.list_prompts()
+    # async def handle_list_prompts():
+    #     return await handlers.handle_list_prompts()
+
+    # @server.get_prompt()
+    # async def handle_get_prompt(name: str, arguments: dict = None):
+    #     return await handlers.handle_get_prompt(name, arguments)
+
     # Initialize server options
     server_options = InitializationOptions(
         server_name=settings.server_name,

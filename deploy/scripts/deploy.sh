@@ -114,8 +114,12 @@ deploy_helm_chart() {
     rm -rf charts/* Chart.lock
 
     # Update dependencies to pull from OCI
-    # log_info "  Update Helm chart dependencies..."
-    helm dependency build .
+    if [ -d "charts" ]; then
+        log_info "  Update Helm chart dependencies..."
+        helm dependency build .
+    else
+        log_info "  No dependencies to update"
+    fi
 
     log_info "  Deploy Helm chart..."
     # Deploy directly with Helm using the local chart with optimizations

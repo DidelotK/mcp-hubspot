@@ -6,6 +6,7 @@ from typing import Any, Dict, List, Optional
 import mcp.types as types
 
 from ..client import HubSpotClient
+from ..prompts import HubSpotPrompts
 from ..tools import (
     BulkCacheLoaderTool,
     CacheManagementTool,
@@ -33,7 +34,7 @@ logger = logging.getLogger(__name__)
 class MCPHandlers:
     """MCP handlers manager for HubSpot.
 
-    This class manages the available tools and handles tool execution requests
+    This class manages the available tools and prompts, and handles execution requests
     from the MCP server.
     """
 
@@ -85,6 +86,9 @@ class MCPHandlers:
             "manage_hubspot_embeddings": self.embedding_management_tool,
         }
 
+        # Initialize prompts
+        self.prompts = HubSpotPrompts()
+
     async def handle_list_tools(self) -> List[types.Tool]:
         """List all available tools.
 
@@ -95,6 +99,58 @@ class MCPHandlers:
         for tool in self.tools_map.values():
             tools.append(tool.get_tool_definition())
         return tools
+
+    async def handle_list_prompts(self) -> List[types.Prompt]:
+        """List all available prompts.
+
+        Returns:
+            List[types.Prompt]: List of prompt definitions
+        """
+        return self.prompts.get_prompt_definitions()
+
+    async def handle_get_prompt(
+        self, name: str, arguments: Optional[Dict[str, Any]] = None
+    ) -> types.GetPromptResult:
+        """Get prompt content by name.
+
+        Args:
+            name: Name of the prompt to get
+            arguments: Optional arguments for the prompt
+
+        Returns:
+            types.GetPromptResult: The prompt result with generated content
+        """
+        if arguments is None:
+            arguments = {}
+
+        try:
+            content = self.prompts.generate_prompt_content(name, arguments)
+            return types.GetPromptResult(
+                description=f"Generated guidance for {name}",
+                messages=[
+                    types.PromptMessage(
+                        role="user",
+                        content=types.TextContent(
+                            type="text",
+                            text=content,
+                        ),
+                    )
+                ],
+            )
+        except Exception as e:
+            logger.error(f"Error generating prompt {name}: {str(e)}")
+            return types.GetPromptResult(
+                description=f"Error generating prompt {name}",
+                messages=[
+                    types.PromptMessage(
+                        role="user",
+                        content=types.TextContent(
+                            type="text",
+                            text=f"Error generating prompt {name}: {str(e)}",
+                        ),
+                    )
+                ],
+            )
 
     async def handle_call_tool(
         self, name: str, arguments: Dict[str, Any]
