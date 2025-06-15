@@ -4,7 +4,7 @@
             "command": "npx",
             "args": [
                 "mcp-remote",
-                "https://hubspot-mcp-server.keltio.fr/sse",
+                "https://hubspot-mcp-server.example.com/sse",
                 "--header",
                 "X-API-Key: XXXXXXXXXXXXXXXXXX"
             ]
