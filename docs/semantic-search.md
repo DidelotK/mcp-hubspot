@@ -2,7 +2,7 @@
 
 The HubSpot MCP server includes advanced **semantic search capabilities** powered by FAISS (Facebook AI Similarity Search) and sentence transformers. This enables natural language queries across your HubSpot data.
 
-## ✨ What is Semantic Search?
+## ✨ What is Semantic Search
 
 Instead of exact keyword matching, semantic search understands the **meaning** and **context** of your queries:
 

@@ -2,7 +2,7 @@
 
 This guide explains how to use the [MCP Inspector](https://github.com/modelcontextprotocol/inspector) to debug and test the HubSpot MCP server.
 
-## 🔍 What is MCP Inspector?
+## 🔍 What is MCP Inspector
 
 The MCP Inspector is a visual testing tool for MCP servers that provides:
 

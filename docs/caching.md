@@ -4,9 +4,9 @@
 
 The HubSpot MCP server uses an **in-memory shared TTL (Time-to-Live) cache** to drastically reduce the number of outbound requests to HubSpot's public API.  Every read-only tool (contacts, companies, deals, properties, engagements, …) automatically stores its result in this cache so that subsequent identical calls can be served instantly.
 
-* **Backend**: [`cachetools.TTLCache`](https://cachetools.readthedocs.io/)
-* **Default TTL**: `300 seconds` (5 minutes)
-* **Maximum entries**: `1 000`
+- **Backend**: [`cachetools.TTLCache`](https://cachetools.readthedocs.io/)
+- **Default TTL**: `300 seconds` (5 minutes)
+- **Maximum entries**: `1 000`
 
 A single cache instance is shared between every tool **inside the same Python process**.  The cache key includes a hash of the API key, guaranteeing that data originating from different HubSpot accounts never collide.
 
@@ -121,8 +121,8 @@ At the moment there is **no environment variable** to tweak the TTL or size, bec
 
 ## Internal Implementation Details
 
-* Each tool calls `BaseTool._cached_client_call()` instead of the client method directly.
-* A SHA-256 hash of the **method name**, **sorted arguments** and **API key** is used as the cache key.
-* Cache hits and misses are logged at `DEBUG` level with the first eight characters of the key, never the full key nor sensitive data.
+- Each tool calls `BaseTool._cached_client_call()` instead of the client method directly.
+- A SHA-256 hash of the **method name**, **sorted arguments** and **API key** is used as the cache key.
+- Cache hits and misses are logged at `DEBUG` level with the first eight characters of the key, never the full key nor sensitive data.
 
 For the full implementation see [`src/hubspot_mcp/tools/base.py`](../src/hubspot_mcp/tools/base.py).
