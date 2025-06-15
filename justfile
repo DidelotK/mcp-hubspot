@@ -23,6 +23,8 @@ default:
     @echo "  just help-mcp       # Show MCP server commands"
     @echo "  just server-stdio   # Start server (stdio mode)"
     @echo "  just server-sse     # Start server (SSE mode)"
+    @echo "  just inspect-stdio  # Inspector with stdio server"
+    @echo "  just inspect-sse    # Inspector with SSE server (auth)"
     @echo "  just test-mcp       # Test MCP configuration"
     @echo ""
     @echo "🛠️ DEVELOPMENT:"
@@ -71,6 +73,16 @@ server-sse:
 # Start the server in SSE mode on custom host and port
 server-sse-custom host="localhost" port="8080":
     uv run hubspot-mcp-server --mode sse --host {{host}} --port {{port}}
+
+# Start MCP Inspector with specific HubSpot server (stdio mode)
+inspect-stdio:
+    @echo "🔍 Starting MCP Inspector with HubSpot stdio server..."
+    npx @modelcontextprotocol/inspector@latest --config mcp.json --server hubspot-stdio
+
+# Start MCP Inspector with SSE server (with authentication)
+inspect-sse:
+    @echo "🔍 Starting MCP Inspector with HubSpot SSE server (authenticated)..."
+    npx @modelcontextprotocol/inspector@latest
 
 # Install dependencies
 install:
@@ -301,6 +313,10 @@ help-mcp:
     @echo ""
     @echo "🔧 Environment setup:"
     @echo "  export HUBSPOT_API_KEY='your-key-here'"
+    @echo ""
+    @echo "🔍 Debugging:"
+    @echo "  just inspect-stdio  # Direct stdio connection"
+    @echo "  just inspect-sse    # Direct SSE connection (auth)"
 
 # Show detailed development commands
 help-dev:

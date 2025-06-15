@@ -1,0 +1,14 @@
+{
+    "mcpServers": {
+        "hubspot-mcp-server-sse": {
+            "command": "npx",
+            "args": [
+                "mcp-remote",
+                "http://localhost:8080/sse",
+                "--allow-http",
+                "--header",
+                "X-API-Key: local-test-key"
+            ]
+        }
+    }
+}

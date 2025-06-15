@@ -45,7 +45,8 @@ The server provides **14 tools** for comprehensive HubSpot integration:
 | **[Local Installation (stdio)](docs/installation-local-stdio.md)** | Install and run locally for Claude Desktop | Personal use, development |
 | **[Remote Deployment (SSE)](docs/installation-remote-sse.md)** | Deploy to Kubernetes for production use | Teams, production, scalability |
 | **[Configuration Guide](docs/configuration.md)** | Environment setup and API configuration | Both approaches |
-| **[Client Integration](docs/integration.md)** | Configure Claude Desktop and other MCP clients | Both approaches |
+| **[Claude Desktop Configuration](docs/claude-desktop-configuration.md)** | Complete guide for stdio and SSE modes with Claude Desktop | All Claude Desktop users |
+| **[Client Integration](docs/integration.md)** | Configure other MCP clients | Non-Claude clients |
 
 ### 🔧 Usage and Features
 
@@ -61,6 +62,7 @@ The server provides **14 tools** for comprehensive HubSpot integration:
 | Section | Description |
 |---------|-------------|
 | **[Developer Guide](docs/developer.md)** | Testing, quality assurance, and development workflow |
+| **[MCP Inspector](docs/mcp-inspector.md)** | Visual debugging and testing with MCP Inspector |
 | **[Contributing](docs/contributing.md)** | Guide for developing new tools |
 | **[Troubleshooting](docs/troubleshooting.md)** | Common issues and solutions |
 | **[Integration Testing](docs/integration-testing.md)** | Comprehensive testing procedures |
@@ -69,7 +71,6 @@ The server provides **14 tools** for comprehensive HubSpot integration:
 
 | Section | Description |
 |---------|-------------|
-| **[Docker Setup](docs/docker-setup.md)** | Docker configuration and containerization |
 | **[Environment Setup](docs/environment-setup.md)** | Advanced environment configuration |
 | **[MCP Clients Integration](docs/mcp-clients-integration.md)** | Integration with various MCP clients |
 

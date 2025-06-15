@@ -5,13 +5,13 @@
       "args": [
         "run",
         "--directory",
-        "/CHEMIN_ABSOLU_VERS_VOTRE_PROJET",
+        "/PATH_TO_MCP_REPO",
         "hubspot-mcp-server",
         "--mode",
         "stdio"
       ],
       "env": {
-        "HUBSPOT_API_KEY": "YOUR_HUBSPOT_API_KEY_HERE"
+        "HUBSPOT_API_KEY": "pat-eu1-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
       }
     }
   }

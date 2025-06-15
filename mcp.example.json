@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "hubspot-stdio": {
+      "command": "uv",
+      "args": [
+        "run",
+        "hubspot-mcp-server",
+        "--mode",
+        "stdio"
+      ],
+      "env": {
+        "HUBSPOT_API_KEY": "YOUR_HUBSPOT_API_KEY_HERE"
+      }
+    }
+  }
+}

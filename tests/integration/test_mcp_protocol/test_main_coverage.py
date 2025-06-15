@@ -272,10 +272,8 @@ async def test_main_sse_mode_execution():
         assert list_result == ["tool1"]
         assert call_result == {"result": "test"}
 
-        # Verify logger was called
-        mock_logger.info.assert_called_with(
-            "Starting server in SSE mode on 0.0.0.0:8080"
-        )
+        # Verify logger was called (authentication may log first)
+        mock_logger.info.assert_any_call("Starting server in SSE mode on 0.0.0.0:8080")
 
 
 @pytest.mark.asyncio
@@ -373,8 +371,8 @@ async def test_main_complete_sse_flow():
         routes = call_args.kwargs["routes"]
         assert len(routes) == 4  # /sse, /health, /ready routes and /messages/ mount
 
-        # Verify logger was called
-        mock_logger.info.assert_called_with(
+        # Verify logger was called (authentication may log first)
+        mock_logger.info.assert_any_call(
             "Starting server in SSE mode on 127.0.0.1:8080"
         )
 

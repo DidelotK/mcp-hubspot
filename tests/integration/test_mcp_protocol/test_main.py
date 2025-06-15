@@ -152,7 +152,8 @@ async def test_main_sse_mode():
 
         # Verify the flow
         mock_parse_args.assert_called_once()
-        mock_logger.info.assert_called_with(
+        # Check that startup logging occurred (authentication may log first)
+        mock_logger.info.assert_any_call(
             "Starting server in SSE mode on localhost:8080"
         )
 
@@ -254,8 +255,8 @@ async def test_main_sse_mode_with_logger():
         # Call main()
         await main.main()
 
-        # Verify logger was called
-        mock_logger.info.assert_called_with(
+        # Verify logger was called (authentication may log first)
+        mock_logger.info.assert_any_call(
             "Starting server in SSE mode on localhost:8080"
         )
 

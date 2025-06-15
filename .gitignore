@@ -195,3 +195,5 @@ Desktop.ini
 fastagent.secrets.yaml
 fastagent.jsonl
 *.jsonl
+
+mcp.json

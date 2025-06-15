@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+      "hubspot": {
+          "command": "<path_to_mcp-hubspot>/mcp-hubspot/scripts/mcp/run_mcp_hubspot.sh",
+          "args": [
+              "--mode",
+              "stdio"
+          ],
+          "env": {
+              "HUBSPOT_API_KEY": "pat-eu1-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+          }
+      }
+  }
+}
