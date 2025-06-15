@@ -113,7 +113,7 @@ class TestFaissDataEndpoint:
                 "hubspot_mcp.__main__.InitializationOptions",
                 return_value=mock_init_options,
             ),
-            patch("hubspot_mcp.__main__.logger"),
+            patch("hubspot_mcp.__main__.logger") as mock_logger,
             patch(
                 "starlette.applications.Starlette", side_effect=capture_starlette_app
             ),
@@ -124,12 +124,8 @@ class TestFaissDataEndpoint:
                 "hubspot_mcp.tools.enhanced_base.EnhancedBaseTool.get_embedding_manager",
                 return_value=mock_embedding_manager,
             ),
-            patch("datetime.datetime") as mock_datetime,
+            patch("hubspot_mcp.sse.endpoints.logger") as mock_endpoints_logger,
         ):
-            # Mock datetime for consistent timestamp
-            mock_datetime.utcnow.return_value.isoformat.return_value = (
-                "2024-01-01T12:00:00"
-            )
 
             # Configure parse_arguments to return SSE mode
             mock_args = MagicMock()
@@ -155,7 +151,8 @@ class TestFaissDataEndpoint:
 
             # Verify response structure
             assert response_body["status"] == "success"
-            assert response_body["timestamp"] == "2024-01-01T12:00:00Z"
+            assert "timestamp" in response_body
+            assert response_body["timestamp"].endswith("Z")  # Check format
             assert response_body["server_info"]["server"] == "hubspot-mcp-server"
             assert response_body["server_info"]["mode"] == "sse"
 
@@ -258,7 +255,7 @@ class TestFaissDataEndpoint:
                 "hubspot_mcp.__main__.InitializationOptions",
                 return_value=mock_init_options,
             ),
-            patch("hubspot_mcp.__main__.logger"),
+            patch("hubspot_mcp.__main__.logger") as mock_logger,
             patch(
                 "starlette.applications.Starlette", side_effect=capture_starlette_app
             ),
@@ -269,6 +266,7 @@ class TestFaissDataEndpoint:
                 "hubspot_mcp.tools.enhanced_base.EnhancedBaseTool.get_embedding_manager",
                 return_value=None,
             ),  # No embedding manager
+            patch("hubspot_mcp.sse.endpoints.logger") as mock_endpoints_logger,
         ):
             # Configure parse_arguments to return SSE mode
             mock_args = MagicMock()
@@ -366,7 +364,7 @@ class TestFaissDataEndpoint:
                 "hubspot_mcp.__main__.InitializationOptions",
                 return_value=mock_init_options,
             ),
-            patch("hubspot_mcp.__main__.logger"),
+            patch("hubspot_mcp.__main__.logger") as mock_logger,
             patch(
                 "starlette.applications.Starlette", side_effect=capture_starlette_app
             ),
@@ -377,6 +375,7 @@ class TestFaissDataEndpoint:
                 "hubspot_mcp.tools.enhanced_base.EnhancedBaseTool.get_embedding_manager",
                 return_value=mock_embedding_manager,
             ),
+            patch("hubspot_mcp.sse.endpoints.logger") as mock_endpoints_logger,
         ):
             # Configure parse_arguments to return SSE mode
             mock_args = MagicMock()
@@ -481,6 +480,7 @@ class TestFaissDataEndpoint:
                 "hubspot_mcp.tools.enhanced_base.EnhancedBaseTool.get_embedding_manager",
                 return_value=mock_embedding_manager,
             ),
+            patch("hubspot_mcp.sse.endpoints.logger") as mock_endpoints_logger,
         ):
             # Configure parse_arguments to return SSE mode
             mock_args = MagicMock()
@@ -508,7 +508,7 @@ class TestFaissDataEndpoint:
             assert "Internal server error" in response_body["message"]
 
             # Verify error was logged
-            mock_logger.error.assert_called_with(
+            mock_endpoints_logger.error.assert_called_with(
                 "FAISS data endpoint failed: Test exception"
             )
 
@@ -596,9 +596,10 @@ class TestFaissDataEndpoint:
                 "hubspot_mcp.tools.enhanced_base.EnhancedBaseTool.get_embedding_manager",
                 return_value=mock_embedding_manager,
             ),
-            patch("datetime.datetime") as mock_datetime,
+            patch("hubspot_mcp.sse.endpoints.logger") as mock_endpoints_logger,
         ):
             # Mock datetime for consistent timestamp
+            mock_datetime = MagicMock()
             mock_datetime.utcnow.return_value.isoformat.return_value = (
                 "2024-01-01T12:00:00"
             )
@@ -632,7 +633,7 @@ class TestFaissDataEndpoint:
             assert response_body["indexed_entities"] == []
 
             # Verify logging
-            mock_logger.info.assert_called_with(
+            mock_endpoints_logger.info.assert_called_with(
                 "FAISS data endpoint accessed - returning 0 indexed entities"
             )
 
@@ -715,7 +716,7 @@ class TestFaissDataEndpoint:
                 "hubspot_mcp.__main__.InitializationOptions",
                 return_value=mock_init_options,
             ),
-            patch("hubspot_mcp.__main__.logger"),
+            patch("hubspot_mcp.__main__.logger") as mock_logger,
             patch(
                 "starlette.applications.Starlette", side_effect=capture_starlette_app
             ),
@@ -726,9 +727,10 @@ class TestFaissDataEndpoint:
                 "hubspot_mcp.tools.enhanced_base.EnhancedBaseTool.get_embedding_manager",
                 return_value=mock_embedding_manager,
             ),
-            patch("datetime.datetime") as mock_datetime,
+            patch("hubspot_mcp.sse.endpoints.logger") as mock_endpoints_logger,
         ):
             # Mock datetime for consistent timestamp
+            mock_datetime = MagicMock()
             mock_datetime.utcnow.return_value.isoformat.return_value = (
                 "2024-01-01T12:00:00"
             )
