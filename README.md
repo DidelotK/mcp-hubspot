@@ -45,7 +45,7 @@ The server provides **14 tools** for comprehensive HubSpot integration:
 | **[Local Installation (stdio)](docs/installation-local-stdio.md)** | Install and run locally for Claude Desktop | Personal use, development |
 | **[Remote Deployment (SSE)](docs/installation-remote-sse.md)** | Deploy to Kubernetes for production use | Teams, production, scalability |
 | **[Configuration Guide](docs/configuration.md)** | Environment setup and API configuration | Both approaches |
-| **[Claude Desktop Configuration](docs/claude-desktop-configuration.md)** | Complete guide for stdio and SSE modes with Claude Desktop | All Claude Desktop users |
+| **[Claude Desktop Integration](docs/claude-desktop-integration.md)** | Complete guide for stdio and SSE modes with Claude Desktop | All Claude Desktop users |
 | **[Client Integration](docs/integration.md)** | Configure other MCP clients | Non-Claude clients |
 
 ### 🔧 Usage and Features
