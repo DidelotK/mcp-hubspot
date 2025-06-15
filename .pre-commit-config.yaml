@@ -18,7 +18,7 @@ repos:
     rev: v0.39.0
     hooks:
       - id: markdownlint
-        args: ['--fix']
+        args: ['--config', '.markdownlint.yaml', '--fix']
         files: '\.(md|markdown)$'
 
   # Markdown link checking

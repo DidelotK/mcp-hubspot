@@ -71,9 +71,7 @@ MD036:
 MD040: true
 
 # MD041/first-line-heading - First line in file should be a top level heading
-MD041:
-  level: 1
-  front_matter_title: ""
+MD041: false  # Allow files without top-level heading (like configuration files)
 
 # MD046/code-block-style - Code block style
 MD046:
@@ -93,4 +91,3 @@ MD050:
 
 # Disable some rules for documentation flexibility
 MD014: false  # Dollar signs used before commands without showing output
-MD041: false  # Allow files without top-level heading (like configuration files)
