@@ -1,19 +1,23 @@
-# Tools
+# Tools Documentation
 
-This MCP server exposes 15 tools to interact with the HubSpot API.
+This MCP server exposes **18 tools** to interact with the HubSpot API, organized by functionality for comprehensive CRM integration.
 
-## list_hubspot_contacts
+## 📋 Entity Listing
+
+Core tools for listing and browsing HubSpot entities with pagination support.
+
+### list_hubspot_contacts
 
 Retrieves the list of HubSpot contacts with pagination support.
 
-### Parameters
+#### Parameters
 
 | Parameter | Type | Required | Description | Default |
 |-----------|------|----------|-------------|---------|
 | `limit` | integer | No | Maximum number of contacts to retrieve (max 100) | 100 |
 | `after` | string | No | Pagination cursor to get the next set of results | - |
 
-### Usage Example
+#### Usage Example
 
 ```json
 {
@@ -25,7 +29,7 @@ Retrieves the list of HubSpot contacts with pagination support.
 }
 ```
 
-### Response
+#### Response
 
 ```text
 📋 **HubSpot Contacts** (10 found)
@@ -37,18 +41,18 @@ Retrieves the list of HubSpot contacts with pagination support.
   🆔 ID: 12345
 ```
 
-## list_hubspot_companies
+### list_hubspot_companies
 
 Retrieves the list of HubSpot companies with pagination support.
 
-### Parameters
+#### Parameters
 
 | Parameter | Type | Required | Description | Default |
 |-----------|------|----------|-------------|---------|
 | `limit` | integer | No | Maximum number of companies to retrieve (max 100) | 100 |
 | `after` | string | No | Pagination cursor to get the next set of results | - |
 
-### Usage Example
+#### Usage Example
 
 ```json
 {
@@ -60,7 +64,7 @@ Retrieves the list of HubSpot companies with pagination support.
 }
 ```
 
-### Response
+#### Response
 
 ```text
 🏢 **HubSpot Companies** (5 found)
@@ -72,18 +76,18 @@ Retrieves the list of HubSpot companies with pagination support.
   🆔 ID: 67890
 ```
 
-## list_hubspot_deals
+### list_hubspot_deals
 
 Retrieves the list of HubSpot deals with pagination support.
 
-### Parameters
+#### Parameters
 
 | Parameter | Type | Required | Description | Default |
 |-----------|------|----------|-------------|---------|
 | `limit` | integer | No | Maximum number of deals to retrieve (max 100) | 100 |
 | `after` | string | No | Pagination cursor to get the next set of results | - |
 
-### Usage Example
+#### Usage Example
 
 ```json
 {
@@ -95,7 +99,7 @@ Retrieves the list of HubSpot deals with pagination support.
 }
 ```
 
-### Response
+#### Response
 
 ```text
 💰 **HubSpot Deals** (20 found)
@@ -108,151 +112,54 @@ Retrieves the list of HubSpot deals with pagination support.
   🆔 ID: 789012
 ```
 
-## search_hubspot_deals
+### list_hubspot_engagements
 
-Search HubSpot deals using the CRM Search API with advanced filtering.
+Retrieves the list of HubSpot engagements (calls, emails, tasks, etc.) with pagination support.
 
-### Parameters
+#### Parameters
 
 | Parameter | Type | Required | Description | Default |
 |-----------|------|----------|-------------|---------|
-| `limit` | integer | No | Maximum number of deals to return (1 – 100) | 100 |
-| `filters` | object | No | Search filters object | `{}` |
+| `limit` | integer | No | Maximum number of engagements to retrieve (max 100) | 100 |
+| `after` | string | No | Pagination cursor to get the next set of results | - |
 
-The `filters` object can include:
-
-| Filter Key | Type | Description |
-|------------|------|-------------|
-| `dealname` | string | Partial match on deal name (contains token) |
-| `owner_id` | string | Exact match on HubSpot owner ID |
-| `dealstage` | string | Exact match on deal stage |
-| `pipeline` | string | Exact match on pipeline ID |
-
-### Usage Example
+#### Usage Example
 
 ```json
 {
-  "name": "search_hubspot_deals",
+  "name": "list_hubspot_engagements",
   "arguments": {
-    "limit": 10,
-    "filters": {
-      "dealname": "renewal",
-      "owner_id": "123"
-    }
+    "limit": 15,
+    "after": "cursor789"
   }
 }
 ```
 
-### Response
+#### Response
 
 ```text
-💰 **HubSpot Deals** (1 found)
+📞 **HubSpot Engagements** (15 found)
 
-**Enterprise Renewal**
-  💰 Amount: $250,000.00
-  📊 Stage: contractsigned
-  🔄 Pipeline: enterprise
-  📅 Close Date: 2024-12-31
-  🆔 ID: 9001
+**Follow-up call with ACME Corp**
+  🔖 Type: CALL
+  ️ Created: 2024-01-01T09:00:00Z
+  🔄 Updated: 2024-01-01T10:00:00Z
+  �� ID: 123456
 ```
 
-## create_deal
+## 🔧 Properties
 
-Creates a new deal in HubSpot.
+Tools for retrieving field properties and schemas for each entity type.
 
-### Parameters
-
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `dealname` | string | **Yes** | Name of the deal |
-| `amount` | string | No | Deal amount |
-| `dealstage` | string | No | Deal stage |
-| `pipeline` | string | No | Deal pipeline |
-| `closedate` | string | No | Expected close date (YYYY-MM-DD) |
-| `hubspot_owner_id` | string | No | Deal owner ID |
-| `description` | string | No | Deal description |
-
-### Usage Example
-
-```json
-{
-  "name": "create_deal",
-  "arguments": {
-    "dealname": "New Enterprise Contract",
-    "amount": "75000",
-    "dealstage": "appointmentscheduled",
-    "pipeline": "default",
-    "closedate": "2024-12-31",
-    "description": "Large enterprise deal for Q4"
-  }
-}
-```
-
-### Response
-
-```text
-✅ **Deal Created Successfully**
-
-**New Enterprise Contract**
-  💰 Amount: $75,000.00
-  📊 Stage: appointmentscheduled
-  🔄 Pipeline: default
-  📅 Close Date: 2024-12-31
-  📝 Description: Large enterprise deal for Q4
-  🆔 ID: 987654
-```
-
-## get_deal_by_name
-
-Retrieves a specific deal by its exact name.
-
-### Parameters
-
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `deal_name` | string | **Yes** | Exact name of the deal to search for |
-
-### Usage Example
-
-```json
-{
-    "name": "get_deal_by_name",
-    "arguments": {
-        "deal_name": "Premium Contract 2024"
-    }
-}
-```
-
-### Response - Deal Found
-
-```text
-💰 **HubSpot Deal**
-
-**Premium Contract 2024**
-  💰 Amount: €45,000.00
-  📊 Stage: proposal
-  🔄 Pipeline: enterprise
-  📅 Close Date: 2024-12-31
-  🆔 ID: 789012
-```
-
-### Response - Deal Not Found
-
-```text
-❌ **Deal Not Found**
-
-No deal found with the name: "Non-existent Contract"
-```
-
-## get_hubspot_contact_properties
+### get_hubspot_contact_properties
 
 Retrieves the list of available properties for HubSpot contacts with their types and descriptions.
 
-### Parameters
+#### Parameters
 
 No parameters required.
 
-### Usage Example
+#### Usage Example
 
 ```json
 {
@@ -261,7 +168,7 @@ No parameters required.
 }
 ```
 
-### Response
+#### Response
 
 ```text
 🔧 **HubSpot Contact Properties** (405 properties)
@@ -289,15 +196,15 @@ No parameters required.
   📝 Description: The contact's primary phone number
 ```
 
-## get_hubspot_company_properties
+### get_hubspot_company_properties
 
 Retrieves the list of available properties for HubSpot companies with their types and descriptions.
 
-### Parameters
+#### Parameters
 
 No parameters required.
 
-### Usage Example
+#### Usage Example
 
 ```json
 {
@@ -306,7 +213,7 @@ No parameters required.
 }
 ```
 
-### Response
+#### Response
 
 ```text
 🏢 **HubSpot Company Properties** (156 properties)
@@ -335,15 +242,15 @@ No parameters required.
   📝 Description: Total number of employees
 ```
 
-## get_hubspot_deal_properties
+### get_hubspot_deal_properties
 
 Retrieves the list of available properties for HubSpot deals with their types and descriptions.
 
-### Parameters
+#### Parameters
 
 No parameters required.
 
-### Usage Example
+#### Usage Example
 
 ```json
 {
@@ -352,7 +259,7 @@ No parameters required.
 }
 ```
 
-### Response
+#### Response
 
 ```text
 💰 **HubSpot Deal Properties** (89 properties)
@@ -387,11 +294,225 @@ No parameters required.
   📝 Description: Expected close date
 ```
 
-## update_deal
+## 🔍 Search & Filtering
+
+Advanced search tools with filters for each entity type.
+
+### search_hubspot_contacts
+
+Search HubSpot contacts using the CRM Search API with advanced filtering.
+
+#### Parameters
+
+| Parameter | Type | Required | Description | Default |
+|-----------|------|----------|-------------|---------|
+| `limit` | integer | No | Maximum number of contacts to return (1-100) | 100 |
+| `filters` | object | No | Search filters object | `{}` |
+
+The `filters` object can include:
+
+| Filter Key | Type | Description |
+|------------|------|-------------|
+| `email` | string | Partial match on email address (contains token) |
+| `firstname` | string | Partial match on first name (contains token) |
+| `lastname` | string | Partial match on last name (contains token) |
+| `company` | string | Partial match on company name (contains token) |
+
+#### Usage Example
+
+```json
+{
+  "name": "search_hubspot_contacts",
+  "arguments": {
+    "limit": 10,
+    "filters": {
+      "company": "TechCorp",
+      "email": "john"
+    }
+  }
+}
+```
+
+### search_hubspot_companies
+
+Search HubSpot companies using the CRM Search API with advanced filtering.
+
+#### Parameters
+
+| Parameter | Type | Required | Description | Default |
+|-----------|------|----------|-------------|---------|
+| `limit` | integer | No | Maximum number of companies to return (1-100) | 100 |
+| `filters` | object | No | Search filters object | `{}` |
+
+The `filters` object can include:
+
+| Filter Key | Type | Description |
+|------------|------|-------------|
+| `name` | string | Partial match on company name (contains token) |
+| `domain` | string | Partial match on website domain (contains token) |
+| `industry` | string | Partial match on industry (contains token) |
+| `country` | string | Partial match on country (contains token) |
+
+#### Usage Example
+
+```json
+{
+  "name": "search_hubspot_companies",
+  "arguments": {
+    "limit": 5,
+    "filters": {
+      "industry": "Technology",
+      "country": "France"
+    }
+  }
+}
+```
+
+### search_hubspot_deals
+
+Search HubSpot deals using the CRM Search API with advanced filtering.
+
+#### Parameters
+
+| Parameter | Type | Required | Description | Default |
+|-----------|------|----------|-------------|---------|
+| `limit` | integer | No | Maximum number of deals to return (1-100) | 100 |
+| `filters` | object | No | Search filters object | `{}` |
+
+The `filters` object can include:
+
+| Filter Key | Type | Description |
+|------------|------|-------------|
+| `dealname` | string | Partial match on deal name (contains token) |
+| `owner_id` | string | Exact match on HubSpot owner ID |
+| `dealstage` | string | Exact match on deal stage |
+| `pipeline` | string | Exact match on pipeline ID |
+
+#### Usage Example
+
+```json
+{
+  "name": "search_hubspot_deals",
+  "arguments": {
+    "limit": 10,
+    "filters": {
+      "dealname": "renewal",
+      "dealstage": "presentation"
+    }
+  }
+}
+```
+
+#### Response
+
+```text
+💰 **HubSpot Deals** (1 found)
+
+**Enterprise Renewal**
+  💰 Amount: $250,000.00
+  📊 Stage: presentation
+  🔄 Pipeline: enterprise
+  📅 Close Date: 2024-12-31
+  🆔 ID: 9001
+```
+
+## 💼 Deal Management
+
+Complete deal lifecycle management tools.
+
+### get_deal_by_name
+
+Retrieves a specific deal by its exact name.
+
+#### Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `deal_name` | string | **Yes** | Exact name of the deal to search for |
+
+#### Usage Example
+
+```json
+{
+    "name": "get_deal_by_name",
+    "arguments": {
+        "deal_name": "Premium Contract 2024"
+    }
+}
+```
+
+#### Response - Deal Found
+
+```text
+💰 **HubSpot Deal**
+
+**Premium Contract 2024**
+  💰 Amount: €45,000.00
+  📊 Stage: proposal
+  🔄 Pipeline: enterprise
+  📅 Close Date: 2024-12-31
+  🆔 ID: 789012
+```
+
+#### Response - Deal Not Found
+
+```text
+❌ **Deal Not Found**
+
+No deal found with the name: "Non-existent Contract"
+```
+
+### create_deal
+
+Creates a new deal in HubSpot.
+
+#### Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `dealname` | string | **Yes** | Name of the deal |
+| `amount` | string | No | Deal amount |
+| `dealstage` | string | No | Deal stage |
+| `pipeline` | string | No | Deal pipeline |
+| `closedate` | string | No | Expected close date (YYYY-MM-DD) |
+| `hubspot_owner_id` | string | No | Deal owner ID |
+| `description` | string | No | Deal description |
+
+#### Usage Example
+
+```json
+{
+  "name": "create_deal",
+  "arguments": {
+    "dealname": "New Enterprise Contract",
+    "amount": "75000",
+    "dealstage": "appointmentscheduled",
+    "pipeline": "default",
+    "closedate": "2024-12-31",
+    "description": "Large enterprise deal for Q4"
+  }
+}
+```
+
+#### Response
+
+```text
+✅ **Deal Created Successfully**
+
+**New Enterprise Contract**
+  💰 Amount: $75,000.00
+  📊 Stage: appointmentscheduled
+  🔄 Pipeline: default
+  📅 Close Date: 2024-12-31
+  📝 Description: Large enterprise deal for Q4
+  🆔 ID: 987654
+```
+
+### update_deal
 
 Updates an existing deal in HubSpot.
 
-### Parameters
+#### Parameters
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
@@ -410,7 +531,7 @@ The `properties` object can contain any of the following fields:
 | `hubspot_owner_id` | string | Deal owner ID |
 | `description` | string | Deal description |
 
-### Usage Example
+#### Usage Example
 
 ```json
 {
@@ -420,16 +541,13 @@ The `properties` object can contain any of the following fields:
     "properties": {
       "dealname": "Updated Enterprise Contract",
       "amount": "85000",
-      "dealstage": "contractsent",
-      "pipeline": "enterprise",
-      "closedate": "2024-12-31",
-      "description": "Updated enterprise deal for Q4"
+      "dealstage": "contractsent"
     }
   }
 }
 ```
 
-### Response
+#### Response
 
 ```text
 💰 **HubSpot Deal Updated**
@@ -439,8 +557,269 @@ The `properties` object can contain any of the following fields:
   📊 Stage: contractsent
   🔄 Pipeline: enterprise
   📅 Close Date: 2024-12-31
-  📝 Description: Updated enterprise deal for Q4
   🆔 ID: 12345
+```
+
+## 🤖 AI-Powered Search
+
+Semantic search using natural language with FAISS vector database.
+
+### semantic_search_hubspot
+
+Perform AI-powered semantic search across HubSpot entities using natural language queries.
+
+#### Parameters
+
+| Parameter | Type | Required | Description | Default |
+|-----------|------|----------|-------------|---------|
+| `query` | string | **Yes** | Natural language search query | - |
+| `entity_types` | array | No | Limit search to specific entity types | All types |
+| `limit` | integer | No | Maximum number of results to return (1-50) | 10 |
+| `search_mode` | string | No | Search mode: "semantic", "hybrid", or "auto" | "auto" |
+| `semantic_weight` | number | No | Weight for semantic vs API results (0.0-1.0) | 0.7 |
+
+#### Usage Example
+
+```json
+{
+  "name": "semantic_search_hubspot",
+  "arguments": {
+    "query": "software engineers in Paris",
+    "entity_types": ["contacts", "companies"],
+    "limit": 5,
+    "search_mode": "semantic"
+  }
+}
+```
+
+#### Response
+
+```text
+🔍 **Semantic Search Results** for "software engineers in Paris"
+
+**Found 5 results** (semantic mode)
+
+**👤 Pierre Martin** (Contact)
+  📧 pierre.martin@devstudio.fr
+  🏢 DevStudio Paris
+  📍 Paris, France
+  🎯 Relevance: 0.92
+  💡 Match: Senior software engineer with React expertise
+
+**🏢 TechFlow Solutions** (Company)
+  🌐 techflow.fr
+  🏭 Software Development
+  📍 Paris, France
+  🎯 Relevance: 0.89
+  💡 Match: Software engineering consultancy specializing in web development
+```
+
+### manage_hubspot_embeddings
+
+Manage FAISS embeddings for AI-powered search capabilities.
+
+#### Parameters
+
+| Parameter | Type | Required | Description | Default |
+|-----------|------|----------|-------------|---------|
+| `action` | string | No | Action: "info", "build", "rebuild", or "clear" | "info" |
+| `entity_types` | array | No | Entity types for build operations | All types |
+| `index_type` | string | No | FAISS index type: "flat" or "ivf" | "flat" |
+
+#### Usage Example
+
+```json
+{
+  "name": "manage_hubspot_embeddings",
+  "arguments": {
+    "action": "build",
+    "entity_types": ["contacts", "companies", "deals"],
+    "index_type": "ivf"
+  }
+}
+```
+
+#### Response
+
+```text
+🧠 **Embedding Management**
+
+✅ **Build Complete**
+
+📊 **Results:**
+  • contacts: 650 entities indexed
+  • companies: 350 entities indexed
+  • deals: 200 entities indexed
+  • Total: 1,200 entities
+
+🔧 **Index Configuration:**
+  • Type: ivf (optimized for large datasets)
+  • Dimension: 768
+  • Model: sentence-transformers/all-mpnet-base-v2
+
+⚡ **Performance:**
+  • Build time: 45.2 seconds
+  • Memory usage: 256 MB
+  • Ready for semantic search
+```
+
+### browse_hubspot_indexed_data
+
+Browse and search HubSpot entities indexed in the FAISS vector database.
+
+#### Parameters
+
+| Parameter | Type | Required | Description | Default |
+|-----------|------|----------|-------------|---------|
+| `action` | string | No | Action: "list", "stats", or "search" | "list" |
+| `entity_type` | string | No | Filter by entity type | - |
+| `offset` | integer | No | Number of entities to skip | 0 |
+| `limit` | integer | No | Maximum entities to return (1-100) | 20 |
+| `search_text` | string | No | Search within indexed content | - |
+| `include_content` | boolean | No | Include full entity data | false |
+
+#### Usage Example
+
+```json
+{
+  "name": "browse_hubspot_indexed_data",
+  "arguments": {
+    "action": "search",
+    "search_text": "technology",
+    "entity_type": "companies",
+    "limit": 3
+  }
+}
+```
+
+#### Response
+
+```text
+🔍 **Search Results for 'technology' in companies**
+
+📊 **Search Info:**
+  • Total matches: 15
+  • Showing: 1-3 of 15
+
+📄 **Matching Entities:**
+
+**1. TechCorp Solutions**
+  🏷️ Type: companies
+  🆔 ID: company789
+  🎯 Match: ...leading technology solutions provider...
+
+**2. InnovateTech Inc**
+  🏷️ Type: companies
+  🆔 ID: company321
+  🎯 Match: ...cutting-edge technology development...
+```
+
+## ⚡ Cache & Performance
+
+Bulk loading, caching, and performance optimization tools.
+
+### load_hubspot_entities_to_cache
+
+Bulk load HubSpot entities (contacts, companies, or deals) into cache with complete property data for optimized FAISS searches.
+
+#### Parameters
+
+| Parameter | Type | Required | Description | Default |
+|-----------|------|----------|-------------|---------|
+| `entity_type` | string | **Yes** | Type of entities: "contacts", "companies", or "deals" | - |
+| `build_embeddings` | boolean | No | Build FAISS embeddings after loading | true |
+| `max_entities` | integer | No | Maximum entities to load (0 = no limit) | 10000 |
+
+#### Usage Example
+
+```json
+{
+  "name": "load_hubspot_entities_to_cache",
+  "arguments": {
+    "entity_type": "deals",
+    "build_embeddings": true,
+    "max_entities": 5000
+  }
+}
+```
+
+#### Response
+
+```text
+🚀 **Bulk Loading Deals to Cache**
+
+📋 **Step 1**: Retrieving all deals properties...
+✅ Found 89 total properties, requesting 25 custom properties
+
+📥 **Step 2**: Loading all deals with complete property data...
+✅ Loaded 1,250 deals with complete property data
+
+🧠 **Step 3**: Building FAISS embeddings for semantic search...
+✅ Built embeddings for 1,250 deals
+  📊 Index stats: 1,250 entities, 768 dimensions, flat index
+
+🎉 **Cache Loading Complete**
+
+📊 **Summary:**
+  • Entity Type: Deals
+  • Total Loaded: 1,250 entities
+  • Properties: 25 custom properties + system properties
+  • Embeddings: ✅ Built
+
+💡 **What you can do now:**
+  • Use semantic search across ALL deals with full property data
+  • FAISS searches will be much faster with complete cached data
+  • All 25 custom properties are searchable
+```
+
+### manage_hubspot_cache
+
+Manage the HubSpot data cache for improved performance.
+
+#### Parameters
+
+| Parameter | Type | Required | Description | Default |
+|-----------|------|----------|-------------|---------|
+| `action` | string | No | Action: "info" or "clear" | "info" |
+
+#### Usage Example
+
+```json
+{
+  "name": "manage_hubspot_cache",
+  "arguments": {
+    "action": "info"
+  }
+}
+```
+
+#### Response
+
+```text
+🗃️ **HubSpot Cache Information**
+
+📊 **Cache Statistics:**
+  • Total entries: 1,247
+  • Memory usage: ~125 MB
+  • Hit rate: 78.5%
+  • TTL: 3600 seconds (1 hour)
+
+📋 **Cache Contents:**
+  • list_hubspot_contacts: 423 entries
+  • list_hubspot_companies: 284 entries
+  • list_hubspot_deals: 312 entries
+  • get_hubspot_contact_properties: 1 entry
+  • search_hubspot_deals: 227 entries
+
+⚡ **Performance Impact:**
+  • Average response time: 45ms (vs 850ms uncached)
+  • Bandwidth saved: ~2.3 MB per hour
+  • API calls avoided: 1,247 in last hour
+
+🔧 **Management:**
+  • Use action="clear" to flush cache
+  • Cache auto-expires after 1 hour
+  • Bulk loading bypasses cache
 ```
 
 ## Error Handling
@@ -471,332 +850,56 @@ All tools handle errors consistently:
 ❌ Invalid parameter: dealname cannot be empty
 ```
 
-## Search Filters
+## Tool Integration
 
-Filters support the following properties:
+These tools work together to provide comprehensive HubSpot CRM integration:
 
-### For Contacts
+### Workflow Examples
 
-- `search`: Text search in name, email, company
-- `email`: Filter by exact email
-- `company`: Filter by company name
+**1. Complete Deal Analysis:**
 
-### For Companies
+1. `list_hubspot_deals` - Get overview of all deals
+2. `search_hubspot_deals` - Filter by specific criteria
+3. `get_deal_by_name` - Get specific deal details
+4. `semantic_search_hubspot` - Find similar deals using AI
 
-- `search`: Text search in name, domain, industry
-- `domain`: Filter by exact domain
-- `industry`: Filter by industry sector
+**2. Performance Optimization:**
 
-### For Deals
+1. `load_hubspot_entities_to_cache` - Bulk load entities
+2. `manage_hubspot_embeddings` - Build AI search indexes
+3. `manage_hubspot_cache` - Monitor performance
+4. `browse_hubspot_indexed_data` - Validate indexing
 
-- `search`: Text search in name, stage, pipeline
-- `stage`: Filter by sales stage
-- `pipeline`: Filter by sales pipeline
-- `amount_gte`: Minimum amount
-- `amount_lte`: Maximum amount
+**3. Data Discovery:**
 
-## Usefulness
+1. `get_hubspot_contact_properties` - Understand available fields
+2. `list_hubspot_contacts` - Browse entity data
+3. `semantic_search_hubspot` - Find entities using natural language
+4. `browse_hubspot_indexed_data` - Explore indexed content
 
-These tools are particularly useful for:
+## Best Practices
 
-- **Customer Relationship Management**: Track and manage all customer interactions
-- **Sales Process Optimization**: Monitor deals through the sales pipeline
-- **Data Integration**: Import/export contact and company information
-- **Workflow Automation**: Integrate HubSpot data with other business tools
-- **Reporting and Analytics**: Extract data for custom reports and analysis
+### Performance Tips
 
-## list_hubspot_engagements
+- Use **bulk loading** tools for initial data import
+- Enable **caching** for frequently accessed data
+- Build **FAISS embeddings** for AI-powered search
+- Use **pagination** for large datasets
 
-Retrieves the list of HubSpot engagements (calls, emails, tasks, etc.) with pagination support.
+### Search Strategy
 
-### Parameters
+- Use **list tools** for browsing and exploration
+- Use **search tools** for precise filtering
+- Use **semantic search** for natural language queries
+- Use **browse indexed data** for content analysis
 
-| Parameter | Type | Required | Description | Default |
-|-----------|------|----------|-------------|---------|
-| `limit` | integer | No | Maximum number of engagements to retrieve (max 100) | 100 |
-| `after` | string | No | Pagination cursor to get the next set of results | - |
+### Error Prevention
 
-### Usage Example
+- Check **authentication** before starting workflows
+- Validate **required parameters** before API calls
+- Use **appropriate limits** to avoid timeouts
+- Monitor **cache performance** for optimization
 
-```json
-{
-  "name": "list_hubspot_engagements",
-  "arguments": {
-    "limit": 15,
-    "after": "cursor789"
-  }
-}
-```
+## Response Format
 
-### Response
-
-```text
-📞 **HubSpot Engagements** (15 found)
-
-**Follow-up call with ACME Corp**
-  🔖 Type: CALL
-  ️ Created: 2024-01-01T09:00:00Z
-  🔄 Updated: 2024-01-01T10:00:00Z
-  🆔 ID: 123456
-```
-
-## Response format
-
-Every tool returns **two complementary payloads**:
-
-1. **Human-friendly Markdown** – formatted summary like the examples below.
-2. **Raw JSON** – full data from HubSpot, embedded in a fenced `json` block directly after the Markdown.
-
-Example:
-
-```text
-💰 **HubSpot Deals** (1 found)
-
-**Premium Contract 2024**
-  💰 Amount: €45,000.00
-  📊 Stage: proposal
-  🆔 ID: 789012
-
-```json
-[
-  {
-    "id": "789012",
-    "properties": {
-      "dealname": "Premium Contract 2024",
-      "amount": "45000",
-      "dealstage": "proposal",
-      ...
-    }
-  }
-]
-```
-
-This dual output lets you scan results quickly while still having the complete record for programmatic use.
-
-## browse_hubspot_indexed_data
-
-Browse and search HubSpot entities indexed in the FAISS vector database with pagination and filtering capabilities.
-
-### Parameters
-
-| Parameter | Type | Required | Description | Default |
-|-----------|------|----------|-------------|---------|
-| `action` | string | No | Action to perform: "list", "stats", or "search" | "list" |
-| `entity_type` | string | No | Filter by entity type (contacts, companies, deals, engagements) | - |
-| `offset` | integer | No | Number of entities to skip for pagination | 0 |
-| `limit` | integer | No | Maximum number of entities to return (1-100) | 20 |
-| `search_text` | string | No | Search within indexed text content (case-insensitive) | - |
-| `include_content` | boolean | No | Include full entity data in results | false |
-
-### Action: stats
-
-Get comprehensive statistics about the FAISS index.
-
-#### Usage Example
-
-```json
-{
-  "name": "browse_hubspot_indexed_data",
-  "arguments": {
-    "action": "stats"
-  }
-}
-```
-
-#### Response
-
-```text
-📊 **FAISS Index Statistics**
-
-✅ **Status**: ready
-📈 **Index Information:**
-  • Total indexed entities: 1,250
-  • Vector dimension: 768
-  • Index type: ivf
-  • Model: sentence-transformers/all-mpnet-base-v2
-  • Cache size: 100 entries
-
-📂 **Entities by Type:**
-  • contacts: 650 (52.0%)
-  • companies: 350 (28.0%)
-  • deals: 200 (16.0%)
-  • engagements: 50 (4.0%)
-
-💡 **Usage Tips:**
-• Use action='list' to browse indexed entities
-• Use action='search' to find entities by text content
-• Apply entity_type filter to narrow results
-• Use offset/limit for pagination through large datasets
-```
-
-### Action: list
-
-List indexed entities with pagination and filtering.
-
-#### Usage Example
-
-```json
-{
-  "name": "browse_hubspot_indexed_data",
-  "arguments": {
-    "action": "list",
-    "entity_type": "contacts",
-    "limit": 5,
-    "offset": 10,
-    "include_content": true
-  }
-}
-```
-
-#### Response
-
-```text
-📋 **Indexed Entities (filtered by contacts)**
-
-📊 **Pagination Info:**
-  • Total entities: 650
-  • Showing: 11-15 of 650
-  • Page size: 5
-
-📄 **Entities:**
-
-**11. John Smith**
-  🏷️  Type: contacts
-  🆔 ID: contact123
-  📝 Text length: 85 chars
-  📍 Index: 245
-  📄 Content: John Smith is a senior sales manager at TechCorp with 10 years experience...
-
-**12. Marie Dubois**
-  🏷️  Type: contacts
-  🆔 ID: contact456
-  📝 Text length: 72 chars
-  📍 Index: 246
-  📄 Content: Marie Dubois works as marketing director at StartupXYZ focusing on growth...
-
-⏭️  **Next page**: Use offset=15 to see more entities
-⏮️  **Previous page**: Use offset=5 to go back
-
-💡 **Tips:**
-• Set include_content=true to see full searchable text
-• Use entity_type filter to focus on specific types
-• Try action='search' to find entities by text content
-```
-
-### Action: search
-
-Search entities by text content with advanced filtering.
-
-#### Usage Example
-
-```json
-{
-  "name": "browse_hubspot_indexed_data",
-  "arguments": {
-    "action": "search",
-    "search_text": "technology",
-    "entity_type": "companies",
-    "limit": 3,
-    "include_content": false
-  }
-}
-```
-
-#### Response
-
-```text
-🔍 **Search Results for 'technology' in companies**
-
-📊 **Search Info:**
-  • Total matches: 15
-  • Showing: 1-3 of 15
-  • Page size: 3
-
-📄 **Matching Entities:**
-
-**1. TechCorp Solutions**
-  🏷️  Type: companies
-  🆔 ID: company789
-  📍 Index: 89
-  🎯 Match: ...leading technology solutions provider for enterprise clients...
-
-**2. InnovateTech Inc**
-  🏷️  Type: companies
-  🆔 ID: company321
-  📍 Index: 156
-  🎯 Match: ...cutting-edge technology development and software engineering services...
-
-**3. Digital Technology Partners**
-  🏷️  Type: companies
-  🆔 ID: company654
-  📍 Index: 203
-  🎯 Match: ...specialized technology consulting for digital transformation...
-
-⏭️  **Next page**: Use offset=3 to see more results
-
-💡 **Tips:**
-• Set include_content=true to see full searchable text
-• Use entity_type filter to focus on specific types
-• Try semantic_search_hubspot for AI-powered similarity search
-```
-
-### Error Responses
-
-#### No Embedding Manager Available
-
-```text
-📋 **Indexed Entities**
-
-❌ **Error**: No embedding manager available
-
-The FAISS embedding system is not initialized.
-```
-
-#### Index Not Ready
-
-```text
-📊 **FAISS Index Statistics**
-
-❌ **Status**: building
-
-The FAISS index is not ready for querying. Use the 'manage_hubspot_embeddings' tool to build an index.
-```
-
-#### No Search Text Provided
-
-```text
-🔍 **Search Indexed Entities**
-
-❌ **Error**: No search text provided
-
-Please provide search_text parameter with your query.
-```
-
-#### No Results Found
-
-```text
-🔍 **Search Results for 'nonexistent'**
-
-❌ **No matches found** for 'nonexistent'
-
-💡 **Tips:**
-• Try different keywords or shorter phrases
-• Check spelling and try variations
-• Remove entity_type filter to search all types
-```
-
-### Integration with Other Tools
-
-This tool complements other AI-powered tools:
-
-- **`manage_hubspot_embeddings`**: Build and manage the FAISS indexes that this tool browses
-- **`semantic_search_hubspot`**: Perform AI-powered similarity searches using the same indexed data
-- **Standard HubSpot tools**: Cross-reference entity IDs found here with detailed entity data
-
-### Use Cases
-
-- **Data Discovery**: Explore what entities are indexed and searchable
-- **Content Analysis**: Find entities containing specific keywords or phrases
-- **Index Validation**: Verify that embedding indexing is working correctly
-- **Performance Monitoring**: Check index statistics and entity distribution
-- **Debugging**: Troubleshoot semantic search issues by examining indexed content
+Every tool returns formatted Markdown output optimized for readability, with consistent emoji usage and structured information display. Complex tools also include raw JSON data in fenced code blocks for programmatic access.

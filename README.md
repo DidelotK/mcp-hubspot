@@ -4,16 +4,16 @@ MCP (Model Context Protocol) server for integrating HubSpot with MCP clients (li
 
 ## 🛠️ Available Tools
 
-The server provides **15 tools** for comprehensive HubSpot integration:
+The server provides **18 tools** for comprehensive HubSpot integration:
 
 | Category | Tools | Description |
 |----------|--------|-------------|
-| **Contacts** | `list_hubspot_contacts`<br/>`get_hubspot_contact_properties` | List contacts and retrieve contact field properties |
-| **Companies** | `list_hubspot_companies`<br/>`get_hubspot_company_properties` | List companies and retrieve company field properties |
-| **Deals** | `list_hubspot_deals`<br/>`search_hubspot_deals`<br/>`create_deal`<br/>`update_deal`<br/>`get_deal_by_name`<br/>`get_hubspot_deal_properties` | Complete deal management and search capabilities |
-| **Engagements** | `list_hubspot_engagements` | List HubSpot engagements with pagination support |
-| **AI Search** | `semantic_search_hubspot`<br/>`manage_hubspot_embeddings` | AI-powered semantic search using natural language |
-| **System** | `manage_hubspot_cache` | Cache management and statistics |
+| **📋 Entity Listing** | `list_hubspot_contacts`<br/>`list_hubspot_companies`<br/>`list_hubspot_deals`<br/>`list_hubspot_engagements` | List and browse HubSpot entities with pagination support |
+| **🔧 Properties** | `get_hubspot_contact_properties`<br/>`get_hubspot_company_properties`<br/>`get_hubspot_deal_properties` | Retrieve field properties and schemas for each entity type |
+| **🔍 Search & Filtering** | `search_hubspot_contacts`<br/>`search_hubspot_companies`<br/>`search_hubspot_deals` | Advanced search with filters for each entity type |
+| **💼 Deal Management** | `get_deal_by_name`<br/>`create_deal`<br/>`update_deal` | Complete deal lifecycle management |
+| **🤖 AI-Powered Search** | `semantic_search_hubspot`<br/>`manage_hubspot_embeddings`<br/>`browse_hubspot_indexed_data` | Semantic search using natural language with FAISS vector database |
+| **⚡ Cache & Performance** | `load_hubspot_entities_to_cache`<br/>`manage_hubspot_cache` | Bulk loading, caching, and performance optimization |
 
 A complete documentation of the tools can be found here : [Tools documentation](docs/tools.md)
 
