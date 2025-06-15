@@ -1,6 +1,17 @@
 #!/bin/bash
 set -euo pipefail
 
+# HubSpot MCP Server Deployment Script
+#
+# This script deploys the HubSpot MCP Server to Kubernetes using Helm.
+# Includes optimizations to prevent large file issues with Helm dependencies.
+#
+# Key optimizations:
+# - Limited Helm history (default: 2 revisions) to prevent large metadata files
+# - Uses configmap driver instead of secrets for better performance
+# - Cleans cache and dependencies before each deployment
+# - Supports customizable history limit via HELM_MAX_HISTORY environment variable
+
 # Get the directory of this script
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
@@ -15,6 +26,10 @@ DOMAIN="${DOMAIN:-mcp-hubspot.keltio.fr}"
 IMAGE_TAG="${IMAGE_TAG:-1.0.0}"
 IMAGE_REGISTRY="${IMAGE_REGISTRY:-rg.fr-par.scw.cloud/keltio-public}"
 REGISTRY_USERNAME="${REGISTRY_USERNAME:-nologin}"
+
+# Helm optimization settings to prevent large file issues
+HELM_MAX_HISTORY="${HELM_MAX_HISTORY:-2}"
+HELM_DRIVER="${HELM_DRIVER:-configmap}"
 
 # Colors and logging functions are already defined in docker-utils.sh
 
@@ -89,10 +104,25 @@ build_and_push_image() {
 deploy_helm_chart() {
     log_info "Deploying Helm chart..."
 
-    # Update dependencies to pull from OCI
-    helm dependency update .
+    # Set Helm optimization environment variables
+    export HELM_MAX_HISTORY="$HELM_MAX_HISTORY"
+    export HELM_DRIVER="$HELM_DRIVER"
+    log_info "  Helm configuration: max history=$HELM_MAX_HISTORY, driver=$HELM_DRIVER"
 
-    # Deploy directly with Helm using the local chart
+    # Clean Helm cache to avoid large file issues
+    log_info "  Cleaning Helm cache..."
+    helm cache clean
+
+    # Remove existing dependencies to force clean download
+    log_info "  Cleaning existing chart dependencies..."
+    rm -rf charts/* Chart.lock
+
+    # Update dependencies to pull from OCI
+    log_info "  Update Helm chart dependencies..."
+    helm dependency update . --skip-refresh
+
+    log_info "  Deploy Helm chart..."
+    # Deploy directly with Helm using the local chart with optimizations
     helm upgrade --install "$RELEASE_NAME" . \
         --namespace "$NAMESPACE" \
         --values ./values-production.yaml \
@@ -100,6 +130,7 @@ deploy_helm_chart() {
         --set image.tag="$IMAGE_TAG" \
         --set ingress.hosts[0].host="$DOMAIN" \
         --set ingress.tls[0].hosts[0]="$DOMAIN" \
+        --max-history="$HELM_MAX_HISTORY" \
         --wait \
         --timeout=600s
 
@@ -159,10 +190,14 @@ rollback() {
     local revision=${1:-}
     log_info "Rolling back deployment..."
 
+    # Set Helm optimization environment variables
+    export HELM_MAX_HISTORY="$HELM_MAX_HISTORY"
+    export HELM_DRIVER="$HELM_DRIVER"
+
     if [ -n "$revision" ]; then
-        helm rollback "$RELEASE_NAME" "$revision" -n "$NAMESPACE"
+        helm rollback "$RELEASE_NAME" "$revision" -n "$NAMESPACE" --max-history="$HELM_MAX_HISTORY"
     else
-        helm rollback "$RELEASE_NAME" -n "$NAMESPACE"
+        helm rollback "$RELEASE_NAME" -n "$NAMESPACE" --max-history="$HELM_MAX_HISTORY"
     fi
 
     log_success "Rollback completed"
