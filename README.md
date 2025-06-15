@@ -4,7 +4,7 @@ MCP (Model Context Protocol) server for integrating HubSpot with MCP clients (li
 
 ## 🛠️ Available Tools
 
-The server provides **14 tools** for comprehensive HubSpot integration:
+The server provides **15 tools** for comprehensive HubSpot integration:
 
 | Category | Tools | Description |
 |----------|--------|-------------|

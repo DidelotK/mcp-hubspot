@@ -13,6 +13,7 @@ from .deals import DealsTool
 from .embedding_management_tool import EmbeddingManagementTool
 from .engagements import EngagementsTool
 from .enhanced_base import EnhancedBaseTool
+from .faiss_data_tool import FaissDataTool
 from .search_companies import SearchCompaniesTool
 from .search_contacts import SearchContactsTool
 from .search_deals import SearchDealsTool
@@ -38,4 +39,5 @@ __all__ = [
     "EnhancedBaseTool",
     "SemanticSearchTool",
     "EmbeddingManagementTool",
+    "FaissDataTool",
 ]

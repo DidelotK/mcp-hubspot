@@ -1,7 +1,7 @@
 """HubSpot MCP configuration settings."""
 
 import os
-from typing import List, Optional, Dict, Any
+from typing import Any, Dict, List, Optional
 
 
 class Settings:
@@ -54,7 +54,7 @@ class Settings:
         return self.hubspot_api_key is not None
 
     def get_missing_config(self) -> List[str]:
-        """Returns the list of missing required configurations.
+        """Return the list of missing required configurations.
 
         Returns:
             List[str]: List of missing configuration items
@@ -78,18 +78,19 @@ class Settings:
     def get_server_config(self) -> Dict[str, Any]:
         """Get server-specific configuration."""
         return {
+            "name": self.server_name,
+            "version": self.server_version,
             "host": self.host,
             "port": self.port,
             "mode": self.mode,
-            "server_name": self.server_name,
-            "server_version": self.server_version,
         }
 
     def get_auth_config(self) -> Dict[str, Any]:
         """Get authentication-specific configuration."""
         return {
-            "mcp_auth_key": self.mcp_auth_key,
-            "mcp_auth_header": self.mcp_auth_header,
+            "enabled": self.is_authentication_enabled(),
+            "auth_key": self.mcp_auth_key,
+            "auth_header": self.mcp_auth_header,
             "faiss_data_secure": self.faiss_data_secure,
         }
 
@@ -108,9 +109,9 @@ class HubSpotConfig:
         self.base_url: str = settings.hubspot_base_url
 
     def validate(self) -> bool:
-        """Validates that all required configuration is present."""
+        """Validate that all required configuration is present."""
         return settings.validate()
 
     def get_missing_config(self) -> List[str]:
-        """Returns the list of missing configurations."""
+        """Return the list of missing configurations."""
         return settings.get_missing_config()

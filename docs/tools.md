@@ -1,6 +1,6 @@
 # Tools
 
-This MCP server exposes 14 tools to interact with the HubSpot API.
+This MCP server exposes 15 tools to interact with the HubSpot API.
 
 ## list_hubspot_contacts
 
@@ -27,7 +27,7 @@ Retrieves the list of HubSpot contacts with pagination support.
 
 ### Response
 
-```
+```text
 📋 **HubSpot Contacts** (10 found)
 
 **Jean Dupont**
@@ -62,7 +62,7 @@ Retrieves the list of HubSpot companies with pagination support.
 
 ### Response
 
-```
+```text
 🏢 **HubSpot Companies** (5 found)
 
 **TechCorp Solutions**
@@ -97,7 +97,7 @@ Retrieves the list of HubSpot deals with pagination support.
 
 ### Response
 
-```
+```text
 💰 **HubSpot Deals** (20 found)
 
 **Premium Contract 2024**
@@ -145,7 +145,7 @@ The `filters` object can include:
 
 ### Response
 
-```
+```text
 💰 **HubSpot Deals** (1 found)
 
 **Enterprise Renewal**
@@ -190,7 +190,7 @@ Creates a new deal in HubSpot.
 
 ### Response
 
-```
+```text
 ✅ **Deal Created Successfully**
 
 **New Enterprise Contract**
@@ -225,7 +225,7 @@ Retrieves a specific deal by its exact name.
 
 ### Response - Deal Found
 
-```
+```text
 💰 **HubSpot Deal**
 
 **Premium Contract 2024**
@@ -238,7 +238,7 @@ Retrieves a specific deal by its exact name.
 
 ### Response - Deal Not Found
 
-```
+```text
 ❌ **Deal Not Found**
 
 No deal found with the name: "Non-existent Contract"
@@ -263,7 +263,7 @@ No parameters required.
 
 ### Response
 
-```
+```text
 🔧 **HubSpot Contact Properties** (405 properties)
 
 ## 📁 contactinformation
@@ -308,7 +308,7 @@ No parameters required.
 
 ### Response
 
-```
+```text
 🏢 **HubSpot Company Properties** (156 properties)
 
 ## 📁 companyinformation
@@ -354,7 +354,7 @@ No parameters required.
 
 ### Response
 
-```
+```text
 💰 **HubSpot Deal Properties** (89 properties)
 
 ## 📁 dealinformation
@@ -431,7 +431,7 @@ The `properties` object can contain any of the following fields:
 
 ### Response
 
-```
+```text
 💰 **HubSpot Deal Updated**
 
 **Updated Enterprise Contract**
@@ -449,25 +449,25 @@ All tools handle errors consistently:
 
 ### Authentication Errors
 
-```
+```text
 ❌ HubSpot authentication error. Check your API key.
 ```
 
 ### Network Errors
 
-```
+```text
 ❌ Connection error to HubSpot API. Check your internet connection.
 ```
 
 ### Parameter Errors
 
-```
+```text
 ❌ Missing parameter: deal_name is required for get_deal_by_name
 ```
 
 ### Validation Errors
 
-```
+```text
 ❌ Invalid parameter: dealname cannot be empty
 ```
 
@@ -499,13 +499,11 @@ Filters support the following properties:
 
 These tools are particularly useful for:
 
-- **Discovering available fields** in HubSpot
-- **Understanding data types** (text, date, select, etc.)
-- **Viewing available options** for selection fields
-- **Planning integration** with other systems
-- **Creating and managing deals** programmatically
-- **Debugging issues** with data synchronization
-- **Building custom workflows** with HubSpot data
+- **Customer Relationship Management**: Track and manage all customer interactions
+- **Sales Process Optimization**: Monitor deals through the sales pipeline
+- **Data Integration**: Import/export contact and company information
+- **Workflow Automation**: Integrate HubSpot data with other business tools
+- **Reporting and Analytics**: Extract data for custom reports and analysis
 
 ## list_hubspot_engagements
 
@@ -532,7 +530,7 @@ Retrieves the list of HubSpot engagements (calls, emails, tasks, etc.) with pagi
 
 ### Response
 
-```
+```text
 📞 **HubSpot Engagements** (15 found)
 
 **Follow-up call with ACME Corp**
@@ -574,3 +572,231 @@ Example:
 ```
 
 This dual output lets you scan results quickly while still having the complete record for programmatic use.
+
+## browse_hubspot_indexed_data
+
+Browse and search HubSpot entities indexed in the FAISS vector database with pagination and filtering capabilities.
+
+### Parameters
+
+| Parameter | Type | Required | Description | Default |
+|-----------|------|----------|-------------|---------|
+| `action` | string | No | Action to perform: "list", "stats", or "search" | "list" |
+| `entity_type` | string | No | Filter by entity type (contacts, companies, deals, engagements) | - |
+| `offset` | integer | No | Number of entities to skip for pagination | 0 |
+| `limit` | integer | No | Maximum number of entities to return (1-100) | 20 |
+| `search_text` | string | No | Search within indexed text content (case-insensitive) | - |
+| `include_content` | boolean | No | Include full entity data in results | false |
+
+### Action: stats
+
+Get comprehensive statistics about the FAISS index.
+
+#### Usage Example
+
+```json
+{
+  "name": "browse_hubspot_indexed_data",
+  "arguments": {
+    "action": "stats"
+  }
+}
+```
+
+#### Response
+
+```text
+📊 **FAISS Index Statistics**
+
+✅ **Status**: ready
+📈 **Index Information:**
+  • Total indexed entities: 1,250
+  • Vector dimension: 768
+  • Index type: ivf
+  • Model: sentence-transformers/all-mpnet-base-v2
+  • Cache size: 100 entries
+
+📂 **Entities by Type:**
+  • contacts: 650 (52.0%)
+  • companies: 350 (28.0%)
+  • deals: 200 (16.0%)
+  • engagements: 50 (4.0%)
+
+💡 **Usage Tips:**
+• Use action='list' to browse indexed entities
+• Use action='search' to find entities by text content
+• Apply entity_type filter to narrow results
+• Use offset/limit for pagination through large datasets
+```
+
+### Action: list
+
+List indexed entities with pagination and filtering.
+
+#### Usage Example
+
+```json
+{
+  "name": "browse_hubspot_indexed_data",
+  "arguments": {
+    "action": "list",
+    "entity_type": "contacts",
+    "limit": 5,
+    "offset": 10,
+    "include_content": true
+  }
+}
+```
+
+#### Response
+
+```text
+📋 **Indexed Entities (filtered by contacts)**
+
+📊 **Pagination Info:**
+  • Total entities: 650
+  • Showing: 11-15 of 650
+  • Page size: 5
+
+📄 **Entities:**
+
+**11. John Smith**
+  🏷️  Type: contacts
+  🆔 ID: contact123
+  📝 Text length: 85 chars
+  📍 Index: 245
+  📄 Content: John Smith is a senior sales manager at TechCorp with 10 years experience...
+
+**12. Marie Dubois**
+  🏷️  Type: contacts
+  🆔 ID: contact456
+  📝 Text length: 72 chars
+  📍 Index: 246
+  📄 Content: Marie Dubois works as marketing director at StartupXYZ focusing on growth...
+
+⏭️  **Next page**: Use offset=15 to see more entities
+⏮️  **Previous page**: Use offset=5 to go back
+
+💡 **Tips:**
+• Set include_content=true to see full searchable text
+• Use entity_type filter to focus on specific types
+• Try action='search' to find entities by text content
+```
+
+### Action: search
+
+Search entities by text content with advanced filtering.
+
+#### Usage Example
+
+```json
+{
+  "name": "browse_hubspot_indexed_data",
+  "arguments": {
+    "action": "search",
+    "search_text": "technology",
+    "entity_type": "companies",
+    "limit": 3,
+    "include_content": false
+  }
+}
+```
+
+#### Response
+
+```text
+🔍 **Search Results for 'technology' in companies**
+
+📊 **Search Info:**
+  • Total matches: 15
+  • Showing: 1-3 of 15
+  • Page size: 3
+
+📄 **Matching Entities:**
+
+**1. TechCorp Solutions**
+  🏷️  Type: companies
+  🆔 ID: company789
+  📍 Index: 89
+  🎯 Match: ...leading technology solutions provider for enterprise clients...
+
+**2. InnovateTech Inc**
+  🏷️  Type: companies
+  🆔 ID: company321
+  📍 Index: 156
+  🎯 Match: ...cutting-edge technology development and software engineering services...
+
+**3. Digital Technology Partners**
+  🏷️  Type: companies
+  🆔 ID: company654
+  📍 Index: 203
+  🎯 Match: ...specialized technology consulting for digital transformation...
+
+⏭️  **Next page**: Use offset=3 to see more results
+
+💡 **Tips:**
+• Set include_content=true to see full searchable text
+• Use entity_type filter to focus on specific types
+• Try semantic_search_hubspot for AI-powered similarity search
+```
+
+### Error Responses
+
+#### No Embedding Manager Available
+
+```text
+📋 **Indexed Entities**
+
+❌ **Error**: No embedding manager available
+
+The FAISS embedding system is not initialized.
+```
+
+#### Index Not Ready
+
+```text
+📊 **FAISS Index Statistics**
+
+❌ **Status**: building
+
+The FAISS index is not ready for querying. Use the 'manage_hubspot_embeddings' tool to build an index.
+```
+
+#### No Search Text Provided
+
+```text
+🔍 **Search Indexed Entities**
+
+❌ **Error**: No search text provided
+
+Please provide search_text parameter with your query.
+```
+
+#### No Results Found
+
+```text
+🔍 **Search Results for 'nonexistent'**
+
+❌ **No matches found** for 'nonexistent'
+
+💡 **Tips:**
+• Try different keywords or shorter phrases
+• Check spelling and try variations
+• Remove entity_type filter to search all types
+```
+
+### Integration with Other Tools
+
+This tool complements other AI-powered tools:
+
+- **`manage_hubspot_embeddings`**: Build and manage the FAISS indexes that this tool browses
+- **`semantic_search_hubspot`**: Perform AI-powered similarity searches using the same indexed data
+- **Standard HubSpot tools**: Cross-reference entity IDs found here with detailed entity data
+
+### Use Cases
+
+- **Data Discovery**: Explore what entities are indexed and searchable
+- **Content Analysis**: Find entities containing specific keywords or phrases
+- **Index Validation**: Verify that embedding indexing is working correctly
+- **Performance Monitoring**: Check index statistics and entity distribution
+- **Debugging**: Troubleshoot semantic search issues by examining indexed content

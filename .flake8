@@ -5,6 +5,8 @@ extend-ignore =
     E501,
     # Blank line contains whitespace
     W293,
+    # Whitespace before ':' (compatible with black)
+    E203,
     # Unused import (sometimes necessary for types)
     F401,
     # f-string without placeholder (sometimes used for consistency)

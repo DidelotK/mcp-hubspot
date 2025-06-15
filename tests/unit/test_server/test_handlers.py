@@ -327,14 +327,15 @@ def test_handle_list_tools_count() -> None:
     handlers = MCPHandlers(client)
     tools: List[Tool] = asyncio.run(handlers.handle_list_tools())
 
-    # Should have exactly 17 tools after adding semantic search, embedding management, and bulk cache loader tools
-    assert len(tools) == 17
+    # Should have exactly 18 tools after adding semantic search, embedding management, bulk cache loader, and FAISS data browsing tools
+    assert len(tools) == 18
 
     # Extract tool names
     tool_names = [tool.name for tool in tools]
 
     # Check that all expected tools are present
     expected_tools = [
+        "load_hubspot_entities_to_cache",
         "manage_hubspot_cache",
         "list_hubspot_contacts",
         "list_hubspot_companies",
@@ -351,6 +352,7 @@ def test_handle_list_tools_count() -> None:
         "search_hubspot_deals",
         "semantic_search_hubspot",
         "manage_hubspot_embeddings",
+        "browse_hubspot_indexed_data",
     ]
 
     for tool_name in expected_tools:

@@ -19,6 +19,7 @@ from ..tools import (
     DealsTool,
     EmbeddingManagementTool,
     EngagementsTool,
+    FaissDataTool,
     SearchCompaniesTool,
     SearchContactsTool,
     SearchDealsTool,
@@ -60,6 +61,7 @@ class MCPHandlers:
         self.search_companies_tool = SearchCompaniesTool(client)
         self.semantic_search_tool = SemanticSearchTool(client)
         self.embedding_management_tool = EmbeddingManagementTool(client)
+        self.faiss_data_tool = FaissDataTool(client)
 
         # Tools mapping
         self.tools_map: Dict[str, Any] = {
@@ -80,6 +82,7 @@ class MCPHandlers:
             "search_hubspot_companies": self.search_companies_tool,
             "semantic_search_hubspot": self.semantic_search_tool,
             "manage_hubspot_embeddings": self.embedding_management_tool,
+            "browse_hubspot_indexed_data": self.faiss_data_tool,
         }
 
     async def handle_list_tools(self) -> List[types.Tool]:
