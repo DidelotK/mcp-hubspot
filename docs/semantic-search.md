@@ -103,6 +103,6 @@ The semantic search system automatically:
 
 ## 🔗 Related Tools
 
-- [`semantic_search_hubspot`](api-reference.md#semantic_search_hubspot) - Perform semantic search
-- [`manage_hubspot_embeddings`](api-reference.md#manage_hubspot_embeddings) - Manage embeddings
+- [`semantic_search_hubspot`](tools.md#semantic_search_hubspot) - Perform semantic search
+- [`manage_hubspot_embeddings`](tools.md#manage_hubspot_embeddings) - Manage embeddings
 - [`manage_hubspot_cache`](caching.md) - Cache management 

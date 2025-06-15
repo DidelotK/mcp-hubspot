@@ -494,5 +494,5 @@ kubectl describe externalsecret hubspot-mcp-secrets -n $NAMESPACE
 
 - **[Local Installation Guide](installation-local-stdio.md)** - Complete local setup
 - **[Remote Deployment Guide](installation-remote-sse.md)** - Kubernetes deployment
-- **[API Reference](api-reference.md)** - Available tools and usage
+- **[Tools](tools.md)** - Available tools and usage
 - **[Troubleshooting](troubleshooting.md)** - Common issues and solutions 

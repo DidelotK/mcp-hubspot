@@ -165,7 +165,7 @@ The test suite includes performance benchmarks for:
 #### Documentation
 - Update relevant documentation files
 - Include examples for new features
-- Maintain API reference accuracy
+- Maintain Tools accuracy
 
 ### Troubleshooting Tests
 
@@ -216,6 +216,6 @@ All pull requests must pass the complete CI pipeline before merging.
 ## 🔗 Related Documentation
 
 - [Contributing Guide](contributing.md) - Detailed contribution process
-- [API Reference](api-reference.md) - Complete tool documentation  
-- [Installation Guide](installation.md) - Setup instructions
+- [Tools](tools.md) - Complete tool documentation  
+- [Installation Guide](installation-local-stdio.md) - Setup instructions
 - [Integration Guide](integration.md) - MCP client configuration 

@@ -52,10 +52,10 @@ The server provides **14 tools** for comprehensive HubSpot integration:
 
 | Section | Description |
 |---------|-------------|
-| **[API Reference](docs/api-reference.md)** | Complete documentation of the 14 available tools |
+| **[API Reference](docs/tools.md)** | Complete documentation of the 14 available tools |
 | **[Semantic Search](docs/semantic-search.md)** | AI-powered semantic search capabilities and usage |
 | **[Cache System](docs/caching.md)** | How the shared TTL cache works and how to manage it |
-| **[Examples](docs/examples.md)** | Use cases and example conversations with Claude |
+| **[Examples](docs/usage-examples.md)** | Use cases and example conversations with Claude |
 
 ### 🛠️ Development and Testing
 
@@ -204,6 +204,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [Production Configuration](docs/installation-remote-sse.md#configuration-files)
 
 ### 📖 General Documentation
-- [All Available Tools](docs/api-reference.md)
-- [Usage Examples](docs/examples.md)
+- [All Available Tools](docs/tools.md)
+- [Usage Examples](docs/usage-examples.md)
 - [Troubleshooting](docs/troubleshooting.md)

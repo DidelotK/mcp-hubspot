@@ -407,7 +407,7 @@ After successful local installation:
 
 ## Related Documentation
 
-- [Installation Guide](installation.md) - Standard installation methods
+- [Installation Guide](installation-local-stdio.md) - Standard installation methods
 - [Developer Guide](developer.md) - Development setup and workflow
 - [Integration Guide](integration.md) - Client configuration
 - [Contributing Guide](contributing.md) - Contribution guidelines 

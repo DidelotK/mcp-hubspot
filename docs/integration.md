@@ -212,9 +212,9 @@ See [Caching Guide](caching.md) for detailed configuration.
 
 ### Documentation Links
 
-- [Installation Guide](installation.md) - Initial setup and installation
-- [API Reference](api-reference.md) - Detailed API documentation
-- [Examples](examples.md) - Usage examples and code samples
+- [Installation Guide](installation-local-stdio.md) - Initial setup and installation
+- [API Reference](tools.md) - Detailed API documentation
+- [Examples](usage-examples.md) - Usage examples and code samples
 - [Contributing](contributing.md) - Development and contribution guidelines
 
 ### Community and Support

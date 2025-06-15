@@ -536,7 +536,7 @@ When reporting issues, include:
 - Check project documentation
 - Search existing issues on GitHub
 - Review [Integration Testing Guide](integration-testing.md)
-- Consult [API Reference](api-reference.md)
+
 
 ## Preventive Measures
 

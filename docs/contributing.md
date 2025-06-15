@@ -79,7 +79,7 @@ Create tests in `tests/` with at minimum:
 
 ### 6. Documentation
 
-Update `docs/api-reference.md` with complete documentation.
+Update `docs/tools.md` with complete documentation.
 
 ## Development Process
 
@@ -136,7 +136,7 @@ uv run python scripts/lint_check.py
 git add .
 git commit -m "feat: add new_resource tool with HubSpot API integration"
 git commit -m "test: add comprehensive unit tests for new_resource tool"
-git commit -m "docs: update API reference with new_resource tool"
+git commit -m "docs: update tool documentation with new_resource tool"
 
 # Push and PR
 git push origin feature/new-tool
@@ -152,7 +152,7 @@ git push origin feature/new-tool
 - [ ] **Error Handling**: Try/catch with consistent messages
 - [ ] **Formatting**: Emojis and uniform structure
 - [ ] **Tests**: Minimum 90% coverage
-- [ ] **Documentation**: Complete section in API reference
+- [ ] **Documentation**: Complete section in Tools
 - [ ] **Types**: Python type annotations
 - [ ] **Async/await**: Asynchronous methods
 - [ ] **Logging**: Appropriate informative messages
@@ -220,9 +220,9 @@ class TestNewResourceTool:
 
 ## Documentation
 
-### API Reference
+### Tools
 
-Each new tool must have a complete section in `docs/api-reference.md`:
+Each new tool must have a complete section in `docs/tools.md`:
 
 ```markdown
 ## new_tool
@@ -241,7 +241,7 @@ Tool description.
 
 ### Examples
 
-Add concrete examples in `docs/examples.md`.
+Add concrete examples in `docs/usage-examples.md`.
 
 ## Code Quality
 
