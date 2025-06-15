@@ -6,7 +6,7 @@
                 "mcp-remote",
                 "https://hubspot-mcp-server.keltio.fr/sse",
                 "--header",
-                "X-API-Key: l7QSUeoh4uT4r1odxQ5dh3Peg"
+                "X-API-Key: XXXXXXXXXXXXXXXXXX"
             ]
         }
     }

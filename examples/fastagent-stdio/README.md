@@ -16,7 +16,7 @@ export HUBSPOT_API_KEY="your_hubspot_api_key_here"
 
 3. Run the agent:
 ```bash
-cd examples/fastagent/
+cd examples/fastagent-stdio/
 uv run agent.py
 ```
 

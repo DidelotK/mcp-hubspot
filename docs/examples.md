@@ -221,7 +221,7 @@ Once the MCP server is configured with Claude Desktop, here are examples of inte
 ## Running the FastAgent interactive example
 
 An interactive conversational agent powered by the **FastAgent** SDK is included in
-`examples/fastagent/agent.py`.  It embeds the HubSpot MCP server declared in
+`examples/fastagent-stdio/agent.py`.  It embeds the HubSpot MCP server declared in
 `fastagent.config.yaml` and lets you chat with your CRM from the console.
 
 ### Prerequisites
