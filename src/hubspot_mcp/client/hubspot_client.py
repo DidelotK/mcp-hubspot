@@ -1,7 +1,7 @@
 """Client to interact with HubSpot API."""
 
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Set
 
 import httpx
 
@@ -12,14 +12,17 @@ class HubSpotClient:
     """Client to interact with HubSpot API.
 
     This class provides methods to interact with the HubSpot API, including
-    retrieving and managing contacts, companies, and deals.
+    retrieving and managing contacts, companies, and deals with automatic
+    property loading for enhanced data richness.
     """
 
-    def __init__(self, api_key: str):
+    def __init__(self, api_key: str, *, auto_load_properties: bool = True):
         """Initialize the HubSpot client.
 
         Args:
             api_key: The HubSpot API key to use for authentication
+            auto_load_properties: If True, automatically loads all available properties
+                for each entity type to ensure maximum data richness
         """
         self.api_key = api_key
         self.base_url = "https://api.hubapi.com"
@@ -27,6 +30,149 @@ class HubSpotClient:
             "Authorization": f"Bearer {api_key}",
             "Content-Type": "application/json",
         }
+        self.auto_load_properties = auto_load_properties
+
+        # Cache for all available properties by entity type
+        self._properties_cache: Dict[str, List[str]] = {}
+        self._properties_loaded: Set[str] = set()
+
+    async def _get_all_properties_for_entity(self, entity_type: str) -> List[str]:
+        """Get all available property names for a specific entity type.
+
+        Args:
+            entity_type: The entity type (contacts, companies, deals, engagements)
+
+        Returns:
+            List of all available property names for the entity type
+        """
+        if not self.auto_load_properties:
+            return []
+
+        if entity_type in self._properties_cache:
+            return self._properties_cache[entity_type]
+
+        try:
+            if entity_type == "contacts":
+                properties_data = await self.get_contact_properties()
+            elif entity_type == "companies":
+                properties_data = await self.get_company_properties()
+            elif entity_type == "deals":
+                properties_data = await self.get_deal_properties()
+            elif entity_type == "engagements":
+                # For engagements, we'll use a reasonable default set since
+                # HubSpot engagements API has different property structure
+                self._properties_cache[entity_type] = []
+                return []
+            else:
+                logger.warning(
+                    f"Unknown entity type for property loading: {entity_type}"
+                )
+                self._properties_cache[entity_type] = []
+                return []
+
+            # Extract property names, filtering out calculated/system properties that can't be requested
+            property_names = []
+            for prop in properties_data:
+                name = prop.get("name", "")
+                if name and not self._is_excluded_property(name, entity_type):
+                    property_names.append(name)
+
+            self._properties_cache[entity_type] = property_names
+            self._properties_loaded.add(entity_type)
+
+            logger.info(f"Loaded {len(property_names)} properties for {entity_type}")
+            return property_names
+
+        except Exception as e:
+            logger.warning(f"Failed to load properties for {entity_type}: {e}")
+            # Cache empty list to avoid repeated failures
+            self._properties_cache[entity_type] = []
+            return []
+
+    def _is_excluded_property(self, property_name: str, entity_type: str) -> bool:
+        """Check if a property should be excluded from automatic loading.
+
+        Args:
+            property_name: Name of the property to check
+            entity_type: Type of entity (contacts, companies, deals)
+
+        Returns:
+            True if the property should be excluded
+        """
+        # Common exclusions across all entity types
+        common_exclusions = {
+            "hs_all_owner_ids",
+            "hs_all_team_ids",
+            "hs_all_accessible_team_ids",
+            "hs_calculated_phone_number",
+            "hs_calculated_phone_number_area_code",
+            "hs_calculated_phone_number_country_code",
+            "hs_calculated_phone_number_region_code",
+            "hubspot_team_id",
+            "hs_all_assigned_business_unit_ids",
+        }
+
+        if property_name in common_exclusions:
+            return True
+
+        # Properties that start with these prefixes are usually calculated
+        calculated_prefixes = [
+            "hs_calculated_",
+            "hs_all_",
+            "hubspot_calculated_",
+            "hs_analytics_",
+            "hs_email_",
+            "hs_social_",
+            "hs_sales_email_",
+            "hs_merged_object_ids",
+            "hs_unique_creation_key",
+            "hs_updated_by_user_id",
+        ]
+
+        for prefix in calculated_prefixes:
+            if property_name.startswith(prefix):
+                return True
+
+        return False
+
+    async def _merge_properties(
+        self,
+        default_props: List[str],
+        extra_properties: Optional[List[str]],
+        entity_type: str,
+    ) -> List[str]:
+        """Merge default properties, auto-loaded properties, and extra properties.
+
+        Args:
+            default_props: Default properties for the entity type
+            extra_properties: Additional properties requested by user
+            entity_type: Type of entity (contacts, companies, deals)
+
+        Returns:
+            List of unique property names preserving order
+        """
+        all_properties = default_props.copy()
+
+        # Add all available properties if auto-loading is enabled
+        if self.auto_load_properties:
+            available_properties = await self._get_all_properties_for_entity(
+                entity_type
+            )
+            all_properties.extend(available_properties)
+
+        # Add any extra properties requested
+        if extra_properties:
+            all_properties.extend(extra_properties)
+
+        # Deduplicate while preserving order
+        seen: Set[str] = set()
+        merged_props: List[str] = []
+        for prop in all_properties:
+            if prop not in seen:
+                seen.add(prop)
+                merged_props.append(prop)
+
+        return merged_props
 
     async def get_contacts(
         self,
@@ -43,7 +189,8 @@ class HubSpotClient:
             extra_properties: List of additional properties to include
 
         Returns:
-            List[Dict[str, Any]]: List of contact dictionaries
+            List[Dict[str, Any]]: List of contact dictionaries with all available
+                properties automatically loaded (if auto_load_properties=True)
 
         Raises:
             httpx.HTTPStatusError: If the API request fails
@@ -60,16 +207,10 @@ class HubSpotClient:
             "lastmodifieddate",
         ]
 
-        # Merge and de-duplicate properties
-        if extra_properties:
-            default_props.extend(extra_properties)
-        # Preserve order but ensure uniqueness
-        seen: set[str] = set()
-        merged_props: List[str] = []
-        for prop in default_props:
-            if prop not in seen:
-                seen.add(prop)
-                merged_props.append(prop)
+        # Use the new property merging system that auto-loads all properties
+        merged_props = await self._merge_properties(
+            default_props, extra_properties, "contacts"
+        )
 
         params = {
             "limit": min(limit, 100),  # HubSpot caps at 100
@@ -101,7 +242,8 @@ class HubSpotClient:
             extra_properties: List of additional properties to include
 
         Returns:
-            List[Dict[str, Any]]: List of company dictionaries
+            List[Dict[str, Any]]: List of company dictionaries with all available
+                properties automatically loaded (if auto_load_properties=True)
 
         Raises:
             httpx.HTTPStatusError: If the API request fails
@@ -119,15 +261,10 @@ class HubSpotClient:
             "lastmodifieddate",
         ]
 
-        if extra_properties:
-            default_props.extend(extra_properties)
-
-        seen: set[str] = set()
-        merged_props: List[str] = []
-        for prop in default_props:
-            if prop not in seen:
-                seen.add(prop)
-                merged_props.append(prop)
+        # Use the new property merging system that auto-loads all properties
+        merged_props = await self._merge_properties(
+            default_props, extra_properties, "companies"
+        )
 
         params = {
             "limit": min(limit, 100),  # HubSpot caps at 100
@@ -159,7 +296,8 @@ class HubSpotClient:
             extra_properties: List of additional properties to include
 
         Returns:
-            List[Dict[str, Any]]: List of deal dictionaries
+            List[Dict[str, Any]]: List of deal dictionaries with all available
+                properties automatically loaded (if auto_load_properties=True)
 
         Raises:
             httpx.HTTPStatusError: If the API request fails
@@ -177,15 +315,10 @@ class HubSpotClient:
             "hubspot_owner_id",
         ]
 
-        if extra_properties:
-            default_props.extend(extra_properties)
-
-        seen: set[str] = set()
-        merged_props: List[str] = []
-        for prop in default_props:
-            if prop not in seen:
-                seen.add(prop)
-                merged_props.append(prop)
+        # Use the new property merging system that auto-loads all properties
+        merged_props = await self._merge_properties(
+            default_props, extra_properties, "deals"
+        )
 
         params = {
             "limit": min(limit, 100),  # HubSpot caps at 100
@@ -209,12 +342,27 @@ class HubSpotClient:
             deal_name: The exact name of the deal to search for
 
         Returns:
-            Optional[Dict[str, Any]]: Deal dictionary if found, None otherwise
+            Optional[Dict[str, Any]]: Deal dictionary with all available properties
+                automatically loaded (if auto_load_properties=True), None if not found
 
         Raises:
             httpx.HTTPStatusError: If the API request fails
         """
         url = f"{self.base_url}/crm/v3/objects/deals/search"
+
+        default_props: List[str] = [
+            "dealname",
+            "amount",
+            "dealstage",
+            "pipeline",
+            "closedate",
+            "createdate",
+            "lastmodifieddate",
+            "hubspot_owner_id",
+        ]
+
+        # Use the new property merging system that auto-loads all properties
+        merged_props = await self._merge_properties(default_props, None, "deals")
 
         # Request body to search by deal name
         search_body = {
@@ -229,16 +377,7 @@ class HubSpotClient:
                     ]
                 }
             ],
-            "properties": [
-                "dealname",
-                "amount",
-                "dealstage",
-                "pipeline",
-                "closedate",
-                "createdate",
-                "lastmodifieddate",
-                "hubspot_owner_id",
-            ],
+            "properties": merged_props,
             "limit": 1,
         }
 
@@ -361,7 +500,8 @@ class HubSpotClient:
             extra_properties: List of additional properties to include
 
         Returns:
-            List[Dict[str, Any]]: List of engagement dictionaries
+            List[Dict[str, Any]]: List of engagement dictionaries with default
+                properties (engagements don't support auto-property loading)
 
         Raises:
             httpx.HTTPStatusError: If the API request fails
@@ -375,6 +515,8 @@ class HubSpotClient:
             "lastmodifieddate",
         ]
 
+        # For engagements, we don't use auto-loading as the API structure is different
+        # Just use the traditional merging approach
         if extra_properties:
             default_props.extend(extra_properties)
 
@@ -474,7 +616,7 @@ class HubSpotClient:
                 {"filters": [{"propertyName": "id", "operator": "GT", "value": 0}]}
             )
 
-        properties_list: List[str] = [
+        default_props: List[str] = [
             "dealname",
             "amount",
             "dealstage",
@@ -485,16 +627,10 @@ class HubSpotClient:
             "hubspot_owner_id",
         ]
 
-        if extra_properties:
-            properties_list.extend(extra_properties)
-
-        # Deduplicate while preserving order
-        seen: set[str] = set()
-        unique_props: List[str] = []
-        for prop in properties_list:
-            if prop not in seen:
-                seen.add(prop)
-                unique_props.append(prop)
+        # Use the new property merging system that auto-loads all properties
+        unique_props = await self._merge_properties(
+            default_props, extra_properties, "deals"
+        )
 
         search_body = {
             "filterGroups": filter_groups,
@@ -558,7 +694,7 @@ class HubSpotClient:
                 {"filters": [{"propertyName": "id", "operator": "GT", "value": 0}]}
             )
 
-        properties_list: List[str] = [
+        default_props: List[str] = [
             "firstname",
             "lastname",
             "email",
@@ -567,16 +703,11 @@ class HubSpotClient:
             "createdate",
             "lastmodifieddate",
         ]
-        if extra_properties:
-            properties_list.extend(extra_properties)
 
-        # Deduplicate
-        seen: set[str] = set()
-        unique_props: List[str] = []
-        for p in properties_list:
-            if p not in seen:
-                seen.add(p)
-                unique_props.append(p)  # pragma: no cover
+        # Use the new property merging system that auto-loads all properties
+        unique_props = await self._merge_properties(
+            default_props, extra_properties, "contacts"
+        )
 
         body = {
             "filterGroups": filter_groups,
@@ -632,7 +763,7 @@ class HubSpotClient:
                 {"filters": [{"propertyName": "id", "operator": "GT", "value": 0}]}
             )
 
-        properties_list: List[str] = [
+        default_props: List[str] = [
             "name",
             "domain",
             "industry",
@@ -642,15 +773,11 @@ class HubSpotClient:
             "createdate",
             "lastmodifieddate",
         ]
-        if extra_properties:
-            properties_list.extend(extra_properties)
 
-        seen: set[str] = set()
-        unique_props: List[str] = []
-        for p in properties_list:
-            if p not in seen:
-                seen.add(p)
-                unique_props.append(p)  # pragma: no cover
+        # Use the new property merging system that auto-loads all properties
+        unique_props = await self._merge_properties(
+            default_props, extra_properties, "companies"
+        )
 
         body = {
             "filterGroups": filter_groups,
@@ -790,16 +917,10 @@ class HubSpotClient:
             "lastmodifieddate",
         ]
 
-        # Merge and de-duplicate properties
-        if extra_properties:
-            default_props.extend(extra_properties)
-        # Preserve order but ensure uniqueness
-        seen: set[str] = set()
-        merged_props: List[str] = []
-        for prop in default_props:
-            if prop not in seen:
-                seen.add(prop)
-                merged_props.append(prop)
+        # Use the new property merging system that auto-loads all properties
+        merged_props = await self._merge_properties(
+            default_props, extra_properties, "contacts"
+        )
 
         params = {
             "limit": min(limit, 100),  # HubSpot caps at 100
@@ -830,7 +951,8 @@ class HubSpotClient:
             extra_properties: List of additional properties to include
 
         Returns:
-            Dict containing 'results' and 'paging' information
+            Dict containing 'results' and 'paging' information with all available
+                properties automatically loaded (if auto_load_properties=True)
 
         Raises:
             httpx.HTTPStatusError: If the API request fails
@@ -848,15 +970,10 @@ class HubSpotClient:
             "lastmodifieddate",
         ]
 
-        if extra_properties:
-            default_props.extend(extra_properties)
-
-        seen: set[str] = set()
-        merged_props: List[str] = []
-        for prop in default_props:
-            if prop not in seen:
-                seen.add(prop)
-                merged_props.append(prop)
+        # Use the new property merging system that auto-loads all properties
+        merged_props = await self._merge_properties(
+            default_props, extra_properties, "companies"
+        )
 
         params = {
             "limit": min(limit, 100),  # HubSpot caps at 100

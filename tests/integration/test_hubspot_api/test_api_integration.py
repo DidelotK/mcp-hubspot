@@ -21,7 +21,9 @@ class TestHubSpotAPIIntegration:
     @pytest.fixture
     def api_client(self, test_environment):
         """Create HubSpot client with test configuration."""
-        return HubSpotClient(api_key=test_environment["HUBSPOT_ACCESS_TOKEN"])
+        return HubSpotClient(
+            api_key=test_environment["HUBSPOT_ACCESS_TOKEN"], auto_load_properties=False
+        )
 
     @pytest.mark.asyncio
     async def test_contacts_api_integration(self, api_client, mock_api_response):
@@ -126,22 +128,16 @@ class TestHubSpotAPIIntegration:
     @pytest.mark.asyncio
     async def test_pagination_integration(self, api_client):
         """Test API pagination handling integration."""
-        # First page response
-        first_page = {
+        # Single page response (get_contacts doesn't auto-paginate)
+        page_response = {
             "results": [{"id": "1", "properties": {"email": "test1@example.com"}}],
             "paging": {"next": {"after": "cursor_123", "link": "?after=cursor_123"}},
-        }
-
-        # Second page response
-        second_page = {
-            "results": [{"id": "2", "properties": {"email": "test2@example.com"}}],
-            "paging": {"next": None},
         }
 
         with patch("httpx.AsyncClient.get", new_callable=AsyncMock) as mock_get:
             response_mock = Mock(status_code=200)
             response_mock.raise_for_status = Mock()
-            response_mock.json.side_effect = [first_page, second_page]
+            response_mock.json.return_value = page_response
             mock_get.return_value = response_mock
 
             # Act
@@ -150,7 +146,7 @@ class TestHubSpotAPIIntegration:
             # Assert
             assert len(contacts) == 1
             assert contacts[0]["properties"]["email"] == "test1@example.com"
-            # The current HubSpotClient implementation does not auto-fetch subsequent pages
+            # The get_contacts method doesn't auto-fetch subsequent pages
             assert mock_get.call_count == 1  # Single API call
 
 

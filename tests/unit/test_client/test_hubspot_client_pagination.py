@@ -12,7 +12,7 @@ from hubspot_mcp.client import HubSpotClient
 @pytest.fixture
 def mock_hubspot_client():
     """Create a mock HubSpot client."""
-    return HubSpotClient(api_key="test-api-key")
+    return HubSpotClient(api_key="test-api-key", auto_load_properties=False)
 
 
 class TestPaginationMethods:
@@ -74,13 +74,19 @@ class TestPaginationMethods:
             "paging": {},  # No next page
         }
 
-        mock_response_obj = Mock()
-        mock_response_obj.status_code = 200
-        mock_response_obj.json.side_effect = [page1_response, page2_response]
-        mock_response_obj.raise_for_status = Mock()
-
         with patch("httpx.AsyncClient.get", new_callable=AsyncMock) as mock_get:
-            mock_get.return_value = mock_response_obj
+            # Create separate mock responses for each call
+            mock_response_1 = Mock()
+            mock_response_1.status_code = 200
+            mock_response_1.json.return_value = page1_response
+            mock_response_1.raise_for_status = Mock()
+
+            mock_response_2 = Mock()
+            mock_response_2.status_code = 200
+            mock_response_2.json.return_value = page2_response
+            mock_response_2.raise_for_status = Mock()
+
+            mock_get.side_effect = [mock_response_1, mock_response_2]
 
             result = await mock_hubspot_client.get_all_contacts_with_pagination()
 
@@ -235,13 +241,19 @@ class TestPaginationMethods:
             "paging": {},
         }
 
-        mock_response_obj = Mock()
-        mock_response_obj.status_code = 200
-        mock_response_obj.json.side_effect = [page1_response, page2_response]
-        mock_response_obj.raise_for_status = Mock()
-
         with patch("httpx.AsyncClient.get", new_callable=AsyncMock) as mock_get:
-            mock_get.return_value = mock_response_obj
+            # Create separate mock responses for each call
+            mock_response_1 = Mock()
+            mock_response_1.status_code = 200
+            mock_response_1.json.return_value = page1_response
+            mock_response_1.raise_for_status = Mock()
+
+            mock_response_2 = Mock()
+            mock_response_2.status_code = 200
+            mock_response_2.json.return_value = page2_response
+            mock_response_2.raise_for_status = Mock()
+
+            mock_get.side_effect = [mock_response_1, mock_response_2]
 
             result = await mock_hubspot_client.get_all_companies_with_pagination()
 
