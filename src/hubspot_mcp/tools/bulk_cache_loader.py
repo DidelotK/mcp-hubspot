@@ -24,7 +24,7 @@ class BulkCacheLoaderTool(EnhancedBaseTool):
         """Return the bulk cache loader tool definition."""
         return types.Tool(
             name="load_hubspot_entities_to_cache",
-            description="Bulk load all HubSpot contacts or companies into cache with complete property data for optimized FAISS searches",
+            description="Bulk load all HubSpot contacts or companies into cache with complete property data for optimized FAISS searches. Recommended to run once daily or when simple searches don't return expected information to ensure FAISS searches have access to complete, up-to-date data.",
             inputSchema={
                 "type": "object",
                 "properties": {

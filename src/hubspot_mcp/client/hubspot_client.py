@@ -325,7 +325,7 @@ class HubSpotClient:
     async def update_deal(
         self, deal_id: str, properties: Dict[str, Any]
     ) -> Dict[str, Any]:
-        """Updates a deal in HubSpot.
+        """Update a deal in HubSpot.
 
         Args:
             deal_id: The ID of the deal to update
@@ -434,7 +434,6 @@ class HubSpotClient:
         Returns:
             A list of deal objects matching the criteria.
         """
-
         url = f"{self.base_url}/crm/v3/objects/deals/search"
 
         # Build filter groups based on provided filters ------------
@@ -529,7 +528,6 @@ class HubSpotClient:
         * ``lastname`` – contains-token on *lastname*.
         * ``company`` – contains-token on *company*.
         """
-
         url = f"{self.base_url}/crm/v3/objects/contacts/search"
 
         if filters is None:
@@ -604,7 +602,6 @@ class HubSpotClient:
         extra_properties: Optional[List[str]] = None,
     ) -> List[Dict[str, Any]]:
         """Search companies via CRM Search API with simple filters."""
-
         url = f"{self.base_url}/crm/v3/objects/companies/search"
 
         if filters is None:
@@ -670,7 +667,7 @@ class HubSpotClient:
     async def get_all_contacts_with_pagination(
         self, *, extra_properties: Optional[List[str]] = None, max_entities: int = 0
     ) -> List[Dict[str, Any]]:
-        """Retrieve ALL contacts using pagination with all specified properties.
+        """Get all contacts using pagination with all specified properties.
 
         Args:
             extra_properties: List of additional properties to include
@@ -717,7 +714,7 @@ class HubSpotClient:
     async def get_all_companies_with_pagination(
         self, *, extra_properties: Optional[List[str]] = None, max_entities: int = 0
     ) -> List[Dict[str, Any]]:
-        """Retrieve ALL companies using pagination with all specified properties.
+        """Get all companies using pagination with all specified properties.
 
         Args:
             extra_properties: List of additional properties to include

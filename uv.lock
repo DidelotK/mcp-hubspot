@@ -709,6 +709,7 @@ dev = [
 [package.dev-dependencies]
 dev = [
     { name = "fast-agent-mcp" },
+    { name = "types-cachetools" },
 ]
 
 [package.metadata]
@@ -736,7 +737,10 @@ requires-dist = [
 provides-extras = ["dev"]
 
 [package.metadata.requires-dev]
-dev = [{ name = "fast-agent-mcp", specifier = ">=0.2.30" }]
+dev = [
+    { name = "fast-agent-mcp", specifier = ">=0.2.30" },
+    { name = "types-cachetools", specifier = ">=6.0.0.20250525" },
+]
 
 [[package]]
 name = "huggingface-hub"

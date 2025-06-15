@@ -93,4 +93,7 @@ warn_unreachable = true
 strict_equality = true
 
 [dependency-groups]
-dev = ["fast-agent-mcp>=0.2.30"]
+dev = [
+    "fast-agent-mcp>=0.2.30",
+    "types-cachetools>=6.0.0.20250525",
+]
