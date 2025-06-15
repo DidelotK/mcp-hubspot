@@ -14,6 +14,7 @@ Instead of exact keyword matching, semantic search understands the **meaning** a
 ## 🚀 Getting Started with Semantic Search
 
 ### 1. **Build Embedding Index**
+
 First, create AI embeddings for your HubSpot data:
 
 ```json
@@ -28,6 +29,7 @@ First, create AI embeddings for your HubSpot data:
 ```
 
 ### 2. **Perform Semantic Search**
+
 Search using natural language across all entities:
 
 ```json
@@ -62,24 +64,28 @@ Monitor and manage your AI indexes:
 ```
 
 **Available Actions:**
+
 - `info` - View embedding system status and statistics
-- `build` - Create new embedding indexes  
+- `build` - Create new embedding indexes
 - `rebuild` - Clear and rebuild all indexes
 - `clear` - Remove all embeddings and indexes
 
 ## 🎯 Example Queries
 
 **Find Similar Contacts:**
+
 - *"software engineers"* → Developers, Programmers, Architects
 - *"decision makers"* → CEOs, CTOs, Directors, VPs
 - *"marketing professionals"* → Marketing Managers, Growth Hackers, CMOs
 
 **Discover Companies:**
+
 - *"AI startups"* → Machine Learning, Artificial Intelligence companies
 - *"enterprise clients"* → Large corporations, Fortune 500 companies
 - *"French companies"* → Organizations based in France
 
 **Search Deals:**
+
 - *"enterprise sales"* → Large B2B deals, corporate contracts
 - *"renewal opportunities"* → Contract renewals, subscription extensions
 - *"urgent deals"* → Time-sensitive, high-priority opportunities
@@ -95,6 +101,7 @@ Monitor and manage your AI indexes:
 ## 🔧 Configuration
 
 The semantic search system automatically:
+
 - Downloads AI models on first use
 - Generates embeddings for all entity text content
 - Builds optimized FAISS indexes
@@ -105,4 +112,4 @@ The semantic search system automatically:
 
 - [`semantic_search_hubspot`](api-reference.md#semantic_search_hubspot) - Perform semantic search
 - [`manage_hubspot_embeddings`](api-reference.md#manage_hubspot_embeddings) - Manage embeddings
-- [`manage_hubspot_cache`](caching.md) - Cache management 
+- [`manage_hubspot_cache`](caching.md) - Cache management

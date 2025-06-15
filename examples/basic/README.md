@@ -3,6 +3,7 @@
 ## Description
 
 The `test_mcp_client.py` script demonstrates how to:
+
 - Connect to the HubSpot MCP server
 - Test the available tools
 - Handle errors and display results
@@ -27,6 +28,7 @@ python test_mcp_client.py
 ## Expected Output
 
 ### Test 1: Basic Contact Retrieval
+
 ```
 🧪 Test 1: List contacts (basic)...
 ✅ Contacts retrieved successfully:
@@ -40,6 +42,7 @@ python test_mcp_client.py
 ```
 
 ### Test 2: Search with Filter
+
 ```
 🧪 Test 2: Search contacts with filter...
 ✅ Search performed successfully:
@@ -61,7 +64,7 @@ python test_mcp_client.py
 ✅ Found 5 available tools:
 
 - list_hubspot_contacts: Lists HubSpot contacts with filtering capability
-- list_hubspot_companies: Lists HubSpot companies with filtering capability 
+- list_hubspot_companies: Lists HubSpot companies with filtering capability
 - list_hubspot_deals: Lists HubSpot deals with filtering capability
 - get_deal_by_name: Retrieves a HubSpot deal by its exact name
 - get_hubspot_contact_properties: Retrieves contact field properties with types and descriptions
@@ -127,6 +130,7 @@ python test_mcp_client.py
 ## Error Handling
 
 The script automatically handles:
+
 - Missing API key configuration
 - Server connection errors
 - Individual tool call failures
@@ -136,4 +140,4 @@ The script automatically handles:
 
 1. **API Key Error**: Ensure `HUBSPOT_API_KEY` is set
 2. **Connection Error**: Check that the main server script is accessible
-3. **Permission Error**: Verify your HubSpot API key has the necessary permissions 
+3. **Permission Error**: Verify your HubSpot API key has the necessary permissions

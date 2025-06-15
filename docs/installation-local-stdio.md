@@ -39,6 +39,7 @@ uv sync --dev
 ```
 
 **Benefits:**
+
 - ✅ Changes to source code are immediately reflected
 - ✅ Perfect for development and testing
 - ✅ Includes all development tools
@@ -69,6 +70,7 @@ uv build
 ```
 
 This creates:
+
 - `dist/hubspot_mcp-x.x.x.tar.gz` (source distribution)
 - `dist/hubspot_mcp-x.x.x-py3-none-any.whl` (wheel distribution)
 
@@ -410,4 +412,4 @@ After successful local installation:
 - [Remote Installation Guide](installation-remote-sse.md) - Remote deployment methods
 - [Developer Guide](developer.md) - Development setup and workflow
 - [Integration Guide](integration.md) - Client configuration
-- [Contributing Guide](contributing.md) - Contribution guidelines 
+- [Contributing Guide](contributing.md) - Contribution guidelines

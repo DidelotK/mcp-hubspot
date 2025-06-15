@@ -77,4 +77,4 @@ EXPOSE 8080
 
 # Use entrypoint script
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
-CMD ["--mode", "sse", "--host", "0.0.0.0", "--port", "8080"] 
+CMD ["--mode", "sse", "--host", "0.0.0.0", "--port", "8080"]

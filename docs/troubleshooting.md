@@ -11,6 +11,7 @@ This guide helps you diagnose and resolve common issues when integrating the Hub
 #### Claude doesn't see HubSpot tools
 
 **Symptoms:**
+
 - Claude responds with "I don't have access to HubSpot tools"
 - No HubSpot-related functionality available
 - Tool list is empty or missing HubSpot tools
@@ -18,37 +19,40 @@ This guide helps you diagnose and resolve common issues when integrating the Hub
 **Potential Causes & Solutions:**
 
 1. **Incorrect Configuration File Location**
+
    ```bash
    # Verify the correct path for your OS
    # macOS
    ls -la ~/Library/Application\ Support/Claude/claude_desktop_config.json
-   
+
    # Linux
    ls -la ~/.config/claude/claude_desktop_config.json
-   
+
    # Windows (in PowerShell)
    ls $env:APPDATA\Claude\claude_desktop_config.json
    ```
 
 2. **Invalid JSON Syntax**
+
    ```bash
    # Validate JSON syntax
    cat ~/.config/claude/claude_desktop_config.json | jq .
    ```
-   
+
    **Fix:** Ensure proper JSON formatting with matching brackets and quotes
 
 3. **Incorrect Path to Server**
+
    ```json
    {
      "mcpServers": {
        "hubspot": {
          "command": "uv",
          "args": [
-           "run", 
-           "python", 
+           "run",
+           "python",
            "/correct/absolute/path/to/your/project/scripts/run_mcp_hubspot.sh",
-           "--mode", 
+           "--mode",
            "stdio"
          ]
        }
@@ -64,6 +68,7 @@ This guide helps you diagnose and resolve common issues when integrating the Hub
 #### "Invalid API key" error
 
 **Symptoms:**
+
 - Error message: "Authentication failed"
 - "Invalid API key" in error responses
 - Tools fail to execute with authorization errors
@@ -71,6 +76,7 @@ This guide helps you diagnose and resolve common issues when integrating the Hub
 **Solutions:**
 
 1. **Verify API Key Format**
+
    ```bash
    # HubSpot API keys should start with 'pat-na1-'
    echo $HUBSPOT_API_KEY | grep -E '^pat-na1-'
@@ -85,16 +91,18 @@ This guide helps you diagnose and resolve common issues when integrating the Hub
      - `crm.objects.deals.read`
 
 3. **Test API Key Directly**
+
    ```bash
    curl -H "Authorization: Bearer $HUBSPOT_API_KEY" \
         "https://api.hubapi.com/crm/v3/objects/contacts?limit=1"
    ```
 
 4. **Environment Variable Setup**
+
    ```bash
    # Make sure the API key is properly set
    export HUBSPOT_API_KEY="your-actual-api-key"
-   
+
    # Or add to Claude Desktop config
    {
      "mcpServers": {
@@ -110,6 +118,7 @@ This guide helps you diagnose and resolve common issues when integrating the Hub
 #### Server won't start
 
 **Symptoms:**
+
 - Claude shows "Server not responding" errors
 - No tool responses
 - Connection timeouts
@@ -117,19 +126,21 @@ This guide helps you diagnose and resolve common issues when integrating the Hub
 **Solutions:**
 
 1. **Check Python Environment**
+
    ```bash
    # Verify Python version (3.12+ required)
    python --version
-   
+
    # Check if uv is installed
    uv --version
-   
+
    # Verify dependencies
    cd /path/to/project
    uv sync
    ```
 
 2. **Test Server Manually**
+
    ```bash
    # Try starting server manually
    cd /path/to/project
@@ -138,12 +149,14 @@ This guide helps you diagnose and resolve common issues when integrating the Hub
    ```
 
 3. **Check for Port Conflicts**
+
    ```bash
    # If using custom port, check if it's available
    netstat -tulpn | grep 8080
    ```
 
 4. **Verify File Permissions**
+
    ```bash
    # Ensure the wrapper script is executable
    ls -la /path/to/project/scripts/run_mcp_hubspot.sh
@@ -155,6 +168,7 @@ This guide helps you diagnose and resolve common issues when integrating the Hub
 #### SSE Mode Connection Problems
 
 **Symptoms:**
+
 - Unable to connect to `http://127.0.0.1:8080`
 - Connection refused errors
 - Timeout errors
@@ -162,15 +176,17 @@ This guide helps you diagnose and resolve common issues when integrating the Hub
 **Solutions:**
 
 1. **Verify Server is Running**
+
    ```bash
    # Start server in SSE mode
    uv run hubspot-mcp-server --mode sse --host 127.0.0.1 --port 8080
-   
+
    # Check if server is listening
    netstat -tulpn | grep 8080
    ```
 
 2. **Test with cURL**
+
    ```bash
    # Simple connectivity test
    curl -X POST http://127.0.0.1:8080/mcp \
@@ -179,12 +195,14 @@ This guide helps you diagnose and resolve common issues when integrating the Hub
    ```
 
 3. **Check Firewall Settings**
+
    ```bash
    # Allow port 8080 through firewall (Linux example)
    sudo ufw allow 8080/tcp
    ```
 
 4. **Try Different Port**
+
    ```bash
    # Use alternative port
    uv run hubspot-mcp-server --mode sse --port 8081
@@ -193,6 +211,7 @@ This guide helps you diagnose and resolve common issues when integrating the Hub
 #### stdio Mode Communication Issues
 
 **Symptoms:**
+
 - No response from stdin/stdout
 - Invalid JSON responses
 - Broken pipe errors
@@ -200,6 +219,7 @@ This guide helps you diagnose and resolve common issues when integrating the Hub
 **Solutions:**
 
 1. **Test Basic Communication**
+
    ```bash
    # Simple echo test
    echo '{"jsonrpc": "2.0", "id": 1, "method": "tools/list"}' | \
@@ -207,12 +227,14 @@ This guide helps you diagnose and resolve common issues when integrating the Hub
    ```
 
 2. **Check Input Format**
+
    ```bash
    # Ensure proper JSON formatting
    echo '{"jsonrpc": "2.0", "id": 1, "method": "tools/list"}' | jq .
    ```
 
 3. **Verify Environment Variables**
+
    ```bash
    # Export API key before running
    export HUBSPOT_API_KEY="your-api-key"
@@ -225,6 +247,7 @@ This guide helps you diagnose and resolve common issues when integrating the Hub
 #### Rate Limiting
 
 **Symptoms:**
+
 - HTTP 429 "Too Many Requests" errors
 - Requests failing after working initially
 - Temporary API unavailability
@@ -232,6 +255,7 @@ This guide helps you diagnose and resolve common issues when integrating the Hub
 **Solutions:**
 
 1. **Implement Request Throttling**
+
    ```bash
    # Reduce request frequency
    # Add delays between requests in your client
@@ -243,12 +267,13 @@ This guide helps you diagnose and resolve common issues when integrating the Hub
    - Consider upgrading subscription if needed
 
 3. **Implement Retry Logic**
+
    ```python
    import time
    import requests
    from requests.adapters import HTTPAdapter
    from requests.packages.urllib3.util.retry import Retry
-   
+
    session = requests.Session()
    retry_strategy = Retry(
        total=3,
@@ -263,6 +288,7 @@ This guide helps you diagnose and resolve common issues when integrating the Hub
 #### Network Connectivity Issues
 
 **Symptoms:**
+
 - Timeout errors
 - DNS resolution failures
 - Connection refused errors
@@ -270,15 +296,17 @@ This guide helps you diagnose and resolve common issues when integrating the Hub
 **Solutions:**
 
 1. **Test Network Connectivity**
+
    ```bash
    # Test HubSpot API connectivity
    ping api.hubapi.com
-   
+
    # Test HTTPS connectivity
    curl -I https://api.hubapi.com/crm/v3/objects/contacts
    ```
 
 2. **Check DNS Resolution**
+
    ```bash
    # Verify DNS resolution
    nslookup api.hubapi.com
@@ -286,6 +314,7 @@ This guide helps you diagnose and resolve common issues when integrating the Hub
    ```
 
 3. **Proxy Configuration**
+
    ```bash
    # If behind corporate proxy
    export HTTP_PROXY=http://proxy.company.com:8080
@@ -297,6 +326,7 @@ This guide helps you diagnose and resolve common issues when integrating the Hub
 #### Missing or Incorrect Data
 
 **Symptoms:**
+
 - Empty responses
 - Missing fields in output
 - Incorrect data formatting
@@ -304,6 +334,7 @@ This guide helps you diagnose and resolve common issues when integrating the Hub
 **Solutions:**
 
 1. **Check HubSpot Data**
+
    ```bash
    # Verify data exists in HubSpot
    curl -H "Authorization: Bearer $HUBSPOT_API_KEY" \
@@ -316,6 +347,7 @@ This guide helps you diagnose and resolve common issues when integrating the Hub
    - Verify data types are compatible
 
 3. **Test with Minimal Request**
+
    ```bash
    # Test with basic request
    curl -X POST http://127.0.0.1:8080/mcp \
@@ -334,6 +366,7 @@ This guide helps you diagnose and resolve common issues when integrating the Hub
 #### Encoding Issues
 
 **Symptoms:**
+
 - Garbled text in responses
 - Unicode characters not displaying correctly
 - Encoding errors in logs
@@ -341,6 +374,7 @@ This guide helps you diagnose and resolve common issues when integrating the Hub
 **Solutions:**
 
 1. **Set Proper Encoding**
+
    ```bash
    # Set UTF-8 encoding
    export LANG=en_US.UTF-8
@@ -348,12 +382,14 @@ This guide helps you diagnose and resolve common issues when integrating the Hub
    ```
 
 2. **Check Terminal Encoding**
+
    ```bash
    # Verify terminal supports UTF-8
    locale charmap
    ```
 
 3. **Update System Locale**
+
    ```bash
    # Ubuntu/Debian
    sudo locale-gen en_US.UTF-8
@@ -405,6 +441,7 @@ cat response.json | jq .
 ### 1. Slow Response Times
 
 **Diagnosis:**
+
 ```bash
 # Test response times
 time curl -X POST http://127.0.0.1:8080/mcp \
@@ -413,6 +450,7 @@ time curl -X POST http://127.0.0.1:8080/mcp \
 ```
 
 **Solutions:**
+
 - Reduce data request size (lower limit)
 - Implement caching (see [Caching Guide](caching.md))
 - Use pagination for large datasets
@@ -421,6 +459,7 @@ time curl -X POST http://127.0.0.1:8080/mcp \
 ### 2. Memory Issues
 
 **Diagnosis:**
+
 ```bash
 # Monitor memory usage
 ps aux | grep python
@@ -428,6 +467,7 @@ top -p $(pgrep -f "hubspot-mcp-server")
 ```
 
 **Solutions:**
+
 - Reduce batch sizes
 - Implement streaming for large responses
 - Add garbage collection hints
@@ -436,6 +476,7 @@ top -p $(pgrep -f "hubspot-mcp-server")
 ### 3. CPU Usage
 
 **Diagnosis:**
+
 ```bash
 # Monitor CPU usage
 htop
@@ -443,6 +484,7 @@ iotop
 ```
 
 **Solutions:**
+
 - Optimize data processing
 - Use async operations where possible
 - Implement request queuing
@@ -480,7 +522,7 @@ cat > ~/.config/claude/claude_desktop_config.json << EOF
         "--directory",
         "/path/to/your/project",
         "hubspot-mcp-server",
-        "--mode", 
+        "--mode",
         "stdio"
       ],
       "env": {
@@ -524,6 +566,7 @@ cat ~/.config/claude/claude_desktop_config.json (remove API key)
 ### 2. Error Reporting
 
 When reporting issues, include:
+
 - Operating system and version
 - Python version
 - Complete error messages
@@ -596,4 +639,4 @@ current, peak = tracemalloc.get_traced_memory()
 print(f"Current memory usage: {current / 1024 / 1024:.1f} MB")
 print(f"Peak memory usage: {peak / 1024 / 1024:.1f} MB")
 tracemalloc.stop()
-``` 
+```

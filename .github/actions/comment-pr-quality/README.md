@@ -23,12 +23,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Run quality checks
         run: |
           # Your quality check commands here
           ./scripts/check_quality.sh
-      
+
       - name: Comment PR with quality report
         uses: ./.github/actions/comment-pr-quality
         with:
@@ -55,7 +55,7 @@ jobs:
 ## Behavior
 
 1. **Report Analysis**: Reads the quality report file
-2. **Comment Management**: 
+2. **Comment Management**:
    - Searches for existing comments with the same title
    - Updates existing comment or creates a new one
 3. **Error Handling**: Handles cases where the report doesn't exist
@@ -69,7 +69,7 @@ The action expects reports in Markdown format:
 ## 📊 Code Quality Report
 
 ✅ **Black Formatting**: OK
-✅ **Import Organization (isort)**: OK  
+✅ **Import Organization (isort)**: OK
 ❌ **PEP 8 Compliance (flake8)**: Issues found
 ✅ **Type Checking (mypy)**: OK
 
@@ -95,10 +95,10 @@ isort src/ tests/
 To modify this action:
 
 1. Edit `action.yml` for input/output definitions
-2. Modify `scripts/comment.sh` for logic changes  
+2. Modify `scripts/comment.sh` for logic changes
 3. Test with a sample PR
 4. Update this README if needed
 
 ## Contributing
 
-This action is part of the HubSpot MCP project quality pipeline. Follow the project's contributing guidelines when making changes. 
+This action is part of the HubSpot MCP project quality pipeline. Follow the project's contributing guidelines when making changes.

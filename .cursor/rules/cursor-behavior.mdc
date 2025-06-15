@@ -1,6 +1,6 @@
 ---
-description: 
-globs: 
+description:
+globs:
 alwaysApply: true
 ---
 description: Rules for Cursor assistant behavior, communication, and priorities
@@ -38,14 +38,14 @@ just check
 
 ### Expected Success Output
 - ✅ All formatting checks passed
-- ✅ All import organization checks passed  
+- ✅ All import organization checks passed
 - ✅ All linting checks passed
 - ✅ All type checking passed
 - ✅ All security checks passed
 - ✅ All tests passed with adequate coverage
 
 ### If Checks Fail
-1. **Fix formatting**: `just format` 
+1. **Fix formatting**: `just format`
 2. **Fix specific issues**: Address linting, type, or test errors
 3. **Re-run validation**: `just check`
 4. **Only proceed when ALL checks pass**
@@ -60,7 +60,7 @@ just check
 ## Error Handling
 - **Analysis**: Always analyze errors before proposing solutions
 - **Tests**: Verify proposed solutions
-- **Rollback**: Propose recovery solutions if necessary  
+- **Rollback**: Propose recovery solutions if necessary
 - **Learning**: Update rules if new patterns identified
 
 ## Strict Prohibitions
@@ -80,4 +80,4 @@ just check
 - ✅ **ALWAYS** respond to users in English
 - ✅ **ALWAYS** create English error messages
 - ✅ **ALWAYS** use English for variable/function naming when possible
-- ✅ **ALWAYS** run `just check` before task completion 
+- ✅ **ALWAYS** run `just check` before task completion

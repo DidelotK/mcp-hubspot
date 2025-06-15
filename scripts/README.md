@@ -10,7 +10,7 @@ scripts/
 │   ├── kill_claude.sh
 │   ├── setup_claude_config.sh
 │   └── diagnose_mcp.sh
-├── mcp/             # MCP server management  
+├── mcp/             # MCP server management
 │   ├── run_mcp_hubspot.sh
 │   └── test_mcp_config.sh
 ├── dev/             # Development tools
@@ -27,9 +27,11 @@ scripts/
 Scripts for managing Claude Desktop application and its integration with the MCP server.
 
 #### 🔴 kill_claude.sh
+
 **Purpose:** Terminate all Claude Desktop processes running on the system.
 
 **Usage:**
+
 ```bash
 # Direct execution
 ./scripts/claude/kill_claude.sh
@@ -39,6 +41,7 @@ just kill-claude
 ```
 
 **Features:**
+
 - ✅ **Progressive termination**: Tries graceful shutdown first, then force kill
 - ✅ **Smart detection**: Finds all Claude-related processes
 - ✅ **Safe execution**: Excludes itself from termination list
@@ -46,9 +49,11 @@ just kill-claude
 - ✅ **Error handling**: Robust process detection and cleanup
 
 #### 🔧 setup_claude_config.sh
+
 **Purpose:** Dynamically generate Claude Desktop configuration for HubSpot MCP Server.
 
 **Usage:**
+
 ```bash
 # Direct execution
 ./scripts/claude/setup_claude_config.sh
@@ -58,6 +63,7 @@ just setup-claude
 ```
 
 **Features:**
+
 - ✅ **Dynamic paths**: Automatically detects project and script locations
 - ✅ **API key management**: Retrieves from environment, .envrc, or user input
 - ✅ **Secure**: Prompts for API key if not found in environment
@@ -65,9 +71,11 @@ just setup-claude
 - ✅ **Portable**: Works on any machine without hardcoded paths
 
 #### 🔍 diagnose_mcp.sh
+
 **Purpose:** Quick diagnostic of MCP server status and health checks.
 
 **Usage:**
+
 ```bash
 # Direct execution
 ./scripts/claude/diagnose_mcp.sh
@@ -77,6 +85,7 @@ just diagnose-mcp
 ```
 
 **Features:**
+
 - ✅ **Process detection**: Checks if Claude Desktop is running
 - ✅ **Log analysis**: Examines recent MCP server activity
 - ✅ **Configuration validation**: Tests wrapper script functionality
@@ -87,9 +96,11 @@ just diagnose-mcp
 Scripts for managing the HubSpot MCP server itself.
 
 #### 🚀 run_mcp_hubspot.sh
+
 **Purpose:** Wrapper script to launch the HubSpot MCP Server with proper environment setup.
 
 **Usage:**
+
 ```bash
 # Direct execution
 ./scripts/mcp/run_mcp_hubspot.sh --mode stdio
@@ -98,6 +109,7 @@ Scripts for managing the HubSpot MCP server itself.
 ```
 
 **Features:**
+
 - ✅ **Dynamic paths**: Auto-detects project directory and uv location
 - ✅ **Environment setup**: Configures PATH and working directory
 - ✅ **Error handling**: Validates environment before execution
@@ -105,9 +117,11 @@ Scripts for managing the HubSpot MCP server itself.
 - ✅ **Portable**: No hardcoded paths - works anywhere
 
 #### 🧪 test_mcp_config.sh
+
 **Purpose:** Test and validate the MCP HubSpot configuration for Claude Desktop.
 
 **Usage:**
+
 ```bash
 # Direct execution
 ./scripts/mcp/test_mcp_config.sh
@@ -117,6 +131,7 @@ just test-mcp
 ```
 
 **Features:**
+
 - ✅ **Configuration validation**: Checks Claude Desktop config file
 - ✅ **Dependency verification**: Ensures uv, Python, and project files are available
 - ✅ **API key validation**: Confirms HubSpot API key is configured
@@ -128,9 +143,11 @@ just test-mcp
 Scripts for code quality, testing, and development workflow automation.
 
 #### ✅ check_quality.sh
+
 **Purpose:** Run comprehensive code quality checks including formatting, linting, and security.
 
 **Usage:**
+
 ```bash
 # Direct execution
 ./scripts/dev/check_quality.sh
@@ -140,18 +157,22 @@ just check
 ```
 
 #### 🔗 install_hooks.sh
+
 **Purpose:** Install Git pre-commit hooks for automated quality checks.
 
 **Usage:**
+
 ```bash
 # Direct execution
 ./scripts/dev/install_hooks.sh
 ```
 
 #### 🐍 lint_check.py
+
 **Purpose:** Python script for advanced linting and code analysis.
 
 **Usage:**
+
 ```bash
 # Direct execution
 ./scripts/dev/lint_check.py
@@ -168,7 +189,7 @@ just kill-claude      # Kill all Claude processes
 just start-claude     # Start Claude Desktop
 just diagnose-mcp     # Diagnostic MCP server status
 
-# MCP Server Management  
+# MCP Server Management
 just test-mcp         # Test MCP configuration
 just server-stdio     # Start MCP server in stdio mode
 
@@ -181,6 +202,7 @@ just lint             # Run linting
 ## 🎯 Common Workflows
 
 ### First Time Setup
+
 ```bash
 # 1. Setup Claude Desktop
 just setup-claude
@@ -193,6 +215,7 @@ just start-claude
 ```
 
 ### Daily Development
+
 ```bash
 # Quick health check
 just diagnose-mcp
@@ -205,6 +228,7 @@ just logs-claude
 ```
 
 ### Code Quality
+
 ```bash
 # Before committing
 just check
@@ -224,9 +248,10 @@ just format
 ## 📋 Prerequisites
 
 All scripts require:
+
 - **bash** shell environment
 - **uv** package manager installed
-- **Python 3.12+** environment  
+- **Python 3.12+** environment
 - **HubSpot API key** configured (for MCP scripts)
 
 ## 🔧 Adding New Scripts
@@ -244,10 +269,11 @@ When adding new scripts:
    - Use descriptive, action-oriented names
 
 3. **Include proper headers**:
+
    ```bash
    #!/bin/bash
    # Brief description of what the script does
-   
+
    set -euo pipefail  # Strict mode
    ```
 
@@ -257,6 +283,7 @@ When adding new scripts:
    - Include usage examples
 
 5. **Make executable**:
+
    ```bash
    chmod +x scripts/category/your_script.sh
    ```
@@ -264,7 +291,7 @@ When adding new scripts:
 ## 📝 Best Practices
 
 - **Use colors**: Include colored output for better UX
-- **Error handling**: Always include proper error handling  
+- **Error handling**: Always include proper error handling
 - **Documentation**: Self-document with `--help` options
 - **Testing**: Test scripts in clean environments
 - **Security**: Never hardcode secrets or API keys
@@ -273,7 +300,8 @@ When adding new scripts:
 ## 🔗 Integration
 
 Scripts are integrated with:
+
 - **Justfile**: Convenient command aliases
 - **Git hooks**: Automated quality checks (via dev/ scripts)
 - **CI/CD**: Quality gates and testing
-- **Claude Desktop**: MCP server management 
+- **Claude Desktop**: MCP server management

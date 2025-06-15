@@ -34,12 +34,12 @@ fi
 docker_authenticate() {
     local registry="${1:-${IMAGE_REGISTRY}}"
     local username="${2:-${REGISTRY_USERNAME:-nologin}}"
-    
+
     if [[ -z "${REGISTRY_PASSWORD:-}" ]]; then
         log_error "REGISTRY_PASSWORD environment variable must be set"
         return 1
     fi
-    
+
     log_info "Authenticating with registry: $registry"
     echo "$REGISTRY_PASSWORD" | docker login "$registry" -u "$username" --password-stdin
 }
@@ -48,7 +48,7 @@ docker_authenticate() {
 docker_init_buildx() {
     if docker buildx version >/dev/null 2>&1; then
         log_info "Docker buildx is available"
-        
+
         # Initialize buildx builder if not exists
         if ! docker buildx ls | grep -q "multiarch"; then
             log_info "Initializing buildx builder..."
@@ -69,9 +69,9 @@ docker_build_with_buildx() {
     local image_name="$1"
     local push_flag="${2:-false}"
     local platform="${3:-linux/amd64}"
-    
+
     log_info "Building image with buildx: $image_name"
-    
+
     if [[ "$push_flag" == "true" ]]; then
         docker buildx build \
             --platform "$platform" \
@@ -93,13 +93,13 @@ docker_build_with_buildx() {
 docker_build_standard() {
     local image_name="$1"
     local push_flag="${2:-false}"
-    
+
     log_warning "Using standard docker build (may show warnings)"
     log_info "💡 Tip: Install docker-buildx-plugin for warning-free builds"
-    
+
     log_info "Building image: $image_name"
     docker build --tag "$image_name" .
-    
+
     if [[ "$push_flag" == "true" ]]; then
         log_info "Pushing image: $image_name"
         docker push "$image_name"
@@ -114,13 +114,13 @@ docker_build_image() {
     local image_name="$1"
     local push_flag="${2:-false}"
     local platform="${3:-linux/amd64}"
-    
+
     # Validate required parameters
     if [[ -z "$image_name" ]]; then
         log_error "Image name is required"
         return 1
     fi
-    
+
     # Try buildx first, fallback to standard build
     if docker_init_buildx; then
         docker_build_with_buildx "$image_name" "$push_flag" "$platform"
@@ -135,13 +135,13 @@ docker_build_and_push() {
     local registry="${2:-${IMAGE_REGISTRY}}"
     local username="${3:-${REGISTRY_USERNAME:-nologin}}"
     local platform="${4:-linux/amd64}"
-    
+
     # Authenticate with registry
     if ! docker_authenticate "$registry" "$username"; then
         log_error "Failed to authenticate with Docker registry"
         return 1
     fi
-    
+
     # Build and push image
     docker_build_image "$image_name" "true" "$platform"
 }
@@ -150,27 +150,27 @@ docker_build_and_push() {
 docker_build_local() {
     local image_name="$1"
     local platform="${2:-linux/amd64}"
-    
+
     docker_build_image "$image_name" "false" "$platform"
 }
 
 # Function to validate Docker build environment
 docker_validate_environment() {
     local required_vars=("IMAGE_REGISTRY" "IMAGE_NAME" "IMAGE_TAG")
-    
+
     for var in "${required_vars[@]}"; do
         if [[ -z "${!var:-}" ]]; then
             log_error "Required environment variable $var is not set"
             return 1
         fi
     done
-    
+
     # Check if docker is available
     if ! command -v docker >/dev/null 2>&1; then
         log_error "Docker is not installed or not in PATH"
         return 1
     fi
-    
+
     log_info "Docker build environment validated"
     return 0
-} 
+}

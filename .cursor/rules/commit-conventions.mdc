@@ -1,6 +1,6 @@
 ---
-description: 
-globs: 
+description:
+globs:
 alwaysApply: true
 ---
 description: Commit message conventions and semantic versioning rules
@@ -18,7 +18,7 @@ ALWAYS use Semantic Versioning format for commits:
 
 ### Main Types:
 - **feat:** new feature
-- **fix:** bug fix  
+- **fix:** bug fix
 - **docs:** documentation only
 - **style:** formatting, no logical changes
 - **refactor:** refactoring without adding/removing functionality
@@ -52,4 +52,4 @@ ci: add GitHub Actions workflow
 - ✅ **ALWAYS** write commit messages in English
 - ❌ **NEVER** use French or other languages in commit messages
 - ✅ Use English technical terms consistently
-- ✅ Keep descriptions clear and concise in English 
+- ✅ Keep descriptions clear and concise in English

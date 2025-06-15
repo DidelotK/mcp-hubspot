@@ -1,6 +1,6 @@
 ---
-description: 
-globs: 
+description:
+globs:
 alwaysApply: true
 ---
 # Project Structure
@@ -54,4 +54,4 @@ project/
 - ✅ **ALWAYS** use English for folder names
 - ✅ **ALWAYS** write configuration in English
 - ✅ **ALWAYS** document in English
-- ❌ **NEVER** use French in project structure 
+- ❌ **NEVER** use French in project structure

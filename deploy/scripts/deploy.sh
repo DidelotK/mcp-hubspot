@@ -26,7 +26,7 @@ command_exists() {
 # Validate prerequisites
 validate_prerequisites() {
     log_info "Validating prerequisites..."
-    
+
     # Check required commands
     local required_commands=("kubectl" "helm" "docker")
     for cmd in "${required_commands[@]}"; do
@@ -35,35 +35,35 @@ validate_prerequisites() {
             exit 1
         fi
     done
-    
+
     # Check kubectl context
     local current_context=$(kubectl config current-context)
     log_info "Current kubectl context: $current_context"
-    
+
     # Check if namespace exists
     if ! kubectl get namespace "$NAMESPACE" >/dev/null 2>&1; then
         log_warning "Namespace $NAMESPACE does not exist, creating it..."
         kubectl create namespace "$NAMESPACE"
         kubectl label namespace "$NAMESPACE" name="$NAMESPACE"
     fi
-    
+
     log_success "Prerequisites validated"
 }
 
 # Build and push Docker image
 build_and_push_image() {
     log_info "Checking Docker image availability..."
-    
+
     local image_name="${IMAGE_REGISTRY}/hubspot-mcp-server:${IMAGE_TAG}"
-    
+
     # Check if image already exists in registry
     if docker manifest inspect "$image_name" >/dev/null 2>&1; then
         log_success "Image already exists in registry: $image_name"
         return 0
     fi
-    
+
     log_info "Building and pushing Docker image..."
-    
+
     # Check if REGISTRY_PASSWORD is set for authentication
     if [[ -n "${REGISTRY_PASSWORD:-}" ]]; then
         # Use shared function for building and pushing
@@ -88,10 +88,10 @@ build_and_push_image() {
 # Deploy with Helm
 deploy_helm_chart() {
     log_info "Deploying Helm chart..."
-    
+
     # Update dependencies to pull from OCI
     helm dependency update .
-    
+
     # Deploy directly with Helm using the local chart
     helm upgrade --install "$RELEASE_NAME" . \
         --namespace "$NAMESPACE" \
@@ -102,36 +102,36 @@ deploy_helm_chart() {
         --set ingress.tls[0].hosts[0]="$DOMAIN" \
         --wait \
         --timeout=600s
-    
+
     log_success "Helm chart deployed successfully"
 }
 
 # Verify deployment
 verify_deployment() {
     log_info "Verifying deployment..."
-    
+
     # Wait for pods to be ready
     kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=hubspot-mcp-server -n "$NAMESPACE" --timeout=300s
-    
+
     # Check deployment status
     kubectl get deployment "$RELEASE_NAME" -n "$NAMESPACE"
     kubectl get pods -l app.kubernetes.io/name=hubspot-mcp-server -n "$NAMESPACE"
     kubectl get services -l app.kubernetes.io/name=hubspot-mcp-server -n "$NAMESPACE"
     kubectl get ingress -n "$NAMESPACE"
-    
+
     # Test health endpoint
     local service_url="https://$DOMAIN/health"
     log_info "Testing health endpoint: $service_url"
-    
+
     # Wait a bit for ingress to be ready
     sleep 30
-    
+
     if curl -f -s "$service_url" >/dev/null; then
         log_success "Health endpoint is responding"
     else
         log_warning "Health endpoint is not yet responding (this may take a few minutes for DNS/TLS)"
     fi
-    
+
     log_success "Deployment verification completed"
 }
 
@@ -142,12 +142,12 @@ deploy() {
     log_info "Release: $RELEASE_NAME"
     log_info "Domain: $DOMAIN"
     log_info "Image: ${IMAGE_REGISTRY}/hubspot-mcp-server:${IMAGE_TAG}"
-    
+
     validate_prerequisites
     build_and_push_image
     deploy_helm_chart
     verify_deployment
-    
+
     log_success "Deployment completed successfully!"
     log_info "Access your MCP server at: https://$DOMAIN"
     log_info "Health check: https://$DOMAIN/health"
@@ -158,24 +158,24 @@ deploy() {
 rollback() {
     local revision=${1:-}
     log_info "Rolling back deployment..."
-    
+
     if [ -n "$revision" ]; then
         helm rollback "$RELEASE_NAME" "$revision" -n "$NAMESPACE"
     else
         helm rollback "$RELEASE_NAME" -n "$NAMESPACE"
     fi
-    
+
     log_success "Rollback completed"
 }
 
 # Cleanup function
 cleanup() {
     log_info "Cleaning up deployment..."
-    
+
     helm uninstall "$RELEASE_NAME" -n "$NAMESPACE"
     kubectl delete externalsecret hubspot-mcp-secrets -n "$NAMESPACE" --ignore-not-found
     kubectl delete secret hubspot-mcp-secrets -n "$NAMESPACE" --ignore-not-found
-    
+
     log_success "Cleanup completed"
 }
 
@@ -194,4 +194,4 @@ case "${1:-deploy}" in
         echo "Usage: $0 {deploy|rollback [revision]|cleanup}"
         exit 1
         ;;
-esac 
+esac

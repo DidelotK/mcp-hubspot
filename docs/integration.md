@@ -9,6 +9,7 @@ This guide provides a comprehensive overview of integrating the HubSpot MCP Serv
 This server can be deployed in **two different ways** depending on your needs:
 
 ### 🏠 **Local Installation (stdio mode)**
+
 **Best for:** Local development, and direct client integration
 
 - ✅ Direct integration with Claude Desktop or any local MCP Client
@@ -18,6 +19,7 @@ This server can be deployed in **two different ways** depending on your needs:
 - ⚠️ **Requires MCP client configuration** (like Claude Desktop)
 
 ### 🌐 **Remote Deployment (SSE mode)**
+
 **Best for:** Production environments, team usage, scalable deployments
 
 - ✅ Production-ready Kubernetes deployment
@@ -52,18 +54,22 @@ This server can be deployed in **two different ways** depending on your needs:
                     │   (api.hubapi.com)│
                     └───────────────────┘
 ```
+
 ---
 
 ## 🎯 Choose Your Installation Method
 
 ### For Claude Desktop Users (Recommended: Local)
+
 **What this involves:**
+
 - Installing Python dependencies locally
 - Configuring HubSpot API credentials
 - Setting up Claude Desktop MCP configuration
 - Server runs when Claude Desktop starts
 
 **Prerequisites:**
+
 - Python 3.12+
 - uv (package manager)
 - HubSpot API key with CRM permissions
@@ -71,13 +77,16 @@ This server can be deployed in **two different ways** depending on your needs:
 → **[Complete Local Installation Guide](installation-local-stdio.md)**
 
 ### For Production/Team Deployment (Recommended: Remote)
+
 **What this involves:**
+
 - Kubernetes cluster setup and configuration
 - External Secrets, Ingress, DNS configuration
 - Production-grade security and monitoring
 - Helm chart deployment and management
 
 **Prerequisites:**
+
 - Kubernetes cluster (>= 1.20)
 - Helm 3
 - External Secrets Operator

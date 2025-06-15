@@ -99,7 +99,7 @@ variable "vpc_cidr_block" {
   description = "CIDR block for the VPC network"
   type        = string
   default     = "10.0.0.0/16"
-  
+
   validation {
     condition     = can(cidrhost(var.vpc_cidr_block, 0))
     error_message = "VPC CIDR block must be a valid IPv4 CIDR."
@@ -118,19 +118,19 @@ variable "vpc_cidr" {
 resource "aws_instance" "web_server" {
   ami           = data.aws_ami.ubuntu.id
   instance_type = var.instance_type
-  
+
   vpc_security_group_ids = [aws_security_group.web_sg.id]
   subnet_id              = aws_subnet.public_subnet.id
-  
+
   user_data = base64encode(templatefile("${path.module}/user_data.sh", {
     environment = var.environment
   }))
-  
+
   tags = merge(local.common_tags, {
     Name = "${var.environment}-web-server"
     Type = "web-server"
   })
-  
+
   lifecycle {
     create_before_destroy = true
   }
@@ -174,22 +174,22 @@ modules/networking/
 # Required header comment in main.tf
 /**
  * # Networking Module
- * 
+ *
  * This module creates a VPC with public and private subnets,
  * internet gateway, and NAT gateway for AWS infrastructure.
- * 
+ *
  * ## Features
  * - VPC with configurable CIDR block
  * - Public and private subnets across multiple AZs
  * - Internet Gateway for public subnet access
  * - NAT Gateway for private subnet outbound access
  * - Route tables with proper routing configuration
- * 
+ *
  * ## Usage
  * ```hcl
  * module "networking" {
  *   source = "./modules/networking"
- *   
+ *
  *   vpc_cidr_block     = "10.0.0.0/16"
  *   availability_zones = ["us-west-2a", "us-west-2b"]
  *   environment        = "production"
@@ -241,7 +241,7 @@ terraform {
 # ✅ Pin provider versions for stability
 terraform {
   required_version = ">= 1.0"
-  
+
   required_providers {
     aws = {
       source  = "hashicorp/aws"
@@ -281,7 +281,7 @@ backup_retention   = 7
 # ✅ Use data sources to discover existing resources
 data "aws_vpc" "existing" {
   count = var.use_existing_vpc ? 1 : 0
-  
+
   filter {
     name   = "tag:Name"
     values = ["${var.environment}-vpc"]
@@ -291,7 +291,7 @@ data "aws_vpc" "existing" {
 data "aws_ami" "ubuntu" {
   most_recent = true
   owners      = ["099720109477"] # Canonical
-  
+
   filter {
     name   = "name"
     values = ["ubuntu/images/hvm-ssd/ubuntu-22.04-amd64-server-*"]
@@ -307,7 +307,7 @@ data "aws_ami" "ubuntu" {
 variable "environment" {
   description = "Environment name (dev, staging, prod)"
   type        = string
-  
+
   validation {
     condition = contains(["dev", "staging", "prod"], var.environment)
     error_message = "Environment must be one of: dev, staging, prod."
@@ -318,7 +318,7 @@ variable "instance_count" {
   description = "Number of instances to create"
   type        = number
   default     = 1
-  
+
   validation {
     condition     = var.instance_count > 0 && var.instance_count <= 10
     error_message = "Instance count must be between 1 and 10."
@@ -332,13 +332,13 @@ variable "instance_count" {
 resource "aws_instance" "web" {
   ami           = data.aws_ami.ubuntu.id
   instance_type = var.instance_type
-  
+
   lifecycle {
     precondition {
       condition     = data.aws_ami.ubuntu.architecture == "x86_64"
       error_message = "AMI must be x86_64 architecture."
     }
-    
+
     postcondition {
       condition     = self.instance_state == "running"
       error_message = "Instance must be in running state after creation."
@@ -356,7 +356,7 @@ resource "aws_vpc" "main" {
   cidr_block           = var.vpc_cidr_block
   enable_dns_hostnames = true  # Required for ELB DNS resolution
   enable_dns_support   = true  # Required for Route53 private zones
-  
+
   tags = merge(local.common_tags, {
     Name = "${var.environment}-vpc"
   })
@@ -365,7 +365,7 @@ resource "aws_vpc" "main" {
 # Internet Gateway allows outbound internet access from public subnets
 resource "aws_internet_gateway" "main" {
   vpc_id = aws_vpc.main.id
-  
+
   tags = merge(local.common_tags, {
     Name = "${var.environment}-igw"
   })
@@ -389,10 +389,10 @@ Brief description of what this module does.
 ```hcl
 module "example" {
   source = "./modules/example"
-  
+
   # Required variables
   environment = "production"
-  
+
   # Optional variables
   instance_type = "t3.large"
 }
@@ -435,27 +435,27 @@ on:
 jobs:
   terraform:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.6.0
-      
+
       - name: Terraform Format Check
         run: terraform fmt -check -recursive
-      
+
       - name: Terraform Validate
         run: terraform validate
-      
+
       - name: Terraform Plan
         run: terraform plan -out=tfplan
         env:
           TF_VAR_environment: ${{ github.ref_name }}
-      
+
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main'
         run: terraform apply tfplan

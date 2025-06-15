@@ -15,6 +15,7 @@ Once the MCP server is configured with Claude Desktop, here are examples of inte
 *[Claude automatically uses the `list_hubspot_contacts` tool with limit: 10]*
 
 **Displayed Result:**
+
 ```
 📋 **HubSpot Contacts** (10 found)
 
@@ -41,6 +42,7 @@ Once the MCP server is configured with Claude Desktop, here are examples of inte
 *[Claude uses the `get_deal_by_name` tool with deal_name: "Premium Contract 2024"]*
 
 **Displayed Result:**
+
 ```
 💰 **HubSpot Deal**
 
@@ -61,6 +63,7 @@ Once the MCP server is configured with Claude Desktop, here are examples of inte
 *[Claude uses the `list_hubspot_companies` tool with filters: {"search": "technology"}]*
 
 **Displayed Result:**
+
 ```
 🏢 **HubSpot Companies** (3 found)
 
@@ -94,6 +97,7 @@ Once the MCP server is configured with Claude Desktop, here are examples of inte
 *[Claude uses the `get_hubspot_contact_properties` tool]*
 
 **Displayed Result:**
+
 ```
 🔧 **HubSpot Contact Properties** (405 properties)
 
@@ -126,18 +130,21 @@ Once the MCP server is configured with Claude Desktop, here are examples of inte
 ## Useful Commands for Claude
 
 ### Contact Search
+
 - *"List all my HubSpot contacts"*
 - *"Find contacts from Acme company"*
-- *"Search for the contact jean.dupont@example.com"*
+- *"Search for the contact <jean.dupont@example.com>"*
 - *"Show the last 20 contacts"*
 
 ### Company Management
+
 - *"Show me all companies"*
 - *"Find French companies"*
 - *"Search for companies in the automotive sector"*
 - *"List companies with more than 100 employees"*
 
 ### Deal Analysis
+
 - *"Show all deals"*
 - *"What are the current deals?"*
 - *"Find deals in the 'enterprise' pipeline"*
@@ -145,11 +152,13 @@ Once the MCP server is configured with Claude Desktop, here are examples of inte
 - *"Show deals closed this month"*
 
 ### Data Exploration
+
 - *"What are the available properties for contacts?"*
 - *"Show me the HubSpot contact fields"*
 - *"List the contact data types"*
 
 ### Combined Searches
+
 - *"Find all TechCorp contacts and their deals"*
 - *"Analyze the technology sector performance"*
 - *"What are the biggest deals in progress?"*
@@ -161,6 +170,7 @@ Once the MCP server is configured with Claude Desktop, here are examples of inte
 **Scenario:** A salesperson wants to review their prospects
 
 **Commands:**
+
 1. *"List my last 10 contacts"*
 2. *"What deals are in negotiation phase?"*
 3. *"Show me deals closing this week"*
@@ -170,6 +180,7 @@ Once the MCP server is configured with Claude Desktop, here are examples of inte
 **Scenario:** Analyze opportunities in a sector
 
 **Commands:**
+
 1. *"Find all companies in the 'fintech' sector"*
 2. *"What are their current deals?"*
 3. *"What's the total amount of fintech deals?"*
@@ -179,6 +190,7 @@ Once the MCP server is configured with Claude Desktop, here are examples of inte
 **Scenario:** Prepare for a client meeting
 
 **Commands:**
+
 1. *"Find the company 'Acme Corp'"*
 2. *"List all contacts from this company"*
 3. *"What are their active deals?"*
@@ -188,6 +200,7 @@ Once the MCP server is configured with Claude Desktop, here are examples of inte
 **Scenario:** Generate activity report
 
 **Commands:**
+
 1. *"List all deals created this week"*
 2. *"How many new contacts do we have?"*
 3. *"What are the most promising deals?"*
@@ -195,24 +208,28 @@ Once the MCP server is configured with Claude Desktop, here are examples of inte
 ## Advanced Filter Examples
 
 ### Search by Amount
+
 ```
 "Find deals between €5,000 and €50,000"
 → filters: {"amount_gte": 5000, "amount_lte": 50000}
 ```
 
 ### Search by Stage
+
 ```
 "Show deals in proposal phase"
 → filters: {"stage": "proposal"}
 ```
 
 ### Text Search
+
 ```
 "Search for contacts with 'manager' in their title"
 → filters: {"search": "manager"}
 ```
 
 ### Combined Filters
+
 ```
 "Find tech companies with more than 50 employees"
 → filters: {"search": "tech", "employees_gte": 50}
@@ -244,7 +261,7 @@ When the script starts you will see a prompt like:
 
 ```
 🤖  Sales Agent ready! Type your questions.
-> 
+>
 ```
 
 Try something like:
@@ -259,4 +276,4 @@ raw-JSON block for advanced inspection.
 
 Press <kbd>Ctrl+C</kbd> to exit the chat.
 
---- 
+---

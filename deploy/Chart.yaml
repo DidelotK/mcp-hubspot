@@ -31,4 +31,4 @@ kubeVersion: ">=1.19.0"
 # Annotations
 annotations:
   category: API
-  licenses: Apache-2.0 
+  licenses: Apache-2.0

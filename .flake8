@@ -1,6 +1,6 @@
 [flake8]
 max-line-length = 88
-extend-ignore = 
+extend-ignore =
     # Line too long (compatible with black)
     E501,
     # Blank line contains whitespace
@@ -9,7 +9,7 @@ extend-ignore =
     F401,
     # f-string without placeholder (sometimes used for consistency)
     F541
-exclude = 
+exclude =
     .git,
     __pycache__,
     .venv,
@@ -23,4 +23,4 @@ per-file-ignores =
     # Tests can have unused imports, redefinitions, and blank line issues
     tests/*:F401,F841,F811,E306,E302
     # Scripts can be more permissive
-    scripts/*:E501,F401 
+    scripts/*:E501,F401

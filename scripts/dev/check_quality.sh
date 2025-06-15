@@ -32,7 +32,7 @@ log_message() {
     local level="$1"
     local message="$2"
     local timestamp=$(date '+%Y-%m-%d %H:%M:%S')
-    
+
     echo "[$timestamp] [$level] $message" >> "$LOG_FILE"
     echo -e "$message"
 }
@@ -42,9 +42,9 @@ run_check() {
     local check_name="$1"
     local command="$2"
     local show_output="$3"
-    
+
     log_message "INFO" "${BLUE}🔍 Running $check_name...${NC}"
-    
+
     if eval "$command" >> "$LOG_FILE" 2>&1; then
         log_message "SUCCESS" "${GREEN}$SUCCESS $check_name passed${NC}"
         return 0
@@ -62,10 +62,10 @@ run_check() {
 # Main function
 main() {
     log_message "INFO" "${BLUE}🚀 Starting comprehensive quality checks...${NC}"
-    
+
     # Navigate to project directory
     cd "$PROJECT_DIR"
-    
+
     # Check 1: Code formatting with black
     if run_check "Code formatting (black)" "uv run black --check --diff src/ tests/ scripts/" "true"; then
         log_message "SUCCESS" "${GREEN}$SUCCESS Code formatting is correct${NC}"
@@ -73,7 +73,7 @@ main() {
         log_message "WARNING" "${YELLOW}$WARNING Code formatting issues found${NC}"
         ((WARNINGS++))
     fi
-    
+
     # Check 2: Import organization with isort
     if run_check "Import organization (isort)" "uv run isort --check-only --diff src/ tests/ scripts/" "true"; then
         log_message "SUCCESS" "${GREEN}$SUCCESS Import organization is correct${NC}"
@@ -81,21 +81,21 @@ main() {
         log_message "WARNING" "${YELLOW}$WARNING Import organization issues found${NC}"
         ((WARNINGS++))
     fi
-    
+
     # Check 3: Code linting with flake8
     if run_check "Code linting (flake8)" "uv run flake8 src/ tests/ scripts/" "true"; then
         log_message "SUCCESS" "${GREEN}$SUCCESS Code linting passed${NC}"
     else
         log_message "ERROR" "${RED}$FAILURE Code linting failed${NC}"
     fi
-    
+
     # Check 4: Type checking with mypy
     if run_check "Type checking (mypy)" "uv run mypy src/" "true"; then
         log_message "SUCCESS" "${GREEN}$SUCCESS Type checking passed${NC}"
     else
         log_message "ERROR" "${RED}$FAILURE Type checking failed${NC}"
     fi
-    
+
     # Check 5: Security scanning with bandit
     if run_check "Security scanning (bandit)" "uv run bandit -r src/ -f json" "false"; then
         log_message "SUCCESS" "${GREEN}$SUCCESS Security scanning passed${NC}"
@@ -103,19 +103,19 @@ main() {
         log_message "WARNING" "${YELLOW}$WARNING Security issues found${NC}"
         ((WARNINGS++))
     fi
-    
+
     # Check 6: Unit tests with coverage
     if run_check "Unit tests with coverage" "uv run pytest --cov=src --cov-report=term-missing --cov-fail-under=90" "true"; then
         log_message "SUCCESS" "${GREEN}$SUCCESS All tests passed with adequate coverage${NC}"
     else
         log_message "ERROR" "${RED}$FAILURE Tests failed or coverage insufficient${NC}"
     fi
-    
+
     # Final report
     echo ""
     log_message "INFO" "${BLUE}📊 Quality Check Summary${NC}"
     log_message "INFO" "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-    
+
     if [ $ERRORS -eq 0 ] && [ $WARNINGS -eq 0 ]; then
         log_message "SUCCESS" "${GREEN}$SUCCESS All quality checks passed! ✨${NC}"
         exit 0
@@ -140,4 +140,4 @@ main() {
 }
 
 # Run main function
-main "$@" 
+main "$@"

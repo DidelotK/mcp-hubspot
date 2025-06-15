@@ -36,7 +36,7 @@ Add to your shell profile (`~/.bashrc`, `~/.zshrc`, etc.):
 # For bash
 eval "$(direnv hook bash)"
 
-# For zsh  
+# For zsh
 eval "$(direnv hook zsh)"
 
 # For fish
@@ -127,6 +127,7 @@ echo $IMAGE_TAG                   # → (empty)
 ### Manual Commands
 
 #### Essential Commands
+
 ```bash
 # Allow direnv for current directory
 direnv allow
@@ -145,6 +146,7 @@ direnv deny
 ```
 
 #### Development Workflow
+
 ```bash
 # 1. Enter project directory → variables auto-load
 cd /path/to/project
@@ -163,6 +165,7 @@ cd /other/directory
 ## Security
 
 ### File Permissions
+
 ```bash
 # Secure your environment file
 chmod 600 deploy/environment
@@ -172,11 +175,13 @@ git status --ignored | grep deploy/environment
 ```
 
 ### What's Versioned
+
 - ✅ **`.envrc`** - Direnv configuration (no secrets)
 - ✅ **`deploy/environment.example`** - Template file
 - ❌ **`deploy/environment`** - Your actual config (contains secrets)
 
 ### Best Practices
+
 - Never commit `deploy/environment` to git
 - Use strong, unique passwords and API keys
 - Regularly rotate secrets, especially API keys
@@ -187,6 +192,7 @@ git status --ignored | grep deploy/environment
 ### Common Issues
 
 #### Variables not loading
+
 ```bash
 # Check direnv status
 direnv status
@@ -199,6 +205,7 @@ ls -la deploy/environment
 ```
 
 #### Permission denied
+
 ```bash
 # Fix file permissions
 chmod 600 deploy/environment
@@ -208,6 +215,7 @@ direnv allow
 ```
 
 #### Variables persist after leaving directory
+
 ```bash
 # Check if direnv hook is properly installed
 echo $DIRENV_DIR  # Should be empty outside project
@@ -217,6 +225,7 @@ source ~/.bashrc  # or ~/.zshrc
 ```
 
 ### Debugging
+
 ```bash
 # Verbose direnv output
 DIRENV_LOG_FORMAT="$(printf "%%s \033[2mdirenv: %%s\033[0m")" direnv allow
@@ -228,10 +237,11 @@ direnv exec . env | grep -E "(IMAGE_|REGISTRY_|HUBSPOT_)"
 ### Getting Help
 
 If environment file is missing, you'll see:
+
 ```bash
 cd mcp-hubspot
 # ⚠️  Environment file not found!
-# 
+#
 # 📝 To set up your environment:
 #    1. Copy the example file:
 #       cp deploy/environment.example deploy/environment
@@ -242,13 +252,17 @@ cd mcp-hubspot
 ## Integration with Development Tools
 
 ### IDE Configuration
+
 Most IDEs support direnv through plugins:
+
 - **VS Code**: `direnv` extension
 - **JetBrains**: `direnv` plugin
 - **Vim**: `direnv.vim` plugin
 
 ### CI/CD Integration
+
 For CI/CD pipelines, export variables manually:
+
 ```bash
 # In CI scripts
 export IMAGE_TAG="$CI_COMMIT_TAG"
@@ -260,6 +274,7 @@ export REGISTRY_PASSWORD="$CI_REGISTRY_PASSWORD"
 ### .envrc Configuration
 
 The `.envrc` file automatically:
+
 - Checks if `deploy/environment` exists
 - Loads all variables using `set -a` + `source` + `set +a` technique
 - Displays helpful setup instructions if file is missing
@@ -273,7 +288,7 @@ if [ -f "deploy/environment" ]; then
     set -a
     source deploy/environment
     set +a
-    
+
     echo "✅ Environment loaded!"
 else
     echo "⚠️ Please create deploy/environment from deploy/environment.example"
@@ -281,7 +296,9 @@ fi
 ```
 
 ### Security Implementation
+
 The system ensures that:
+
 - Secrets are stored in `deploy/environment` (not versioned)
 - No secrets are embedded in `.envrc` (versioned)
 - Variables are automatically cleaned when leaving the directory
@@ -333,6 +350,7 @@ docker buildx build \
 If you were previously using manual `export` commands:
 
 ### Before (Manual)
+
 ```bash
 export IMAGE_TAG=0.1.0
 export REGISTRY_PASSWORD=your-password
@@ -341,6 +359,7 @@ docker push registry/app:$IMAGE_TAG
 ```
 
 ### After (direnv)
+
 ```bash
 # Just enter the directory
 cd mcp-hubspot
@@ -356,4 +375,4 @@ docker buildx build --platform linux/amd64 --tag $IMAGE_REGISTRY/$IMAGE_NAME:$IM
 4. **Document changes**: Update this file when adding new variables
 5. **Test setup**: Verify `direnv allow` works correctly
 6. **Regular rotation**: Rotate secrets periodically
-7. **Clean environment**: Don't export variables manually when using direnv 
+7. **Clean environment**: Don't export variables manually when using direnv

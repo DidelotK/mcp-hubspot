@@ -1,6 +1,6 @@
 ---
-description: 
-globs: 
+description:
+globs:
 alwaysApply: false
 ---
 # Python Standards
@@ -46,15 +46,15 @@ def process_user_data(
     options: Optional[List[str]] = None
 ) -> Dict[str, Union[str, int]]:
     """Process user data with specified options.
-    
+
     Args:
         user_id: Unique identifier for the user
         data: User data dictionary containing profile information
         options: Optional list of processing options
-        
+
     Returns:
         Dictionary containing processed results
-        
+
     Raises:
         ValueError: If user_id is invalid
         ProcessingError: If data processing fails
@@ -64,7 +64,7 @@ def process_user_data(
 
 ### Import Organization
 - **Standard library imports**: First group
-- **Third-party imports**: Second group  
+- **Third-party imports**: Second group
 - **Local application imports**: Third group
 - **Absolute imports preferred**: Over relative imports
 - **One import per line**: For better readability
@@ -133,15 +133,15 @@ if user_input in ALLOWED_EXPRESSIONS:
 # File: tests/unit/test_user_service.py
 class TestUserService:
     """Test suite for UserService class."""
-    
+
     def test_create_user_with_valid_data_returns_user_instance(self):
         # Arrange
         user_data = {"email": "test@example.com", "name": "Test User"}
         service = UserService()
-        
+
         # Act
         result = service.create_user(user_data)
-        
+
         # Assert
         assert isinstance(result, User)
         assert result.email == "test@example.com"
@@ -176,12 +176,12 @@ async def test_async_api_call_returns_expected_data():
     """Test asynchronous API call handling."""
     # Arrange
     mock_response = {"status": "success", "data": []}
-    
+
     # Act
     with aioresponses() as m:
         m.get("https://api.example.com/data", payload=mock_response)
         result = await fetch_api_data()
-    
+
     # Assert
     assert result["status"] == "success"
     assert isinstance(result["data"], list)
@@ -193,13 +193,13 @@ async def test_async_api_call_returns_expected_data():
 def db_session():
     """Database session with transaction rollback."""
     from app.database import engine, SessionLocal
-    
+
     connection = engine.connect()
     transaction = connection.begin()
     session = SessionLocal(bind=connection)
-    
+
     yield session
-    
+
     session.close()
     transaction.rollback()
     connection.close()
@@ -209,7 +209,7 @@ def db_session():
 ```ini
 # pytest.ini
 [tool:pytest]
-addopts = 
+addopts =
     --cov=src
     --cov-report=term-missing
     --cov-report=html:htmlcov
@@ -229,7 +229,7 @@ markers =
 
 [coverage:run]
 source = src
-omit = 
+omit =
     */tests/*
     */venv/*
     */__pycache__/*
@@ -275,7 +275,7 @@ from typing import Any, Dict
 
 class JSONFormatter(logging.Formatter):
     """Custom JSON formatter for structured logging."""
-    
+
     def format(self, record: logging.LogRecord) -> str:
         log_entry = {
             "timestamp": datetime.utcnow().isoformat() + "Z",
@@ -287,23 +287,23 @@ class JSONFormatter(logging.Formatter):
             "process": record.process,
             "thread": record.thread,
         }
-        
+
         # Add extra data if present
         if hasattr(record, 'extra_data'):
             log_entry.update(record.extra_data)
-            
+
         return json.dumps(log_entry, ensure_ascii=False)
 
 def setup_logger(name: str, level: str = "INFO") -> logging.Logger:
     """Set up structured JSON logger."""
     logger = logging.getLogger(name)
     logger.setLevel(getattr(logging, level.upper()))
-    
+
     if not logger.handlers:
         handler = logging.StreamHandler()
         handler.setFormatter(JSONFormatter())
         logger.addHandler(handler)
-    
+
     return logger
 ```
 
@@ -318,7 +318,7 @@ def log_execution_time(operation: str) -> Generator[None, None, None]:
     """Context manager to log execution time."""
     start_time = time.time()
     logger.info(f"Starting operation: {operation}")
-    
+
     try:
         yield
     except Exception as e:
@@ -419,7 +419,7 @@ class DatabaseConnection:
     def __enter__(self):
         self.connection = create_connection()
         return self.connection
-    
+
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.connection.close()
 
@@ -521,7 +521,7 @@ repos:
 - ✅ **ALWAYS** use dataclasses or Pydantic models for data structures
 - ✅ **ALWAYS** handle exceptions explicitly and appropriately
 
-### Strict Prohibitions  
+### Strict Prohibitions
 - ❌ **NEVER** use `print()` statements in production code (use logging)
 - ❌ **NEVER** use bare `except:` clauses
 - ❌ **NEVER** use mutable default arguments
@@ -538,4 +538,3 @@ repos:
 - **Performance tests** required for critical paths
 
 This Python-specific guide supplements the general coding conventions. Always consult both documents when developing Python code for this project.
-

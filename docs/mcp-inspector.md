@@ -5,6 +5,7 @@ This guide explains how to use the [MCP Inspector](https://github.com/modelconte
 ## 🔍 What is MCP Inspector?
 
 The MCP Inspector is a visual testing tool for MCP servers that provides:
+
 - **Interactive UI** for testing MCP tools and schemas
 - **Real-time debugging** of server communications
 - **CLI mode** for automation and scripting
@@ -27,9 +28,10 @@ just inspect-config
 ```
 
 This starts the inspector with our `mcp.json` configuration file, providing these pre-configured servers:
+
 - `hubspot-stdio` - Standard stdio mode
 - `hubspot-sse` - SSE mode with authentication
-- `hubspot-sse-no-auth` - SSE mode without authentication  
+- `hubspot-sse-no-auth` - SSE mode without authentication
 - `hubspot-script` - Using the wrapper script
 
 ### 3. Direct stdio Server Launch
@@ -45,6 +47,7 @@ This directly launches the inspector with the HubSpot stdio server configuration
 Our project includes a pre-configured `mcp.json` file with four server configurations:
 
 ### hubspot-stdio
+
 ```json
 {
   "command": "uv",
@@ -56,6 +59,7 @@ Our project includes a pre-configured `mcp.json` file with four server configura
 ```
 
 ### hubspot-sse
+
 ```json
 {
   "command": "uv",
@@ -68,6 +72,7 @@ Our project includes a pre-configured `mcp.json` file with four server configura
 ```
 
 ### hubspot-sse-no-auth
+
 ```json
 {
   "command": "uv",
@@ -79,6 +84,7 @@ Our project includes a pre-configured `mcp.json` file with four server configura
 ```
 
 ### hubspot-script
+
 ```json
 {
   "command": "./scripts/run_mcp_hubspot.sh",
@@ -101,6 +107,7 @@ sed -i 's/YOUR_HUBSPOT_API_KEY_HERE/pat-na1-your-actual-key-here/g' mcp.json
 ```
 
 Or edit the file manually:
+
 ```bash
 # Using your preferred editor
 vim mcp.json
@@ -111,6 +118,7 @@ code mcp.json
 ### 2. Choose Your Configuration Method
 
 #### Option A: Environment Variables (Recommended)
+
 Keep `mcp.json` with placeholder and use environment variables:
 
 ```bash
@@ -119,6 +127,7 @@ just inspect-config
 ```
 
 #### Option B: Direct File Editing
+
 Edit `mcp.json` directly with your API key (be careful not to commit it).
 
 ## 🎯 Using the Inspector
@@ -132,6 +141,7 @@ just inspect-config
 ### 2. Select Server Configuration
 
 In the Inspector UI:
+
 1. Click **"Configuration"** in the sidebar
 2. Select **"hubspot-stdio"** from the server dropdown
 3. Click **"Connect"**
@@ -139,8 +149,9 @@ In the Inspector UI:
 ### 3. Test Available Tools
 
 The inspector will show all available HubSpot MCP tools:
+
 - `list_hubspot_contacts`
-- `list_hubspot_companies` 
+- `list_hubspot_companies`
 - `list_hubspot_deals`
 - `search_hubspot_deals`
 - `create_deal`
@@ -166,6 +177,7 @@ The inspector will show all available HubSpot MCP tools:
 ### Real-time Communication
 
 The inspector shows:
+
 - **Request/Response** cycles in real-time
 - **Error messages** with detailed stack traces
 - **Performance metrics** for each operation
@@ -248,4 +260,4 @@ The MCP Inspector integrates well with your development workflow:
 1. **During Development**: Use `just inspect-stdio` for quick testing
 2. **During Debugging**: Use the UI mode for visual debugging
 3. **In CI/CD**: Use CLI mode for automated testing
-4. **For Documentation**: Export configurations and responses 
+4. **For Documentation**: Export configurations and responses

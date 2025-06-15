@@ -35,7 +35,7 @@ else
     echo -e "${YELLOW}⚠️  HubSpot API key not found in environment or .envrc${NC}"
     echo -e "${BLUE}📝 Please enter your HubSpot API key:${NC}"
     read -r -p "API Key: " API_KEY
-    
+
     if [ -z "$API_KEY" ]; then
         echo -e "${RED}❌ API key cannot be empty${NC}"
         exit 1
@@ -83,4 +83,4 @@ echo -e "   API Key: ${API_KEY:0:8}***"
 echo -e "   Config File: $CLAUDE_CONFIG_DIR/claude_desktop_config.json"
 
 echo -e "\n${GREEN}🎉 Setup complete! You can now start Claude Desktop.${NC}"
-echo -e "${YELLOW}💡 Tip: Use 'just start-claude' to launch with this configuration${NC}" 
+echo -e "${YELLOW}💡 Tip: Use 'just start-claude' to launch with this configuration${NC}"

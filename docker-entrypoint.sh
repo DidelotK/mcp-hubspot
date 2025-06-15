@@ -89,4 +89,4 @@ log "Pre-flight checks completed successfully"
 
 # Start the server
 log "Starting server..."
-exec hubspot-mcp-server --mode "$MODE" --host "$HOST" --port "$PORT" "${ARGS[@]}" 
+exec hubspot-mcp-server --mode "$MODE" --host "$HOST" --port "$PORT" "${ARGS[@]}"

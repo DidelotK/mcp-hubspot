@@ -1,6 +1,6 @@
 ---
-description: 
-globs: 
+description:
+globs:
 alwaysApply: true
 ---
 description: Development workflow, branching, and CI/CD rules for the project
@@ -67,4 +67,4 @@ globs:
 - ✅ **ALWAYS** write commit messages in English
 - ✅ **ALWAYS** create PR descriptions in English
 - ✅ **ALWAYS** document code changes in English
-- ❌ **NEVER** use French in any development workflow element 
+- ❌ **NEVER** use French in any development workflow element

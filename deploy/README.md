@@ -7,6 +7,7 @@ This directory contains production deployment configurations and scripts for the
 ### 1. Prerequisites Setup
 
 Ensure you have:
+
 - **Kubernetes cluster** (>= 1.20) with proper access
 - **Helm 3** installed
 - **kubectl** configured
@@ -101,6 +102,7 @@ Automated deployment with namespace creation and verification:
 ```
 
 **Features:**
+
 - Creates namespace with proper labels
 - Deploys application using Helm
 - Verifies deployment status
@@ -131,6 +133,7 @@ Builds and pushes Docker image:
 ```
 
 **Features:**
+
 - Loads environment configuration
 - Builds multi-architecture image
 - Pushes to configured registry
@@ -145,6 +148,7 @@ Comprehensive deployment testing:
 ```
 
 **Tests include:**
+
 - Kubernetes resources verification
 - Health endpoint checks
 - Authentication testing
@@ -160,6 +164,7 @@ Specialized script for testing SSE MCP functionality:
 ```
 
 **Tests include:**
+
 - Basic connectivity (health/ready endpoints)
 - SSE endpoint accessibility
 - Authentication security
@@ -205,6 +210,7 @@ nano values-production.yaml  # or use your preferred editor
 **Key sections you MUST customize:**
 
 #### 1. Docker Image Configuration
+
 ```yaml
 app-component:
   containers:
@@ -215,6 +221,7 @@ app-component:
 ```
 
 #### 2. Secret Management
+
 ```yaml
   secrets:
     - name: hubspot-mcp-secrets
@@ -228,6 +235,7 @@ app-component:
 ```
 
 #### 3. Domain and Ingress
+
 ```yaml
   ingress:
     hosts:
@@ -241,10 +249,11 @@ app-component:
 ```
 
 #### 4. Environment and Namespace
+
 ```yaml
   commonLabels:
     environment: your-environment-name  # e.g., production, staging
-  
+
   commonAnnotations:
     meta.helm.sh/release-namespace: your-namespace  # e.g., mcp-hubspot
 ```
@@ -271,6 +280,7 @@ The HubSpot MCP Server is deployed as a containerized application in Kubernetes 
 The deployment uses External Secrets Operator with a ClusterSecretStore. Configure your secrets in your secret management system:
 
 **For Scaleway Secret Manager:**
+
 ```yaml
 secrets:
   - name: hubspot-mcp-secrets
@@ -281,6 +291,7 @@ secrets:
 ```
 
 **For other providers:**
+
 ```yaml
 secrets:
   - name: hubspot-mcp-secrets
@@ -293,6 +304,7 @@ secrets:
 ### Required Secrets
 
 Your secret must contain:
+
 - **`hubspot-api-key`**: Your HubSpot API key
 - **`mcp-auth-key`**: Authentication key for MCP server access
 
@@ -307,6 +319,7 @@ The deployment uses **External DNS** for automatic DNS record management:
 - **Multi-provider support**: Works with major DNS providers (Cloudflare, Route53, etc.)
 
 When you deploy the Ingress with the correct annotations, External DNS will:
+
 1. Detect the new Ingress resource
 2. Extract the hostname from annotations or hosts
 3. Create the appropriate DNS record pointing to the load balancer
@@ -427,12 +440,14 @@ curl -k -H "X-API-Key: your-auth-key" \
 ### Common Issues
 
 #### 1. Script Permissions
+
 ```bash
 # Make scripts executable
 chmod +x scripts/*.sh
 ```
 
 #### 2. Environment Variables
+
 ```bash
 # Check environment is loaded
 source environment
@@ -440,6 +455,7 @@ echo $NAMESPACE $RELEASE_NAME $DOMAIN
 ```
 
 #### 3. Kubernetes Access
+
 ```bash
 # Test cluster access
 kubectl cluster-info
@@ -447,6 +463,7 @@ kubectl get nodes
 ```
 
 #### 4. External Secrets Issues
+
 ```bash
 # Check external secret status
 kubectl describe externalsecret hubspot-mcp-secrets -n $NAMESPACE
@@ -456,6 +473,7 @@ kubectl get secrets -n $NAMESPACE
 ```
 
 #### 5. Ingress/TLS Issues
+
 ```bash
 # Check ingress status
 kubectl describe ingress -n $NAMESPACE
@@ -482,6 +500,7 @@ kubectl get all -n $NAMESPACE
 ### Authentication
 
 The server includes header-based authentication:
+
 - **Header**: `X-API-Key` (configurable)
 - **Exempt paths**: `/health`, `/ready`
 - **Auth key**: From External Secrets
@@ -543,7 +562,8 @@ kubectl delete namespace $NAMESPACE
 ## Support
 
 For issues with:
+
 - **Scripts**: Check script logs and environment configuration
 - **Helm Chart**: Check [app-component documentation](https://gitlab.com/keltiotechnology/helm-charts/-/tree/master/app-component)
 - **External Secrets**: Check External Secrets Operator logs
-- **Application**: Check pod logs and health endpoints 
+- **Application**: Check pod logs and health endpoints

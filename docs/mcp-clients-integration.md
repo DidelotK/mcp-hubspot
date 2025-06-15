@@ -7,6 +7,7 @@ This guide covers integration with MCP (Model Context Protocol) clients other th
 ## Prerequisites and Setup
 
 Before starting, ensure you have:
+
 - Python 3.12+ installed
 - uv package manager installed
 - HubSpot API key with appropriate permissions
@@ -46,13 +47,14 @@ uv run hubspot-mcp-server --mode sse --host 127.0.0.1 --port 8080
 # Custom host and port
 uv run hubspot-mcp-server --mode sse --host 0.0.0.0 --port 9000
 
-# Enable CORS for web applications  
+# Enable CORS for web applications
 uv run hubspot-mcp-server --mode sse --host 127.0.0.1 --port 8080 --cors
 ```
 
 #### Client Connection
 
 Connect your MCP client to:
+
 ```
 http://127.0.0.1:8080
 ```
@@ -112,7 +114,7 @@ import requests
 class HubSpotMCPClient:
     def __init__(self, base_url="http://127.0.0.1:8080"):
         self.base_url = base_url
-    
+
     def list_tools(self):
         response = requests.post(
             f"{self.base_url}/mcp",
@@ -123,7 +125,7 @@ class HubSpotMCPClient:
             }
         )
         return response.json()
-    
+
     def call_tool(self, tool_name, arguments=None):
         response = requests.post(
             f"{self.base_url}/mcp",
@@ -223,6 +225,7 @@ curl -X POST http://127.0.0.1:8080/mcp \
 The server follows the MCP protocol based on JSON-RPC 2.0:
 
 #### Request Format
+
 ```json
 {
   "jsonrpc": "2.0",
@@ -235,6 +238,7 @@ The server follows the MCP protocol based on JSON-RPC 2.0:
 ```
 
 #### Response Format
+
 ```json
 {
   "jsonrpc": "2.0",
@@ -246,6 +250,7 @@ The server follows the MCP protocol based on JSON-RPC 2.0:
 ```
 
 #### Error Format
+
 ```json
 {
   "jsonrpc": "2.0",

@@ -476,16 +476,19 @@ All tools handle errors consistently:
 Filters support the following properties:
 
 ### For Contacts
+
 - `search`: Text search in name, email, company
 - `email`: Filter by exact email
 - `company`: Filter by company name
 
 ### For Companies
+
 - `search`: Text search in name, domain, industry
 - `domain`: Filter by exact domain
 - `industry`: Filter by industry sector
 
 ### For Deals
+
 - `search`: Text search in name, stage, pipeline
 - `stage`: Filter by sales stage
 - `pipeline`: Filter by sales pipeline
@@ -495,6 +498,7 @@ Filters support the following properties:
 ## Usefulness
 
 These tools are particularly useful for:
+
 - **Discovering available fields** in HubSpot
 - **Understanding data types** (text, date, select, etc.)
 - **Viewing available options** for selection fields
@@ -569,4 +573,4 @@ Example:
 ]
 ```
 
-This dual output lets you scan results quickly while still having the complete record for programmatic use. 
+This dual output lets you scan results quickly while still having the complete record for programmatic use.

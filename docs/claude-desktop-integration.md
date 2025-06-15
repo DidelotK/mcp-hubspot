@@ -7,12 +7,14 @@ This guide provides detailed instructions for integrating Claude Desktop with th
 The HubSpot MCP Server can be used with Claude Desktop in two different ways:
 
 ### 🏠 **stdio Mode (Local)**
+
 - Server runs locally and communicates directly with Claude Desktop
 - Best for: Personal use, development, simple setup
 - Pros: Simple, direct communication, no network dependencies
 - Cons: Server must run on same machine as Claude Desktop
 
 ### 🌐 **SSE Mode (Remote)**
+
 - Server runs as a web service, Claude Desktop connects via HTTP
 - Best for: Production deployments, team usage, remote server setups
 - Pros: Server can run anywhere, scalable, multiple clients
@@ -54,7 +56,8 @@ Choose the appropriate configuration file from the examples:
 | **Standard stdio** | [`claude_desktop_config_stdio.example.json`](../examples/claude/claude_desktop_config_stdio.example.json) | Direct uv command execution |
 | **Script-based stdio** | [`claude_desktop_config_stdio_with_launch_script.example.json`](../examples/claude/claude_desktop_config_stdio_with_launch_script.example.json) | Uses wrapper script for easier setup |
 
-**Important**: 
+**Important**:
+
 - Copy the example file content to your Claude Desktop configuration
 - Replace placeholder values with your actual paths and API keys
 
@@ -62,7 +65,7 @@ Choose the appropriate configuration file from the examples:
 
 1. **Restart Claude Desktop** : Make sur all process of Claude Desktop are stopped during restart
 2. **Check MCP Status**: Look for MCP connection indicators in Claude Desktop
-3. **Test Basic Commands**: 
+3. **Test Basic Commands**:
    - "List my HubSpot contacts"
    - "Show my HubSpot deals"
    - "What contact properties are available?"
@@ -90,7 +93,7 @@ npx mcp-remote --help
 
 ### Step 2: Start the SSE Server
 
-#### Local SSE Server (for testing):
+#### Local SSE Server (for testing)
 
 ```bash
 # Clone the repository
@@ -109,7 +112,7 @@ HUBSPOT_API_KEY="pat-na1-your-actual-api-key-here" \
 uv run hubspot-mcp-server --mode sse --host localhost --port 8080
 ```
 
-#### Remote SSE Server:
+#### Remote SSE Server
 
 For production deployments, follow the [Remote Deployment Guide](installation-remote-sse.md).
 
@@ -122,7 +125,8 @@ Choose the appropriate SSE configuration file from the examples:
 | **Local SSE Server** | [`claude_desktop_config_sse_local.example.json`](../examples/claude/claude_desktop_config_sse_local.example.json) | For local development with SSE mode |
 | **Remote SSE Server** | [`claude_desktop_config_sse.example.json`](../examples/claude/claude_desktop_config_sse.example.json) | For production remote SSE servers |
 
-**Important**: 
+**Important**:
+
 - Copy the example file content to your Claude Desktop configuration
 - Replace placeholder values with your actual server URLs and authentication keys
 - For local development, ensure the SSE server is running on the specified port
@@ -130,6 +134,7 @@ Choose the appropriate SSE configuration file from the examples:
 ### Step 4: Test SSE Configuration
 
 1. **Verify Server is Running**:
+
    ```bash
    curl -H "X-API-Key: your-auth-key" http://localhost:8080/health
    ```
@@ -145,6 +150,7 @@ Choose the appropriate SSE configuration file from the examples:
 ### stdio Mode Issues
 
 **Server Not Starting**:
+
 ```bash
 # Check if uv is installed
 uv --version
@@ -155,6 +161,7 @@ uv run hubspot-mcp-server --mode stdio
 ```
 
 **Environment Variables Not Loading**:
+
 ```bash
 # Check if direnv is working
 direnv status
@@ -164,6 +171,7 @@ source .env.local
 ```
 
 **Claude Desktop Not Connecting**:
+
 1. Check Claude Desktop logs
 2. Verify absolute paths in configuration
 3. Ensure HubSpot API key is valid
@@ -172,6 +180,7 @@ source .env.local
 ### SSE Mode Issues
 
 **Connection Refused**:
+
 ```bash
 # Check if server is running
 ss -tlnp | grep 8080
@@ -181,6 +190,7 @@ curl http://localhost:8080/health
 ```
 
 **Authentication Errors**:
+
 ```bash
 # Test with curl
 curl -H "X-API-Key: your-key" http://localhost:8080/sse
@@ -189,6 +199,7 @@ curl -H "X-API-Key: your-key" http://localhost:8080/sse
 ```
 
 **mcp-remote Issues**:
+
 ```bash
 # Update mcp-remote
 npm update -g mcp-remote
@@ -279,6 +290,6 @@ sed -i "s|YOUR_HUBSPOT_API_KEY_HERE|$HUBSPOT_API_KEY|g" ~/.config/Claude/claude_
 sed -i "s|local-test-key|$MCP_AUTH_KEY|g" ~/.config/Claude/claude_desktop_config.json
 
 echo "✅ Claude Desktop configured for SSE mode using example file"
-echo "🔄 Please restart Claude Desktop" 
+echo "🔄 Please restart Claude Desktop"
 echo "🌐 SSE server running on http://localhost:8080"
 ```

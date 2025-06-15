@@ -49,16 +49,16 @@ load_environment() {
     else
         log_warning "Environment file not found at $DEPLOY_DIR/environment"
     fi
-    
+
     # Set defaults if not provided
     DOMAIN="${DOMAIN:-mcp-hubspot.keltio.fr}"
-    
+
     # Check required variables
     if [[ -z "$DOMAIN" ]]; then
         log_error "DOMAIN is required. Set it in environment file or as environment variable."
         exit 1
     fi
-    
+
     if [[ -z "$MCP_AUTH_KEY" ]]; then
         log_warning "MCP_AUTH_KEY not set. Some tests may fail."
     fi
@@ -67,10 +67,10 @@ load_environment() {
 # Test basic connectivity
 test_basic_connectivity() {
     log_info "Testing basic connectivity to $DOMAIN..."
-    
+
     local health_url="https://$DOMAIN/health"
     local ready_url="https://$DOMAIN/ready"
-    
+
     # Test health endpoint
     if curl -f -s -m $TIMEOUT "$health_url" >/dev/null; then
         log_success "Health endpoint accessible"
@@ -78,7 +78,7 @@ test_basic_connectivity() {
         log_error "Health endpoint not accessible"
         return 1
     fi
-    
+
     # Test ready endpoint
     if curl -f -s -m $TIMEOUT "$ready_url" >/dev/null; then
         log_success "Ready endpoint accessible"
@@ -86,20 +86,20 @@ test_basic_connectivity() {
         log_error "Ready endpoint not accessible"
         return 1
     fi
-    
+
     return 0
 }
 
 # Test SSE endpoint accessibility
 test_sse_endpoint() {
     log_info "Testing SSE endpoint accessibility..."
-    
+
     local sse_url="https://$DOMAIN/sse"
-    
+
     # Test without authentication first
     local response_code
     response_code=$(curl -s -o /dev/null -w "%{http_code}" -m $TIMEOUT "$sse_url")
-    
+
     if [[ "$response_code" == "401" ]]; then
         log_success "SSE endpoint requires authentication (401) - as expected"
         return 0
@@ -115,14 +115,14 @@ test_sse_endpoint() {
 # Test MCP tools listing via HTTP POST
 test_mcp_list_tools() {
     log_info "Testing MCP list_tools functionality..."
-    
+
     if [[ -z "$MCP_AUTH_KEY" ]]; then
         log_warning "Skipping list_tools test - MCP_AUTH_KEY not set"
         return 0
     fi
-    
+
     local base_url="https://$DOMAIN"
-    
+
     # Send list_tools request via HTTP POST
     local request_payload='{
         "jsonrpc": "2.0",
@@ -130,7 +130,7 @@ test_mcp_list_tools() {
         "method": "tools/list",
         "params": {}
     }'
-    
+
     local response
     response=$(curl -s -m $TIMEOUT \
         -H "X-API-Key: $MCP_AUTH_KEY" \
@@ -138,12 +138,12 @@ test_mcp_list_tools() {
         -X POST \
         -d "$request_payload" \
         "$base_url/" 2>/dev/null)
-    
+
     if echo "$response" | jq -e '.result.tools[]' >/dev/null 2>&1; then
         local tool_count
         tool_count=$(echo "$response" | jq -r '.result.tools | length')
         log_success "MCP tools listed successfully - found $tool_count tools"
-        
+
         # Show some tools
         log_debug "Available tools:"
         echo "$response" | jq -r '.result.tools[].name' | head -5 | sed 's/^/  - /'
@@ -158,14 +158,14 @@ test_mcp_list_tools() {
 # Test MCP tool execution
 test_mcp_tool_execution() {
     log_info "Testing MCP tool execution..."
-    
+
     if [[ -z "$MCP_AUTH_KEY" ]]; then
         log_warning "Skipping tool execution test - MCP_AUTH_KEY not set"
         return 0
     fi
-    
+
     local base_url="https://$DOMAIN"
-    
+
     # Test list_hubspot_contacts tool
     local request_payload='{
         "jsonrpc": "2.0",
@@ -178,7 +178,7 @@ test_mcp_tool_execution() {
             }
         }
     }'
-    
+
     local response
     response=$(curl -s -m $TIMEOUT \
         -H "X-API-Key: $MCP_AUTH_KEY" \
@@ -186,10 +186,10 @@ test_mcp_tool_execution() {
         -X POST \
         -d "$request_payload" \
         "$base_url/" 2>/dev/null)
-    
+
     if echo "$response" | jq -e '.result.content[0].text' >/dev/null 2>&1; then
         log_success "MCP tool execution successful - list_hubspot_contacts worked"
-        
+
         # Show preview of result
         local preview
         preview=$(echo "$response" | jq -r '.result.content[0].text' | head -3)
@@ -206,65 +206,65 @@ test_mcp_tool_execution() {
 # Test authentication scenarios
 test_authentication() {
     log_info "Testing authentication scenarios..."
-    
+
     local base_url="https://$DOMAIN"
-    
+
     # Test without authentication
     local response_code
     response_code=$(curl -s -o /dev/null -w "%{http_code}" -m $TIMEOUT "$base_url/")
-    
+
     if [[ "$response_code" == "401" ]]; then
         log_success "Authentication required - endpoint properly secured"
     else
         log_warning "Authentication not required - endpoint may be insecure"
     fi
-    
+
     # Test with wrong authentication
     if [[ -n "$MCP_AUTH_KEY" ]]; then
         response_code=$(curl -s -o /dev/null -w "%{http_code}" -m $TIMEOUT \
             -H "X-API-Key: wrong-key" "$base_url/")
-        
+
         if [[ "$response_code" == "401" ]]; then
             log_success "Wrong authentication rejected - security working"
         else
             log_warning "Wrong authentication accepted - security issue"
         fi
     fi
-    
+
     return 0
 }
 
 # Test SSE streaming
 test_sse_streaming() {
     log_info "Testing SSE streaming functionality..."
-    
+
     if [[ -z "$MCP_AUTH_KEY" ]]; then
         log_warning "Skipping SSE streaming test - MCP_AUTH_KEY not set"
         return 0
     fi
-    
+
     local sse_url="https://$DOMAIN/sse"
     local temp_file=$(mktemp)
-    
+
     log_info "Testing SSE stream for 10 seconds..."
-    
+
     # Start SSE connection in background
     curl -s -m 15 \
         -H "X-API-Key: $MCP_AUTH_KEY" \
         -H "Accept: text/event-stream" \
         -H "Cache-Control: no-cache" \
         "$sse_url" > "$temp_file" &
-    
+
     local curl_pid=$!
     sleep 10
     kill $curl_pid 2>/dev/null || true
     wait $curl_pid 2>/dev/null || true
-    
+
     if [[ -s "$temp_file" ]]; then
         local line_count
         line_count=$(wc -l < "$temp_file")
         log_success "SSE streaming working - received $line_count lines"
-        
+
         if [[ $line_count -gt 0 ]]; then
             log_debug "Sample SSE data:"
             head -n 5 "$temp_file" | sed 's/^/  /'
@@ -281,29 +281,29 @@ test_sse_streaming() {
 # Performance test
 test_performance() {
     log_info "Testing performance..."
-    
+
     if [[ -z "$MCP_AUTH_KEY" ]]; then
         log_warning "Skipping performance test - MCP_AUTH_KEY not set"
         return 0
     fi
-    
+
     local base_url="https://$DOMAIN"
     local total_time=0
     local successful_requests=0
     local failed_requests=0
-    
+
     log_info "Running 5 performance test requests..."
-    
+
     for i in {1..5}; do
         local start_time=$(date +%s.%N)
-        
+
         local request_payload='{
             "jsonrpc": "2.0",
             "id": '$i',
             "method": "tools/list",
             "params": {}
         }'
-        
+
         if curl -s -m $TIMEOUT \
             -H "X-API-Key: $MCP_AUTH_KEY" \
             -H "Content-Type: application/json" \
@@ -314,22 +314,22 @@ test_performance() {
         else
             ((failed_requests++))
         fi
-        
+
         local end_time=$(date +%s.%N)
         local request_time=$(echo "$end_time - $start_time" | bc)
         total_time=$(echo "$total_time + $request_time" | bc)
-        
+
         echo "  Request $i: ${request_time}s"
     done
-    
+
     local avg_time
     avg_time=$(echo "scale=3; $total_time / 5" | bc)
-    
+
     log_success "Performance test completed:"
     echo "  - Successful requests: $successful_requests/5"
     echo "  - Failed requests: $failed_requests/5"
     echo "  - Average response time: ${avg_time}s"
-    
+
     return 0
 }
 
@@ -340,47 +340,47 @@ run_all_tests() {
     log_info "Namespace: $NAMESPACE"
     log_info "Timeout: ${TIMEOUT}s"
     echo ""
-    
+
     local failed_tests=0
-    
+
     # Test basic connectivity
     if ! test_basic_connectivity; then
         ((failed_tests++))
     fi
     echo ""
-    
+
     # Test SSE endpoint
     if ! test_sse_endpoint; then
         ((failed_tests++))
     fi
     echo ""
-    
+
     # Test authentication
     test_authentication
     echo ""
-    
+
     # Test SSE streaming
     if ! test_sse_streaming; then
         ((failed_tests++))
     fi
     echo ""
-    
+
     # Test MCP tools listing
     if ! test_mcp_list_tools; then
         ((failed_tests++))
     fi
     echo ""
-    
+
     # Test MCP tool execution
     if ! test_mcp_tool_execution; then
         ((failed_tests++))
     fi
     echo ""
-    
+
     # Performance test
     test_performance
     echo ""
-    
+
     # Summary
     if [[ $failed_tests -eq 0 ]]; then
         log_success "=== All SSE MCP tests passed! ✅ ==="
@@ -396,19 +396,19 @@ run_all_tests() {
 # Check prerequisites
 check_prerequisites() {
     local missing_tools=()
-    
+
     if ! command -v curl &> /dev/null; then
         missing_tools+=("curl")
     fi
-    
+
     if ! command -v jq &> /dev/null; then
         missing_tools+=("jq")
     fi
-    
+
     if ! command -v bc &> /dev/null; then
         missing_tools+=("bc")
     fi
-    
+
     if [[ ${#missing_tools[@]} -ne 0 ]]; then
         log_error "Missing required tools: ${missing_tools[*]}"
         log_info "Please install missing tools:"
@@ -481,4 +481,4 @@ done
 # Main execution
 check_prerequisites
 load_environment
-run_all_tests 
+run_all_tests

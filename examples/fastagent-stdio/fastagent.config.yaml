@@ -20,4 +20,4 @@ mcp:
           args: ["run", "hubspot-mcp-server", "--mode", "stdio"]
           env:
             HUBSPOT_API_KEY: "${HUBSPOT_API_KEY}"
-            HUBSPOT_API_URL: "https://api.hubapi.com" 
+            HUBSPOT_API_URL: "https://api.hubapi.com"

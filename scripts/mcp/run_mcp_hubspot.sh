@@ -43,4 +43,4 @@ if [ ! -f "pyproject.toml" ]; then
 fi
 
 # Launch the MCP server using the official entry point
-exec "$UV_PATH" run hubspot-mcp-server "$@" 
+exec "$UV_PATH" run hubspot-mcp-server "$@"

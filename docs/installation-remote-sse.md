@@ -7,6 +7,7 @@ This guide explains how to deploy the HubSpot MCP Server to Kubernetes for produ
 ## 🎯 When to Use Remote Deployment
 
 **Best for:**
+
 - ✅ Production environments
 - ✅ Team usage and collaboration
 - ✅ Scalable deployments
@@ -15,6 +16,7 @@ This guide explains how to deploy the HubSpot MCP Server to Kubernetes for produ
 - ✅ Centralized management
 
 **Features:**
+
 - 🌐 SSE (Server-Sent Events) protocol
 - 🔐 Authentication and security
 - 📈 Horizontal scaling
@@ -130,6 +132,7 @@ nano values-production.yaml  # Customize with your values
 **Key sections to customize:**
 
 #### 1. Docker Image Configuration
+
 ```yaml
 app-component:
   containers:
@@ -140,6 +143,7 @@ app-component:
 ```
 
 #### 2. Secret Management
+
 ```yaml
   secrets:
     - name: hubspot-mcp-secrets
@@ -153,6 +157,7 @@ app-component:
 ```
 
 #### 3. Domain and Ingress
+
 ```yaml
   ingress:
     hosts:
@@ -166,10 +171,11 @@ app-component:
 ```
 
 #### 4. Environment and Namespace
+
 ```yaml
   commonLabels:
     environment: production  # Your environment name
-  
+
   commonAnnotations:
     meta.helm.sh/release-namespace: mcp-hubspot  # Your namespace
 ```
@@ -183,12 +189,14 @@ The deployment uses **External Secrets Operator** for secure secret management:
 ### Required Secrets
 
 Your secret store must contain:
+
 - **`hubspot-api-key`**: Your HubSpot API key for CRM access
 - **`mcp-auth-key`**: Authentication key for MCP server access
 
 ### External Secrets Configuration
 
 **For Scaleway Secret Manager:**
+
 ```yaml
 secrets:
   - name: hubspot-mcp-secrets
@@ -199,6 +207,7 @@ secrets:
 ```
 
 **For other providers:**
+
 ```yaml
 secrets:
   - name: hubspot-mcp-secrets
@@ -217,6 +226,7 @@ secrets:
 - ✅ Support for major DNS providers (Cloudflare, Route53, etc.)
 
 When you deploy, External DNS will:
+
 1. Detect the new Ingress resource
 2. Extract hostname from annotations
 3. Create appropriate DNS record pointing to load balancer
@@ -235,6 +245,7 @@ Automated deployment with namespace creation and verification:
 ```
 
 **Features:**
+
 - Creates namespace with proper labels
 - Deploys application using Helm
 - Verifies deployment status
@@ -265,6 +276,7 @@ Builds and pushes Docker image:
 ```
 
 **Features:**
+
 - Loads environment configuration
 - Builds multi-architecture image
 - Pushes to configured registry
@@ -421,12 +433,14 @@ kubectl get ingress -n $NAMESPACE
 ### Common Issues
 
 #### 1. Script Permissions
+
 ```bash
 # Make scripts executable
 chmod +x scripts/*.sh
 ```
 
 #### 2. Environment Variables
+
 ```bash
 # Check environment is loaded
 source environment
@@ -434,6 +448,7 @@ echo $NAMESPACE $RELEASE_NAME $DOMAIN
 ```
 
 #### 3. Kubernetes Access
+
 ```bash
 # Test cluster access
 kubectl cluster-info
@@ -441,6 +456,7 @@ kubectl get nodes
 ```
 
 #### 4. External Secrets Issues
+
 ```bash
 # Check external secret status
 kubectl describe externalsecret hubspot-mcp-secrets -n $NAMESPACE
@@ -450,6 +466,7 @@ kubectl get secrets -n $NAMESPACE
 ```
 
 #### 5. Ingress/TLS Issues
+
 ```bash
 # Check ingress status
 kubectl describe ingress -n $NAMESPACE
@@ -572,6 +589,7 @@ kubectl scale deployment hubspot-mcp-server -n $NAMESPACE --replicas=5
 ### Performance Monitoring
 
 Monitor performance through:
+
 - **Prometheus metrics** at `/metrics` endpoint
 - **Health checks** at `/health` and `/ready`
 - **Kubernetes resources** monitoring
@@ -623,4 +641,4 @@ After successful deployment:
 4. **Scale as needed**: Adjust replicas based on usage
 5. **Maintain regularly**: Keep dependencies and secrets updated
 
-**Happy deploying!** 🚀 
+**Happy deploying!** 🚀

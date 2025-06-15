@@ -201,4 +201,3 @@ globs:
 - **Team follows conventions** consistently
 
 This document establishes the foundation for writing maintainable, high-quality code across all programming languages and projects. Language-specific conventions should supplement, not replace, these general principles.
-

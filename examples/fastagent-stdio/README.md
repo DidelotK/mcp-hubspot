@@ -5,16 +5,19 @@ This example demonstrates how to use the HubSpot MCP server with FastAgent to cr
 ## Setup
 
 1. Install dependencies:
+
 ```bash
 uv sync
 ```
 
 2. Set up your HubSpot API key:
+
 ```bash
 export HUBSPOT_API_KEY="your_hubspot_api_key_here"
 ```
 
 3. Run the agent:
+
 ```bash
 cd examples/fastagent-stdio/
 uv run agent.py
@@ -30,6 +33,7 @@ Once started, you can interact with the agent using natural language to:
 - Get property information for HubSpot objects
 
 Example queries:
+
 - "Show me the top 5 contacts"
 - "Find deals related to Cardiologs"
 - "Create a new deal for Acme Corp worth $50,000"
@@ -37,4 +41,4 @@ Example queries:
 
 ## Configuration
 
-The agent uses the configuration in `fastagent.config.yaml` which references the HubSpot MCP server. Make sure your API key is set in the environment variable `HUBSPOT_API_KEY`. 
+The agent uses the configuration in `fastagent.config.yaml` which references the HubSpot MCP server. Make sure your API key is set in the environment variable `HUBSPOT_API_KEY`.

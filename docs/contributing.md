@@ -26,7 +26,7 @@ def format_new_resources(resources: List[dict]) -> str:
     """Formats the list of new resources for display."""
     if not resources:
         return "❌ **No resources found**"
-    
+
     # Formatting with emojis and consistent structure
     pass
 ```
@@ -43,7 +43,7 @@ from ..formatters import format_new_resources
 class NewResourceTool:
     def __init__(self, client: HubSpotClient):
         self.client = client
-    
+
     @property
     def definition(self) -> Tool:
         return Tool(
@@ -60,7 +60,7 @@ class NewResourceTool:
                 }
             }
         )
-    
+
     async def execute(self, limit: int = 100, filters: dict = None) -> str:
         # Implementation with error handling
         pass
@@ -73,6 +73,7 @@ Update `src/hubspot_mcp/__init__.py` and `src/hubspot_mcp/handlers.py`.
 ### 5. Tests
 
 Create tests in `tests/` with at minimum:
+
 - Normal execution test
 - Error handling test
 - Formatting test
@@ -160,16 +161,19 @@ git push origin feature/new-tool
 ### Code Standards
 
 #### Tool Naming
+
 - **List**: `list_hubspot_[resource]` (e.g., `list_hubspot_contacts`)
 - **Search**: `get_[resource]_by_[field]` (e.g., `get_deal_by_name`)
 
 #### Response Formatting
+
 - **Title**: `📋 **HubSpot Resources** (X found)`
 - **Emojis**: Consistent by data type
 - **Structure**: Bold name, indented properties
 - **Errors**: `❌ **Error message**`
 
 #### Error Handling
+
 ```python
 try:
     # API call
@@ -192,16 +196,16 @@ class TestNewResourceTool:
     @pytest.fixture
     def mock_client(self):
         return AsyncMock()
-    
+
     @pytest.fixture
     def tool(self, mock_client):
         return NewResourceTool(mock_client)
-    
+
     @pytest.mark.asyncio
     async def test_execute_success(self, tool, mock_client):
         # Test normal case
         pass
-    
+
     @pytest.mark.asyncio
     async def test_execute_error(self, tool, mock_client):
         # Test error handling
@@ -277,6 +281,7 @@ Installed Git hooks automatically execute:
 - **pre-push**: Unit tests
 
 To temporarily bypass:
+
 ```bash
 git commit --no-verify
 git push --no-verify
@@ -285,6 +290,7 @@ git push --no-verify
 ### CI/CD
 
 Quality checks run automatically:
+
 - ✅ **On all pushes** to main/develop
 - ✅ **On all pull requests**
 - ❌ **Build failure** if quality is not satisfactory
@@ -307,4 +313,4 @@ Quality checks run automatically:
 3. Test coverage maintained
 4. **Code quality validated**
 5. Semantic versioning commits
-6. PR reviewed and approved 
+6. PR reviewed and approved

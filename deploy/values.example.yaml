@@ -1,6 +1,6 @@
 # HubSpot MCP Server - Example Configuration
 # Using app-component helm chart: https://gitlab.com/keltiotechnology/helm-charts/-/tree/master/app-component
-# 
+#
 # Copy this file to values-production.yaml and customize with your environment-specific values:
 # cp values.example.yaml values-production.yaml
 
@@ -184,4 +184,4 @@ app-component:
   commonAnnotations:
     deployment.kubernetes.io/revision: "1"
     meta.helm.sh/release-name: hubspot-mcp-server
-    meta.helm.sh/release-namespace: production  # Update with your namespace 
+    meta.helm.sh/release-namespace: production  # Update with your namespace

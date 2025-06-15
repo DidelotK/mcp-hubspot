@@ -105,7 +105,7 @@ class Config:
     """Base configuration class."""
     SECRET_KEY: str = os.getenv("SECRET_KEY", "")
     DATABASE_URL: str = os.getenv("DATABASE_URL", "")
-    
+
     @classmethod
     def validate(cls) -> None:
         """Validate required configuration."""
@@ -187,7 +187,7 @@ def load_env_file(env_file: Optional[str] = None) -> None:
     if env_file is None:
         env = os.getenv("ENVIRONMENT", "development")
         env_file = f".env.{env}"
-    
+
     env_path = Path(env_file)
     if env_path.exists():
         from dotenv import load_dotenv
@@ -208,13 +208,13 @@ def validate_secrets() -> None:
         "SECRET_KEY",
         "DATABASE_URL"
     ]
-    
+
     missing_secrets = []
     for secret in required_secrets:
         value = os.getenv(secret)
         if not value or value.startswith("your_") or value == "placeholder":
             missing_secrets.append(secret)
-    
+
     if missing_secrets:
         raise ValueError(
             f"Missing or invalid secrets: {missing_secrets}. "
@@ -245,7 +245,7 @@ secrets/
 
 ### Secret Rotation
 - **Development**: Rotate monthly or when compromised
-- **Staging**: Rotate bi-weekly or when compromised  
+- **Staging**: Rotate bi-weekly or when compromised
 - **Production**: Rotate weekly or immediately when compromised
 - **Document**: Keep a log of secret rotation dates
 

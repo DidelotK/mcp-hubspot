@@ -28,6 +28,7 @@ Both deployment modes use these core environment variables:
    - Configure scopes and permissions
 
 2. **Required Scopes**:
+
    ```
    CRM Scopes:
    - crm.objects.contacts.read
@@ -45,6 +46,7 @@ Both deployment modes use these core environment variables:
 #### API Key Format
 
 HubSpot API keys follow this format:
+
 ```
 pat-na1-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 ```
@@ -122,7 +124,7 @@ app-component:
         repository: your-registry.example.com/your-org/hubspot-mcp-server
         pullPolicy: IfNotPresent
         tag: "0.1.0"
-      
+
       # Environment variables for the container
       env:
         - name: MODE
@@ -232,6 +234,7 @@ Remote mode uses header-based authentication for security:
 #### Exempt Endpoints
 
 These endpoints don't require authentication:
+
 - `/health` - Health check
 - `/ready` - Readiness check
 
@@ -354,10 +357,12 @@ helm template hubspot-mcp-server . \
 #### 1. Invalid API Key
 
 **Symptoms:**
+
 - 401 Unauthorized errors
 - "Invalid API key" messages
 
 **Solutions:**
+
 ```bash
 # Verify API key format
 echo $HUBSPOT_API_KEY | grep -E "^pat-[a-z0-9]+-[a-f0-9-]+$"
@@ -370,10 +375,12 @@ curl -H "Authorization: Bearer $HUBSPOT_API_KEY" \
 #### 2. Missing Environment Variables
 
 **Symptoms:**
+
 - Server fails to start
 - Configuration errors
 
 **Solutions:**
+
 ```bash
 # Check required variables
 env | grep -E "(HUBSPOT_API_KEY|MCP_AUTH_KEY|DOMAIN)"
@@ -385,10 +392,12 @@ source deploy/environment
 #### 3. Authentication Issues (SSE Mode)
 
 **Symptoms:**
+
 - 401 errors on API calls
 - Authentication failures
 
 **Solutions:**
+
 ```bash
 # Test authentication
 curl -I -H "X-API-Key: $MCP_AUTH_KEY" \
@@ -430,4 +439,4 @@ kubectl describe externalsecret hubspot-mcp-secrets -n $NAMESPACE
 
 - **[Local Installation Guide](installation-local-stdio.md)** - Complete local setup
 - **[Remote Deployment Guide](installation-remote-sse.md)** - Kubernetes deployment
-- **[Troubleshooting](troubleshooting.md)** - Common issues and solutions 
+- **[Troubleshooting](troubleshooting.md)** - Common issues and solutions

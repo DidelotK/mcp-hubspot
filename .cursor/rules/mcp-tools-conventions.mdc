@@ -1,6 +1,6 @@
 ---
-description: 
-globs: 
+description:
+globs:
 alwaysApply: true
 ---
 # HubSpot MCP Tools Development Conventions
@@ -33,10 +33,10 @@ from .base import BaseTool
 
 class {Entity}Tool(BaseTool):
     """Tool for listing HubSpot {entity}."""
-    
+
     def get_tool_definition(self) -> types.Tool:
         # MANDATORY: Definition with complete JSON schema
-        
+
     async def execute(self, arguments: Dict[str, Any]) -> List[types.TextContent]:
         # MANDATORY: Implementation with error handling
 ```
@@ -139,7 +139,7 @@ Call list_hubspot_{entity} tool with filters: {"search": "term"}
 #### 3. **Standard HubSpot API Properties**
 Always include:
 - `createdate`: Creation date
-- `lastmodifieddate`: Last modification date  
+- `lastmodifieddate`: Last modification date
 - `id`: Unique identifier
 
 #### 4. **Display Formatting**
@@ -255,4 +255,4 @@ The conventions apply uniformly to any CRM entity such as **contacts**, **compan
 - Tool class: `EngagementsTool`
 - Client method: `get_engagements`
 - Formatter method: `format_engagements`
-- Tool name exposed to MCP: `list_hubspot_engagements` 
+- Tool name exposed to MCP: `list_hubspot_engagements`

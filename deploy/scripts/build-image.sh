@@ -29,4 +29,4 @@ if docker_build_and_push "$FULL_IMAGE_NAME" "$IMAGE_REGISTRY" "$REGISTRY_USERNAM
 else
     log_error "Docker image build and push failed!"
     exit 1
-fi 
+fi

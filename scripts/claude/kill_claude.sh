@@ -91,4 +91,4 @@ else
     exit 1
 fi
 
-echo -e "\n${BLUE}💡 To restart Claude Desktop, run: ${GREEN}claude-desktop${NC}" 
+echo -e "\n${BLUE}💡 To restart Claude Desktop, run: ${GREEN}claude-desktop${NC}"

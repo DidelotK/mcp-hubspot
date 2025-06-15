@@ -37,17 +37,17 @@ if [ -f "$LOG_FILE" ]; then
     RECENT_SUCCESS=$(tail -50 "$LOG_FILE" | grep -c "Server started and connected successfully" 2>/dev/null || echo "0")
     RECENT_ERRORS=$(tail -50 "$LOG_FILE" | grep -c "HOME: unbound variable" 2>/dev/null || echo "0")
     RECENT_DISCONNECTS=$(tail -50 "$LOG_FILE" | grep -c "Server disconnected" 2>/dev/null || echo "0")
-    
+
     # Clean up any whitespace/newlines
     RECENT_SUCCESS=${RECENT_SUCCESS//[^0-9]/}
     RECENT_ERRORS=${RECENT_ERRORS//[^0-9]/}
     RECENT_DISCONNECTS=${RECENT_DISCONNECTS//[^0-9]/}
-    
+
     # Set defaults if empty
     RECENT_SUCCESS=${RECENT_SUCCESS:-0}
     RECENT_ERRORS=${RECENT_ERRORS:-0}
     RECENT_DISCONNECTS=${RECENT_DISCONNECTS:-0}
-    
+
     if [ "$RECENT_SUCCESS" -gt 0 ] && [ "$RECENT_ERRORS" -eq 0 ]; then
         echo -e "   ${GREEN}✅ MCP server connected successfully${NC}"
         echo -e "   ${GREEN}   Recent connections: $RECENT_SUCCESS${NC}"
@@ -59,7 +59,7 @@ if [ -f "$LOG_FILE" ]; then
     else
         echo -e "   ${YELLOW}⚠️  No recent activity found${NC}"
     fi
-    
+
     # Show last few log entries
     echo -e "\n${BLUE}3. Last 3 Log Entries:${NC}"
     tail -3 "$LOG_FILE" | while read line; do
@@ -101,4 +101,4 @@ echo -e "\n${BLUE}💡 Quick Commands:${NC}"
 echo -e "   ${BLUE}just kill-claude${NC}    # Stop all Claude processes"
 echo -e "   ${BLUE}just start-claude${NC}   # Start Claude Desktop"
 echo -e "   ${BLUE}just test-mcp${NC}       # Test MCP configuration"
-echo -e "   ${BLUE}just logs-claude${NC}    # Monitor logs" 
+echo -e "   ${BLUE}just logs-claude${NC}    # Monitor logs"
