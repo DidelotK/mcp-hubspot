@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-HubSpot MCP Server
+"""HubSpot MCP Server.
 
 This server provides Model Context Protocol (MCP) tools to interact with HubSpot CRM.
 It allows accessing contacts, companies, and deals through conversational tools.
@@ -126,7 +125,7 @@ class AuthenticationMiddleware:
 
 
 async def main():
-    """Main entry point for the HubSpot MCP server."""
+    """Run the HubSpot MCP server main entry point."""
     args = parse_arguments()
 
     # Create server
@@ -259,6 +258,113 @@ async def main():
                     status_code=503, content={"status": "not_ready", "error": str(e)}
                 )
 
+        # FAISS data endpoint
+        async def faiss_data_endpoint(request: Request):
+            """Retrieve indexed FAISS data in JSON format.
+
+            Available only in SSE mode. Returns all indexed entities with their metadata.
+            """
+            try:
+                # Import here to avoid circular imports
+                from .tools.enhanced_base import EnhancedBaseTool
+
+                # Get the shared embedding manager
+                embedding_manager = EnhancedBaseTool.get_embedding_manager()
+
+                if embedding_manager is None:
+                    return JSONResponse(
+                        status_code=503,
+                        content={
+                            "status": "unavailable",
+                            "error": "Embedding system not initialized",
+                            "message": "No FAISS index has been built yet. Use the embedding management tool to build an index first.",
+                        },
+                    )
+
+                # Get index statistics
+                stats = embedding_manager.get_index_stats()
+
+                if stats.get("status") != "ready":
+                    return JSONResponse(
+                        status_code=503,
+                        content={
+                            "status": "not_ready",
+                            "error": "FAISS index not ready",
+                            "stats": stats,
+                            "message": "The FAISS index is not ready. Build an index using the embedding management tool.",
+                        },
+                    )
+
+                # Extract indexed entities data
+                indexed_entities = []
+                entity_counts = {}
+
+                for idx, metadata in embedding_manager.entity_metadata.items():
+                    entity = metadata.get("entity", {})
+                    entity_type = metadata.get("entity_type", "unknown")
+                    text = metadata.get("text", "")
+
+                    # Count entities by type
+                    entity_counts[entity_type] = entity_counts.get(entity_type, 0) + 1
+
+                    # Add to indexed entities
+                    indexed_entities.append(
+                        {
+                            "index": idx,
+                            "entity_type": entity_type,
+                            "entity_id": entity.get("id"),
+                            "entity_data": entity,
+                            "searchable_text": text,
+                            "text_length": len(text),
+                        }
+                    )
+
+                # Prepare response data
+                response_data = {
+                    "status": "success",
+                    "timestamp": __import__("datetime").datetime.utcnow().isoformat()
+                    + "Z",
+                    "server_info": {
+                        "server": "hubspot-mcp-server",
+                        "version": "1.0.0",
+                        "mode": "sse",
+                    },
+                    "faiss_stats": {
+                        "index_status": stats.get("status"),
+                        "total_entities": stats.get("total_entities", 0),
+                        "vector_dimension": stats.get("dimension"),
+                        "index_type": stats.get("index_type"),
+                        "model_name": stats.get("model_name"),
+                        "cache_size": stats.get("cache_size", 0),
+                    },
+                    "entity_summary": {
+                        "total_indexed": len(indexed_entities),
+                        "types_count": entity_counts,
+                        "available_types": list(entity_counts.keys()),
+                    },
+                    "indexed_entities": indexed_entities,
+                }
+
+                logger.info(
+                    f"FAISS data endpoint accessed - returning {len(indexed_entities)} indexed entities"
+                )
+
+                return JSONResponse(
+                    status_code=200,
+                    content=response_data,
+                )
+
+            except Exception as e:
+                logger.error(f"FAISS data endpoint failed: {e}")
+                return JSONResponse(
+                    status_code=500,
+                    content={
+                        "status": "error",
+                        "error": str(e),
+                        "message": "Internal server error while retrieving FAISS data",
+                    },
+                )
+
         # Create Starlette app with SSE routes
         # The following infrastructure objects (Starlette app and uvicorn config) are
         # instantiated only when running an actual SSE server. Mocking their internal
@@ -270,6 +376,7 @@ async def main():
                 Route("/sse", endpoint=handle_sse),
                 Route("/health", endpoint=health_check, methods=["GET"]),
                 Route("/ready", endpoint=readiness_check, methods=["GET"]),
+                Route("/faiss-data", endpoint=faiss_data_endpoint, methods=["GET"]),
                 Mount("/messages/", app=sse.handle_post_message),
             ]
         )  # pragma: no cover
