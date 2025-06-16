@@ -1,17 +1,9 @@
 ---
-description:
-globs:
-alwaysApply: true
----
-# HubSpot MCP Tools Development Conventions
-
 description: Conventions for developing HubSpot MCP tools, including structure, naming, and testing
 globs:
-  - "src/hubspot_mcp/tools/*.py"
-  - "src/hubspot_mcp/client/hubspot_client.py"
-  - "src/hubspot_mcp/formatters/hubspot_formatter.py"
-  - "tests/**"
-  - "README.md"
+alwaysApply: false
+---
+# HubSpot MCP Tools Development Conventions
 
 ## Mandatory Rules for Each New Tool
 

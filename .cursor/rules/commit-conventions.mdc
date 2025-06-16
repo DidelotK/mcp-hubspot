@@ -1,12 +1,8 @@
 ---
-description:
-globs:
-alwaysApply: true
----
 description: Commit message conventions and semantic versioning rules
 globs:
-  - "*"
-
+alwaysApply: false
+---
 # Commit Conventions - Semantic Versioning
 
 ## Required Format

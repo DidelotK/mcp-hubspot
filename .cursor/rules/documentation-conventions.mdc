@@ -1,10 +1,8 @@
 ---
-description: Documentation conventions for development agents
+description: Documentation standards and conventions for creating clear, maintainable documentation
 globs:
-  - "*"
-alwaysApply: true
+alwaysApply: false
 ---
-
 # Documentation Conventions for Development Agents
 
 ## 1. General Documentation

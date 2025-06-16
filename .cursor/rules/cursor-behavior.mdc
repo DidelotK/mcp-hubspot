@@ -3,10 +3,6 @@ description:
 globs:
 alwaysApply: true
 ---
-description: Rules for Cursor assistant behavior, communication, and priorities
-globs:
-  - "*"
-
 # Cursor/Assistant Behavior
 
 ## Communication Rules

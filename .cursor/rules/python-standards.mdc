@@ -1,19 +1,14 @@
 ---
 description:
-globs:
+globs: src/**/*.py,tests/**/*.py
 alwaysApply: false
 ---
 # Python Standards
 
-description: Python coding standards and best practices for the project
-globs:
-  - "src/**/*.py"
-  - "tests/**/*.py"
-
 ## General Conventions Reference
 
 **📋 For general coding conventions that apply to all programming languages, see:**
-📖 **[General Coding Conventions](mdc:coding-conventions.mdc)**
+📖 **[General Coding Conventions](mdc:mcp-hubspot/coding-conventions.mdc)**
 
 This file covers Python-specific standards. The general conventions file covers:
 - DRY (Don't Repeat Yourself) principle

@@ -7,13 +7,6 @@ alwaysApply: true
 
 ## Folder Organization
 
-description: Project folder organization, naming, and structure rules
-globs:
-  - "src/**"
-  - "tests/**"
-  - "pyproject.toml"
-  - "README.md"
-
 ```
 project/
 ├── .cursor/rules/          # Cursor rules (thematic organizations)

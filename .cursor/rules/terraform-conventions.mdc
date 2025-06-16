@@ -3,6 +3,7 @@ description:
 globs:
 alwaysApply: false
 ---
+---
 description: Terraform Infrastructure as Code conventions, standards, and best practices
 globs:
   - "*.tf"
@@ -11,6 +12,8 @@ globs:
   - "terraform/**"
   - "infrastructure/**"
   - ".terraform/**"
+alwaysApply: false
+---
 
 # Terraform Conventions - Infrastructure as Code
 

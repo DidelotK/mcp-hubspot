@@ -1,12 +1,8 @@
 ---
 description:
 globs:
-alwaysApply: false
+alwaysApply: true
 ---
-- description: General coding conventions and best practices for all programming languages
-globs:
-  - "*"
-
 # General Coding Conventions
 
 ## Core Principles
