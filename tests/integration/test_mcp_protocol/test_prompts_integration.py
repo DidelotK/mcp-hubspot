@@ -219,7 +219,7 @@ class TestMCPPromptsIntegration:
     @pytest.mark.asyncio
     async def test_prompt_error_logging(self, handlers):
         """Test that prompt errors are properly logged."""
-        with patch("src.hubspot_mcp.server.handlers.logger") as mock_logger:
+        with patch("hubspot_mcp.server.handlers.logger") as mock_logger:
             # Force an error by mocking the prompts object
             original_method = handlers.prompts.generate_prompt_content
             handlers.prompts.generate_prompt_content = Mock(

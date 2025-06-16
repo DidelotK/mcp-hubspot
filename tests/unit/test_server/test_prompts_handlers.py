@@ -268,7 +268,7 @@ class TestHubSpotHandlersPrompts:
         )
 
         # Patch the logger to verify it's called
-        with patch("src.hubspot_mcp.server.handlers.logger") as mock_logger:
+        with patch("hubspot_mcp.server.handlers.logger") as mock_logger:
             result = await handlers.handle_list_prompts()
 
             # Verify the error response (should return empty list)
