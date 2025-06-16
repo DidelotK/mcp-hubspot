@@ -1,0 +1,243 @@
+---
+description: When user ask you to create a spec for a specific task, use this file as guideline
+globs:
+alwaysApply: false
+---
+# Task Definition Convention
+
+description: Guidelines for AI agents when creating task specifications to ensure focused, contextual, and appropriately scoped requirements
+
+## Core Principles for Task Specifications
+
+### 🎯 Scope Definition
+- **NEVER expand beyond the explicit request**: Only address what the user specifically asked for
+- **Context-aware boundaries**: Understand the repository structure and existing patterns
+- **Incremental approach**: Break large tasks into smaller, manageable specifications
+- **Clear deliverables**: Define exactly what will be created, modified, or removed
+
+### 📋 Specification Structure
+
+#### Required Sections for All Task Specs
+
+1. **📊 Task Overview**
+   - Brief summary (1-2 sentences)
+   - Primary objective
+   - Expected outcome
+
+2. **🎯 Scope and Boundaries**
+   - What IS included in this task
+   - What is explicitly NOT included
+   - Dependencies on existing code/systems
+   - Integration points with current architecture
+
+3. **📁 Repository Context**
+   - Relevant existing files and directories
+   - Current patterns and conventions to follow
+   - Existing similar implementations to reference
+   - Impact on current codebase structure
+
+4. **✅ Acceptance Criteria**
+   - Specific, measurable outcomes
+   - Quality requirements
+   - Testing requirements
+   - Documentation requirements
+
+5. **🔧 Technical Requirements**
+   - Language/framework constraints
+   - Performance requirements
+   - Security considerations
+   - Compatibility requirements
+
+6. **📝 Implementation Guidelines**
+   - Preferred approaches based on existing patterns
+   - Code style and naming conventions
+   - Error handling patterns
+   - Logging and monitoring requirements
+
+## Repository-Specific Context Rules
+
+### 🏗️ HubSpot MCP Server Context
+- **Architecture**: MCP (Model Context Protocol) server for HubSpot integration
+- **Language**: Python 3.12+ with type hints
+- **Framework**: MCP protocol implementation
+- **Key modules**: `src/hubspot_mcp/` - main application code
+- **Testing**: `tests/` directory with pytest
+- **Configuration**: `pyproject.toml` for dependencies and settings
+
+### 📦 Existing Patterns to Follow
+- **Error handling**: Use structured exceptions with clear messages
+- **Logging**: Structured logging with appropriate levels
+- **Configuration**: Environment-based configuration with defaults
+- **API integration**: Async/await patterns for external API calls
+- **Data models**: Pydantic models for data validation
+- **Testing**: Unit tests with high coverage requirements
+
+### 🔗 Integration Points
+- **HubSpot API**: Integration with HubSpot REST API
+- **MCP Protocol**: Implementation of MCP server specification
+- **FAISS**: Vector database for semantic search
+- **SSE Endpoints**: Server-Sent Events for real-time updates
+- **Authentication**: Bearer token and API key management
+
+## Task Scoping Guidelines
+
+### ✅ Appropriate Task Scopes
+- **Single feature addition**: Add one new MCP tool or endpoint
+- **Bug fix**: Address specific issue without changing architecture
+- **Documentation update**: Improve or add documentation for existing features
+- **Test addition**: Add tests for existing functionality
+- **Configuration enhancement**: Improve configuration management
+- **Performance optimization**: Optimize specific bottlenecks
+
+### ❌ Inappropriate Task Scopes
+- **Complete architecture overhaul**: Requires multiple separate tasks
+- **Multiple unrelated features**: Should be split into separate specifications
+- **External dependency changes**: Requires separate dependency management task
+- **Breaking API changes**: Requires deprecation strategy and migration plan
+- **Security audit**: Requires specialized security expertise
+
+## Specification Template
+
+### Basic Task Specification Template
+
+```markdown
+# [Task Type]: [Brief Description]
+
+## 📊 Task Overview
+- **Objective**: [What needs to be accomplished]
+- **Context**: [Why this task is needed]
+- **Outcome**: [Expected result]
+
+## 🎯 Scope and Boundaries
+
+### ✅ Included
+- [Specific item 1]
+- [Specific item 2]
+
+### ❌ Excluded
+- [What will NOT be done]
+- [Future considerations]
+
+### 🔗 Dependencies
+- [Existing code dependencies]
+- [External service dependencies]
+
+## 📁 Repository Context
+
+### 📄 Relevant Files
+- `src/hubspot_mcp/[module].py` - [Description]
+- `tests/test_[module].py` - [Description]
+
+### 🏗️ Architecture Integration
+- [How this fits into existing architecture]
+- [Existing patterns to follow]
+
+## ✅ Acceptance Criteria
+1. [Specific, testable requirement 1]
+2. [Specific, testable requirement 2]
+3. [Quality requirement - tests, documentation, etc.]
+
+## 🔧 Technical Requirements
+
+### 📋 Implementation Details
+- **Language**: Python 3.12+
+- **Framework**: [Specific framework/library]
+- **Testing**: pytest with [coverage requirement]
+- **Documentation**: [Documentation requirements]
+
+### 🛡️ Quality Standards
+- Type hints required
+- Error handling implemented
+- Logging added where appropriate
+- Tests with minimum 80% coverage
+
+## 📝 Implementation Guidelines
+
+### 🏗️ Code Structure
+- Follow existing module organization
+- Use established naming conventions
+- Implement proper error handling patterns
+- Add appropriate logging
+
+### 🧪 Testing Requirements
+- Unit tests for all new functions
+- Integration tests for API endpoints
+- Mock external dependencies
+- Test error conditions
+
+### 📚 Documentation Requirements
+- Docstrings for all public functions
+- Update relevant README sections
+- Add examples where appropriate
+- Update API documentation if needed
+
+## 🚀 Definition of Done
+- [ ] Code implemented according to specification
+- [ ] All tests pass (unit and integration)
+- [ ] Code coverage meets requirements
+- [ ] Documentation updated
+- [ ] Code review completed
+- [ ] Quality checks pass (`just check`)
+```
+
+## Quality Assurance for Specifications
+
+### 📋 Specification Review Checklist
+- [ ] **Scope clarity**: Task boundaries are clearly defined
+- [ ] **Context awareness**: Specification considers existing codebase
+- [ ] **Feasibility**: Task is achievable within scope
+- [ ] **Testability**: Acceptance criteria are measurable
+- [ ] **Completeness**: All required sections included
+- [ ] **Repository alignment**: Follows existing patterns and conventions
+
+### 🔍 Common Specification Issues to Avoid
+- ❌ **Scope creep**: Adding requirements beyond original request
+- ❌ **Context ignorance**: Ignoring existing code patterns
+- ❌ **Vague requirements**: Non-specific or unmeasurable criteria
+- ❌ **Missing dependencies**: Not identifying required existing code
+- ❌ **Architecture conflicts**: Proposing incompatible solutions
+
+## Language and Communication Standards
+
+### 📝 Writing Guidelines
+- **Language**: All specifications must be written in English
+- **Clarity**: Use clear, unambiguous language
+- **Structure**: Follow the template structure consistently
+- **Examples**: Include concrete examples where helpful
+- **Precision**: Be specific about requirements and expectations
+
+### 🎯 User Intent Analysis
+- **Listen carefully**: Address exactly what the user requested
+- **Ask clarifying questions**: If scope is unclear, ask for clarification
+- **Suggest alternatives**: If request is too broad, suggest breaking it down
+- **Respect boundaries**: Don't add features the user didn't request
+
+## Continuous Improvement
+
+### 📈 Specification Evolution
+- Update conventions based on project experience
+- Refine templates as patterns emerge
+- Incorporate lessons learned from implemented tasks
+- Adapt to changing project requirements
+
+### 🔄 Feedback Integration
+- Collect feedback on specification quality
+- Track implementation success rates
+- Identify common specification issues
+- Improve templates and guidelines iteratively
+
+## Enforcement
+
+### ✅ Mandatory Requirements
+- All task specifications MUST follow this convention
+- Specifications MUST be written in English
+- Repository context MUST be considered
+- Scope boundaries MUST be clearly defined
+- Quality standards MUST be included
+
+### 🚫 Strict Prohibitions
+- ❌ NEVER expand scope beyond user request
+- ❌ NEVER ignore existing code patterns
+- ❌ NEVER create vague or unmeasurable requirements
+- ❌ NEVER propose breaking changes without explicit request
+- ❌ NEVER use languages other than English in specifications
