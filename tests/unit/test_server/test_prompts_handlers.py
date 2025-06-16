@@ -5,11 +5,11 @@ from unittest.mock import AsyncMock, MagicMock, Mock
 import mcp.types as types
 import pytest
 
-from src.hubspot_mcp.client import HubSpotClient
-from src.hubspot_mcp.server.handlers import MCPHandlers
+from hubspot_mcp.client import HubSpotClient
+from hubspot_mcp.server.handlers import HubSpotHandlers
 
 
-class TestMCPHandlersPrompts:
+class TestHubSpotHandlersPrompts:
     """Test cases for MCP handlers prompt functionality."""
 
     @pytest.fixture
@@ -20,7 +20,7 @@ class TestMCPHandlersPrompts:
     @pytest.fixture
     def handlers(self, mock_client):
         """Create MCP handlers instance."""
-        return MCPHandlers(mock_client)
+        return HubSpotHandlers(mock_client)
 
     @pytest.mark.asyncio
     async def test_handle_list_prompts(self, handlers):
@@ -52,7 +52,7 @@ class TestMCPHandlersPrompts:
     @pytest.mark.asyncio
     async def test_handle_get_prompt_basics_guide(self, handlers):
         """Test getting the basics guide prompt."""
-        result = await handlers.handle_get_prompt("hubspot_basics_guide")
+        result = await handlers.handle_get_prompt("hubspot_basics_guide", {})
 
         assert isinstance(result, types.GetPromptResult)
         assert "Generated guidance for hubspot_basics_guide" in result.description
@@ -135,12 +135,23 @@ class TestMCPHandlersPrompts:
     @pytest.mark.asyncio
     async def test_handle_get_prompt_no_arguments(self, handlers):
         """Test getting a prompt with no arguments provided."""
-        result = await handlers.handle_get_prompt("hubspot_basics_guide", None)
+        result = await handlers.handle_get_prompt("hubspot_basics_guide", {})
 
         assert isinstance(result, types.GetPromptResult)
         content = result.messages[0].content.text
 
         # Should work with default empty arguments
+        assert "HubSpot MCP Server - Getting Started Guide" in content
+
+    @pytest.mark.asyncio
+    async def test_handle_get_prompt_with_none_arguments(self, handlers):
+        """Test getting a prompt with None arguments to cover line 106."""
+        result = await handlers.handle_get_prompt("hubspot_basics_guide", None)
+
+        assert isinstance(result, types.GetPromptResult)
+        content = result.messages[0].content.text
+
+        # Should work with None arguments converted to empty dict
         assert "HubSpot MCP Server - Getting Started Guide" in content
 
     @pytest.mark.asyncio
@@ -181,7 +192,7 @@ class TestMCPHandlersPrompts:
     @pytest.mark.asyncio
     async def test_prompts_initialization(self, mock_client):
         """Test that prompts are properly initialized in handlers."""
-        handlers = MCPHandlers(mock_client)
+        handlers = HubSpotHandlers(mock_client)
 
         assert handlers.prompts is not None
         assert hasattr(handlers.prompts, "get_prompt_definitions")
@@ -230,7 +241,7 @@ class TestMCPHandlersPrompts:
 
     def test_prompts_class_integration(self, handlers):
         """Test that HubSpotPrompts class is properly integrated."""
-        from src.hubspot_mcp.prompts import HubSpotPrompts
+        from hubspot_mcp.prompts import HubSpotPrompts
 
         assert isinstance(handlers.prompts, HubSpotPrompts)
 
@@ -240,3 +251,31 @@ class TestMCPHandlersPrompts:
 
         content = handlers.prompts.generate_prompt_content("hubspot_basics_guide", {})
         assert "HubSpot MCP Server" in content
+
+    @pytest.mark.asyncio
+    async def test_handle_list_prompts_exception_handling(self, handlers):
+        """Test exception handling in handle_list_prompts method.
+
+        Tests that the handler correctly handles exceptions raised during
+        prompt listing by logging the error and returning an empty list
+        to achieve 100% coverage of lines 87-89.
+        """
+        from unittest.mock import patch
+
+        # Mock the prompts object to raise an exception
+        handlers.prompts.get_prompt_definitions = Mock(
+            side_effect=Exception("Test error during prompt listing")
+        )
+
+        # Patch the logger to verify it's called
+        with patch("src.hubspot_mcp.server.handlers.logger") as mock_logger:
+            result = await handlers.handle_list_prompts()
+
+            # Verify the error response (should return empty list)
+            assert isinstance(result, list)
+            assert len(result) == 0
+
+            # Verify the logger was called with the error
+            mock_logger.error.assert_called_once_with(
+                "Error listing prompts: Test error during prompt listing"
+            )

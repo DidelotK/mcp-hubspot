@@ -146,13 +146,41 @@ async def test_main_stdio_mode_execution():
 
         return decorator
 
+    def capture_list_prompts():
+        def decorator(func):
+            return func
+
+        return decorator
+
+    def capture_get_prompt():
+        def decorator(func):
+            return func
+
+        return decorator
+
+    def capture_list_resources():
+        def decorator(func):
+            return func
+
+        return decorator
+
+    def capture_read_resource():
+        def decorator(func):
+            return func
+
+        return decorator
+
     mock_server.list_tools = capture_list_tools
     mock_server.call_tool = capture_call_tool
+    mock_server.list_prompts = capture_list_prompts
+    mock_server.get_prompt = capture_get_prompt
+    mock_server.list_resources = capture_list_resources
+    mock_server.read_resource = capture_read_resource
 
     with (
         patch("hubspot_mcp.__main__.Server", return_value=mock_server),
         patch("hubspot_mcp.__main__.HubSpotClient", return_value=mock_hubspot_client),
-        patch("hubspot_mcp.__main__.MCPHandlers", return_value=mock_handlers),
+        patch("hubspot_mcp.__main__.HubSpotHandlers", return_value=mock_handlers),
         patch("mcp.server.stdio.stdio_server", return_value=mock_stdio),
         patch("hubspot_mcp.__main__.parse_arguments") as mock_parse_args,
         patch(
@@ -210,6 +238,10 @@ async def test_main_sse_mode_execution():
     # Capture registered handlers
     registered_list_tools_handler = None
     registered_call_tool_handler = None
+    registered_list_prompts_handler = None
+    registered_get_prompt_handler = None
+    registered_list_resources_handler = None
+    registered_read_resource_handler = None
 
     def capture_list_tools():
         def decorator(func):
@@ -227,13 +259,49 @@ async def test_main_sse_mode_execution():
 
         return decorator
 
+    def capture_list_prompts():
+        def decorator(func):
+            nonlocal registered_list_prompts_handler
+            registered_list_prompts_handler = func
+            return func
+
+        return decorator
+
+    def capture_get_prompt():
+        def decorator(func):
+            nonlocal registered_get_prompt_handler
+            registered_get_prompt_handler = func
+            return func
+
+        return decorator
+
+    def capture_list_resources():
+        def decorator(func):
+            nonlocal registered_list_resources_handler
+            registered_list_resources_handler = func
+            return func
+
+        return decorator
+
+    def capture_read_resource():
+        def decorator(func):
+            nonlocal registered_read_resource_handler
+            registered_read_resource_handler = func
+            return func
+
+        return decorator
+
     mock_server.list_tools = capture_list_tools
     mock_server.call_tool = capture_call_tool
+    mock_server.list_prompts = capture_list_prompts
+    mock_server.get_prompt = capture_get_prompt
+    mock_server.list_resources = capture_list_resources
+    mock_server.read_resource = capture_read_resource
 
     with (
         patch("hubspot_mcp.__main__.Server", return_value=mock_server),
         patch("hubspot_mcp.__main__.HubSpotClient", return_value=mock_hubspot_client),
-        patch("hubspot_mcp.__main__.MCPHandlers", return_value=mock_handlers),
+        patch("hubspot_mcp.__main__.HubSpotHandlers", return_value=mock_handlers),
         patch("hubspot_mcp.__main__.SseServerTransport", return_value=mock_sse),
         patch("hubspot_mcp.__main__.parse_arguments") as mock_parse_args,
         patch(
@@ -299,6 +367,10 @@ async def test_main_complete_sse_flow():
     # Capture registered handlers
     registered_list_tools_handler = None
     registered_call_tool_handler = None
+    registered_list_prompts_handler = None
+    registered_get_prompt_handler = None
+    registered_list_resources_handler = None
+    registered_read_resource_handler = None
 
     def capture_list_tools():
         def decorator(func):
@@ -316,13 +388,49 @@ async def test_main_complete_sse_flow():
 
         return decorator
 
+    def capture_list_prompts():
+        def decorator(func):
+            nonlocal registered_list_prompts_handler
+            registered_list_prompts_handler = func
+            return func
+
+        return decorator
+
+    def capture_get_prompt():
+        def decorator(func):
+            nonlocal registered_get_prompt_handler
+            registered_get_prompt_handler = func
+            return func
+
+        return decorator
+
+    def capture_list_resources():
+        def decorator(func):
+            nonlocal registered_list_resources_handler
+            registered_list_resources_handler = func
+            return func
+
+        return decorator
+
+    def capture_read_resource():
+        def decorator(func):
+            nonlocal registered_read_resource_handler
+            registered_read_resource_handler = func
+            return func
+
+        return decorator
+
     mock_server.list_tools = capture_list_tools
     mock_server.call_tool = capture_call_tool
+    mock_server.list_prompts = capture_list_prompts
+    mock_server.get_prompt = capture_get_prompt
+    mock_server.list_resources = capture_list_resources
+    mock_server.read_resource = capture_read_resource
 
     with (
         patch("hubspot_mcp.__main__.Server", return_value=mock_server),
         patch("hubspot_mcp.__main__.HubSpotClient", return_value=mock_hubspot_client),
-        patch("hubspot_mcp.__main__.MCPHandlers", return_value=mock_handlers),
+        patch("hubspot_mcp.__main__.HubSpotHandlers", return_value=mock_handlers),
         patch("hubspot_mcp.__main__.SseServerTransport", return_value=mock_sse),
         patch("hubspot_mcp.__main__.parse_arguments") as mock_parse_args,
         patch(
@@ -778,6 +886,10 @@ async def test_sse_mode_imports_and_logging():
     # Capture registered handlers
     registered_list_tools_handler = None
     registered_call_tool_handler = None
+    registered_list_prompts_handler = None
+    registered_get_prompt_handler = None
+    registered_list_resources_handler = None
+    registered_read_resource_handler = None
 
     def capture_list_tools():
         def decorator(func):
@@ -795,13 +907,49 @@ async def test_sse_mode_imports_and_logging():
 
         return decorator
 
+    def capture_list_prompts():
+        def decorator(func):
+            nonlocal registered_list_prompts_handler
+            registered_list_prompts_handler = func
+            return func
+
+        return decorator
+
+    def capture_get_prompt():
+        def decorator(func):
+            nonlocal registered_get_prompt_handler
+            registered_get_prompt_handler = func
+            return func
+
+        return decorator
+
+    def capture_list_resources():
+        def decorator(func):
+            nonlocal registered_list_resources_handler
+            registered_list_resources_handler = func
+            return func
+
+        return decorator
+
+    def capture_read_resource():
+        def decorator(func):
+            nonlocal registered_read_resource_handler
+            registered_read_resource_handler = func
+            return func
+
+        return decorator
+
     mock_server.list_tools = capture_list_tools
     mock_server.call_tool = capture_call_tool
+    mock_server.list_prompts = capture_list_prompts
+    mock_server.get_prompt = capture_get_prompt
+    mock_server.list_resources = capture_list_resources
+    mock_server.read_resource = capture_read_resource
 
     with (
         patch("hubspot_mcp.__main__.Server", return_value=mock_server),
         patch("hubspot_mcp.__main__.HubSpotClient", return_value=mock_hubspot_client),
-        patch("hubspot_mcp.__main__.MCPHandlers", return_value=mock_handlers),
+        patch("hubspot_mcp.__main__.HubSpotHandlers", return_value=mock_handlers),
         patch("hubspot_mcp.__main__.SseServerTransport", return_value=mock_sse),
         patch("hubspot_mcp.__main__.parse_arguments") as mock_parse_args,
         patch(
@@ -886,6 +1034,10 @@ async def test_sse_mode_without_auth():
     # Capture registered handlers
     registered_list_tools_handler = None
     registered_call_tool_handler = None
+    registered_list_prompts_handler = None
+    registered_get_prompt_handler = None
+    registered_list_resources_handler = None
+    registered_read_resource_handler = None
 
     def capture_list_tools():
         def decorator(func):
@@ -903,13 +1055,49 @@ async def test_sse_mode_without_auth():
 
         return decorator
 
+    def capture_list_prompts():
+        def decorator(func):
+            nonlocal registered_list_prompts_handler
+            registered_list_prompts_handler = func
+            return func
+
+        return decorator
+
+    def capture_get_prompt():
+        def decorator(func):
+            nonlocal registered_get_prompt_handler
+            registered_get_prompt_handler = func
+            return func
+
+        return decorator
+
+    def capture_list_resources():
+        def decorator(func):
+            nonlocal registered_list_resources_handler
+            registered_list_resources_handler = func
+            return func
+
+        return decorator
+
+    def capture_read_resource():
+        def decorator(func):
+            nonlocal registered_read_resource_handler
+            registered_read_resource_handler = func
+            return func
+
+        return decorator
+
     mock_server.list_tools = capture_list_tools
     mock_server.call_tool = capture_call_tool
+    mock_server.list_prompts = capture_list_prompts
+    mock_server.get_prompt = capture_get_prompt
+    mock_server.list_resources = capture_list_resources
+    mock_server.read_resource = capture_read_resource
 
     with (
         patch("hubspot_mcp.__main__.Server", return_value=mock_server),
         patch("hubspot_mcp.__main__.HubSpotClient", return_value=mock_hubspot_client),
-        patch("hubspot_mcp.__main__.MCPHandlers", return_value=mock_handlers),
+        patch("hubspot_mcp.__main__.HubSpotHandlers", return_value=mock_handlers),
         patch("hubspot_mcp.__main__.SseServerTransport", return_value=mock_sse),
         patch("hubspot_mcp.__main__.parse_arguments") as mock_parse_args,
         patch(
@@ -998,6 +1186,10 @@ async def test_sse_health_endpoint_no_api_key():
     # Capture registered handlers
     registered_list_tools_handler = None
     registered_call_tool_handler = None
+    registered_list_prompts_handler = None
+    registered_get_prompt_handler = None
+    registered_list_resources_handler = None
+    registered_read_resource_handler = None
 
     def capture_list_tools():
         def decorator(func):
@@ -1015,8 +1207,44 @@ async def test_sse_health_endpoint_no_api_key():
 
         return decorator
 
+    def capture_list_prompts():
+        def decorator(func):
+            nonlocal registered_list_prompts_handler
+            registered_list_prompts_handler = func
+            return func
+
+        return decorator
+
+    def capture_get_prompt():
+        def decorator(func):
+            nonlocal registered_get_prompt_handler
+            registered_get_prompt_handler = func
+            return func
+
+        return decorator
+
+    def capture_list_resources():
+        def decorator(func):
+            nonlocal registered_list_resources_handler
+            registered_list_resources_handler = func
+            return func
+
+        return decorator
+
+    def capture_read_resource():
+        def decorator(func):
+            nonlocal registered_read_resource_handler
+            registered_read_resource_handler = func
+            return func
+
+        return decorator
+
     mock_server.list_tools = capture_list_tools
     mock_server.call_tool = capture_call_tool
+    mock_server.list_prompts = capture_list_prompts
+    mock_server.get_prompt = capture_get_prompt
+    mock_server.list_resources = capture_list_resources
+    mock_server.read_resource = capture_read_resource
 
     # Mock InitializationOptions
     mock_init_options = MagicMock()
@@ -1024,7 +1252,7 @@ async def test_sse_health_endpoint_no_api_key():
     with (
         patch("hubspot_mcp.__main__.Server", return_value=mock_server),
         patch("hubspot_mcp.__main__.HubSpotClient", return_value=mock_hubspot_client),
-        patch("hubspot_mcp.__main__.MCPHandlers", return_value=mock_handlers),
+        patch("hubspot_mcp.__main__.HubSpotHandlers", return_value=mock_handlers),
         patch("hubspot_mcp.__main__.SseServerTransport", return_value=mock_sse),
         patch("hubspot_mcp.__main__.parse_arguments") as mock_parse_args,
         patch(
@@ -1098,6 +1326,10 @@ async def test_sse_readiness_endpoint_no_api_key():
     # Capture registered handlers
     registered_list_tools_handler = None
     registered_call_tool_handler = None
+    registered_list_prompts_handler = None
+    registered_get_prompt_handler = None
+    registered_list_resources_handler = None
+    registered_read_resource_handler = None
 
     def capture_list_tools():
         def decorator(func):
@@ -1115,8 +1347,44 @@ async def test_sse_readiness_endpoint_no_api_key():
 
         return decorator
 
+    def capture_list_prompts():
+        def decorator(func):
+            nonlocal registered_list_prompts_handler
+            registered_list_prompts_handler = func
+            return func
+
+        return decorator
+
+    def capture_get_prompt():
+        def decorator(func):
+            nonlocal registered_get_prompt_handler
+            registered_get_prompt_handler = func
+            return func
+
+        return decorator
+
+    def capture_list_resources():
+        def decorator(func):
+            nonlocal registered_list_resources_handler
+            registered_list_resources_handler = func
+            return func
+
+        return decorator
+
+    def capture_read_resource():
+        def decorator(func):
+            nonlocal registered_read_resource_handler
+            registered_read_resource_handler = func
+            return func
+
+        return decorator
+
     mock_server.list_tools = capture_list_tools
     mock_server.call_tool = capture_call_tool
+    mock_server.list_prompts = capture_list_prompts
+    mock_server.get_prompt = capture_get_prompt
+    mock_server.list_resources = capture_list_resources
+    mock_server.read_resource = capture_read_resource
 
     # Mock InitializationOptions
     mock_init_options = MagicMock()
@@ -1124,7 +1392,7 @@ async def test_sse_readiness_endpoint_no_api_key():
     with (
         patch("hubspot_mcp.__main__.Server", return_value=mock_server),
         patch("hubspot_mcp.__main__.HubSpotClient", return_value=mock_hubspot_client),
-        patch("hubspot_mcp.__main__.MCPHandlers", return_value=mock_handlers),
+        patch("hubspot_mcp.__main__.HubSpotHandlers", return_value=mock_handlers),
         patch("hubspot_mcp.__main__.SseServerTransport", return_value=mock_sse),
         patch("hubspot_mcp.__main__.parse_arguments") as mock_parse_args,
         patch(

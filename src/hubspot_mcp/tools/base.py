@@ -8,7 +8,7 @@ from typing import Any, Dict, List, Optional
 
 import httpx
 import mcp.types as types
-from cachetools import TTLCache
+from cachetools import TTLCache  # type: ignore
 
 from ..client import HubSpotClient
 

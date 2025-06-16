@@ -20,6 +20,28 @@ from .search_deals import SearchDealsTool
 from .semantic_search_tool import SemanticSearchTool
 from .update_deal_tool import UpdateDealTool
 
+# List of all available tool classes
+AVAILABLE_TOOLS = [
+    BulkCacheLoaderTool,
+    CacheManagementTool,
+    ContactsTool,
+    CompaniesTool,
+    DealsTool,
+    CreateDealTool,
+    DealByNameTool,
+    ContactPropertiesTool,
+    CompanyPropertiesTool,
+    DealPropertiesTool,
+    UpdateDealTool,
+    EngagementsTool,
+    SearchDealsTool,
+    SearchContactsTool,
+    SearchCompaniesTool,
+    SemanticSearchTool,
+    EmbeddingManagementTool,
+    FaissDataTool,
+]
+
 __all__ = [
     "BulkCacheLoaderTool",
     "CacheManagementTool",
@@ -40,4 +62,5 @@ __all__ = [
     "SemanticSearchTool",
     "EmbeddingManagementTool",
     "FaissDataTool",
+    "AVAILABLE_TOOLS",
 ]

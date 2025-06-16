@@ -3,7 +3,7 @@
 import mcp.types as types
 import pytest
 
-from src.hubspot_mcp.prompts.hubspot_prompts import HubSpotPrompts
+from hubspot_mcp.prompts.hubspot_prompts import HubSpotPrompts
 
 
 class TestHubSpotPrompts:

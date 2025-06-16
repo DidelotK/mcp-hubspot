@@ -19,7 +19,7 @@ from mcp.server.sse import SseServerTransport
 
 from .client import HubSpotClient
 from .config.settings import settings
-from .server import MCPHandlers
+from .server import HubSpotHandlers
 from .sse import (
     AuthenticationMiddleware,
     faiss_data_endpoint,
@@ -79,7 +79,7 @@ async def main():
     hubspot_client = HubSpotClient(api_key=settings.hubspot_api_key)
 
     # Create and add handlers
-    handlers = MCPHandlers(hubspot_client)
+    handlers = HubSpotHandlers(hubspot_client)
 
     # Enregistrement des handlers
     @server.list_tools()
@@ -90,14 +90,23 @@ async def main():
     async def handle_call_tool(name: str, arguments: dict):
         return await handlers.handle_call_tool(name, arguments)
 
-    # TODO: Add prompt handlers when MCP library supports them properly
-    # @server.list_prompts()
-    # async def handle_list_prompts():
-    #     return await handlers.handle_list_prompts()
+    @server.list_prompts()
+    async def handle_list_prompts():
+        return await handlers.handle_list_prompts()
 
-    # @server.get_prompt()
-    # async def handle_get_prompt(name: str, arguments: dict = None):
-    #     return await handlers.handle_get_prompt(name, arguments)
+    @server.get_prompt()
+    async def handle_get_prompt(name: str, arguments: dict = None):
+        if arguments is None:
+            arguments = {}
+        return await handlers.handle_get_prompt(name, arguments)
+
+    @server.list_resources()
+    async def handle_list_resources():
+        return await handlers.handle_list_resources()
+
+    @server.read_resource()
+    async def handle_read_resource(uri: str):
+        return await handlers.handle_read_resource(uri)
 
     # Initialize server options
     server_options = InitializationOptions(

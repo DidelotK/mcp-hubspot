@@ -21,7 +21,7 @@ if src_path not in sys.path:
 # Local imports after path modification
 from hubspot_mcp.__main__ import parse_arguments  # noqa: E402
 from hubspot_mcp.client import HubSpotClient  # noqa: E402
-from hubspot_mcp.server import MCPHandlers  # noqa: E402
+from hubspot_mcp.server import HubSpotHandlers  # noqa: E402
 
 
 def test_parse_arguments_defaults(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -67,7 +67,7 @@ def test_handle_list_tools() -> None:
     with their expected names.
     """
     client = HubSpotClient("test-key")
-    handlers = MCPHandlers(client)
+    handlers = HubSpotHandlers(client)
     tools: List[Tool] = asyncio.run(handlers.handle_list_tools())
     names: List[str] = [tool.name for tool in tools]
     assert "list_hubspot_contacts" in names
@@ -83,7 +83,7 @@ def test_handle_call_tool_no_client() -> None:
     Tests that the handler correctly handles the case when no client
     is initialized.
     """
-    handlers = MCPHandlers(None)
+    handlers = HubSpotHandlers(None)
     result: List[TextContent] = asyncio.run(
         handlers.handle_call_tool("list_hubspot_contacts", {})
     )
@@ -219,7 +219,7 @@ def test_handle_call_tool_deals(monkeypatch: pytest.MonkeyPatch) -> None:
     """
     monkeypatch.setattr(httpx, "AsyncClient", DummyAsyncClient)
     client = HubSpotClient("testkey")
-    handlers = MCPHandlers(client)
+    handlers = HubSpotHandlers(client)
     result: List[TextContent] = asyncio.run(
         handlers.handle_call_tool("list_hubspot_deals", {"limit": 10})
     )
@@ -235,7 +235,7 @@ def test_handle_list_tools_includes_properties() -> None:
     in the list of available tools.
     """
     client = HubSpotClient("test-key")
-    handlers = MCPHandlers(client)
+    handlers = HubSpotHandlers(client)
     tools: List[Tool] = asyncio.run(handlers.handle_list_tools())
     names: List[str] = [tool.name for tool in tools]
     assert "get_hubspot_contact_properties" in names
@@ -266,7 +266,7 @@ def test_handle_call_tool_deal_properties(monkeypatch: pytest.MonkeyPatch) -> No
     """
     monkeypatch.setattr(httpx, "AsyncClient", DummyAsyncClient)
     client = HubSpotClient("testkey")
-    handlers = MCPHandlers(client)
+    handlers = HubSpotHandlers(client)
     result: List[TextContent] = asyncio.run(
         handlers.handle_call_tool("get_hubspot_deal_properties", {})
     )
@@ -282,7 +282,7 @@ def test_handle_call_tool_unknown_tool() -> None:
     by returning an appropriate error message.
     """
     client = HubSpotClient("test-key")
-    handlers = MCPHandlers(client)
+    handlers = HubSpotHandlers(client)
     result: List[TextContent] = asyncio.run(
         handlers.handle_call_tool("unknown_tool", {})
     )
@@ -298,7 +298,7 @@ def test_handle_call_tool_with_arguments() -> None:
     types of arguments (limit, filters, etc.).
     """
     client = HubSpotClient("test-key")
-    handlers = MCPHandlers(client)
+    handlers = HubSpotHandlers(client)
 
     # Test with limit argument
     result: List[TextContent] = asyncio.run(
@@ -324,7 +324,7 @@ def test_handle_list_tools_count() -> None:
     with their correct names.
     """
     client = HubSpotClient("test-key")
-    handlers = MCPHandlers(client)
+    handlers = HubSpotHandlers(client)
     tools: List[Tool] = asyncio.run(handlers.handle_list_tools())
 
     # Should have exactly 18 tools after adding semantic search, embedding management, bulk cache loader, and FAISS data browsing tools
@@ -367,14 +367,18 @@ def test_handle_call_tool_exception_handling() -> None:
     error message to achieve 100% coverage.
     """
     client = HubSpotClient("test-key")
-    handlers = MCPHandlers(client)
+    handlers = HubSpotHandlers(client)
 
-    # Create a mock tool that raises an exception
-    mock_tool = AsyncMock()
-    mock_tool.execute.side_effect = ValueError("Test exception for coverage")
+    # Create a mock tool class that raises an exception when executed
+    class MockTool:
+        def __init__(self, client):
+            self.client = client
+
+        async def execute(self, arguments):
+            raise ValueError("Test exception for coverage")
 
     # Replace the contacts tool with our mock
-    handlers.tools_map["list_hubspot_contacts"] = mock_tool
+    handlers.tools["list_hubspot_contacts"] = MockTool  # type: ignore
 
     # Patch the logger to verify it's called
     with patch("hubspot_mcp.server.handlers.logger") as mock_logger:
@@ -395,3 +399,42 @@ def test_handle_call_tool_exception_handling() -> None:
         mock_logger.error.assert_called_once_with(
             "Error executing tool list_hubspot_contacts: Test exception for coverage"
         )
+
+
+def test_handle_list_tools_exception_handling() -> None:
+    """Test exception handling in handle_list_tools method.
+
+    Tests that the handler correctly handles exceptions raised during
+    tool listing by logging the error and returning an empty list
+    to achieve 100% coverage of lines 43-45.
+    """
+    client = HubSpotClient("test-key")
+    handlers = HubSpotHandlers(client)
+
+    # Create a mock tool class that raises an exception when get_tool_definition is called
+    class MockToolClass:
+        def __init__(self, client):
+            self.client = client
+
+        def get_tool_definition(self):
+            raise ValueError("Test exception during tool definition retrieval")
+
+    # Replace one of the tools with our mock that will cause an exception
+    original_tools = handlers.tools.copy()
+    handlers.tools = {"mock_tool": MockToolClass}  # type: ignore
+
+    # Patch the logger to verify it's called
+    with patch("hubspot_mcp.server.handlers.logger") as mock_logger:
+        result: List[Tool] = asyncio.run(handlers.handle_list_tools())
+
+        # Verify the error response (should return empty list)
+        assert isinstance(result, list)
+        assert len(result) == 0
+
+        # Verify the logger was called with the error
+        mock_logger.error.assert_called_once_with(
+            "Error listing tools: Test exception during tool definition retrieval"
+        )
+
+    # Restore original tools
+    handlers.tools = original_tools

@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
-"""
-Unit tests for main.py
-"""
+"""Unit tests for main.py."""
 
 import asyncio
 import os
@@ -26,7 +24,7 @@ if src_path not in sys.path:
 # Explicit import of main module for code coverage
 import hubspot_mcp.__main__ as main  # noqa: F401,E402
 from hubspot_mcp.client import HubSpotClient  # noqa: E402
-from hubspot_mcp.server import MCPHandlers  # noqa: E402
+from hubspot_mcp.server import HubSpotHandlers  # noqa: E402
 
 
 @pytest.mark.asyncio
@@ -59,7 +57,7 @@ async def test_main_stdio_mode():
     mock_server = AsyncMock(spec=Server)
     mock_server.run = AsyncMock(return_value=None)  # Prevent unawaited coroutine
     mock_hubspot_client = MagicMock(spec=HubSpotClient)
-    mock_handlers = AsyncMock(spec=MCPHandlers)
+    mock_handlers = AsyncMock(spec=HubSpotHandlers)
     mock_handlers.handle_list_tools = AsyncMock()
     mock_handlers.handle_call_tool = AsyncMock()
 
@@ -79,7 +77,7 @@ async def test_main_stdio_mode():
     with (
         patch("hubspot_mcp.__main__.Server", return_value=mock_server),
         patch("hubspot_mcp.__main__.HubSpotClient", return_value=mock_hubspot_client),
-        patch("hubspot_mcp.__main__.MCPHandlers", return_value=mock_handlers),
+        patch("hubspot_mcp.__main__.HubSpotHandlers", return_value=mock_handlers),
         patch("mcp.server.stdio.stdio_server", return_value=mock_stdio),
         patch("hubspot_mcp.__main__.parse_arguments") as mock_parse_args,
         patch(
@@ -106,7 +104,7 @@ async def test_main_sse_mode():
     # Mock dependencies
     mock_server = AsyncMock(spec=Server)
     mock_hubspot_client = MagicMock(spec=HubSpotClient)
-    mock_handlers = AsyncMock(spec=MCPHandlers)
+    mock_handlers = AsyncMock(spec=HubSpotHandlers)
     mock_handlers.handle_list_tools = AsyncMock()
     mock_handlers.handle_call_tool = AsyncMock()
 
@@ -128,7 +126,7 @@ async def test_main_sse_mode():
     with (
         patch("hubspot_mcp.__main__.Server", return_value=mock_server),
         patch("hubspot_mcp.__main__.HubSpotClient", return_value=mock_hubspot_client),
-        patch("hubspot_mcp.__main__.MCPHandlers", return_value=mock_handlers),
+        patch("hubspot_mcp.__main__.HubSpotHandlers", return_value=mock_handlers),
         patch("hubspot_mcp.__main__.SseServerTransport", return_value=mock_sse),
         patch("hubspot_mcp.__main__.parse_arguments") as mock_parse_args,
         patch(
@@ -165,7 +163,7 @@ async def test_main_stdio_mode_with_logger():
     mock_server = AsyncMock(spec=Server)
     mock_server.run = AsyncMock(return_value=None)  # Prevent unawaited coroutine
     mock_hubspot_client = MagicMock(spec=HubSpotClient)
-    mock_handlers = AsyncMock(spec=MCPHandlers)
+    mock_handlers = AsyncMock(spec=HubSpotHandlers)
     mock_handlers.handle_list_tools = AsyncMock()
     mock_handlers.handle_call_tool = AsyncMock()
 
@@ -185,7 +183,7 @@ async def test_main_stdio_mode_with_logger():
     with (
         patch("hubspot_mcp.__main__.Server", return_value=mock_server),
         patch("hubspot_mcp.__main__.HubSpotClient", return_value=mock_hubspot_client),
-        patch("hubspot_mcp.__main__.MCPHandlers", return_value=mock_handlers),
+        patch("hubspot_mcp.__main__.HubSpotHandlers", return_value=mock_handlers),
         patch("mcp.server.stdio.stdio_server", return_value=mock_stdio),
         patch("hubspot_mcp.__main__.parse_arguments") as mock_parse_args,
         patch(
@@ -211,7 +209,7 @@ async def test_main_sse_mode_with_logger():
     # Mock dependencies
     mock_server = AsyncMock(spec=Server)
     mock_hubspot_client = MagicMock(spec=HubSpotClient)
-    mock_handlers = AsyncMock(spec=MCPHandlers)
+    mock_handlers = AsyncMock(spec=HubSpotHandlers)
     mock_handlers.handle_list_tools = AsyncMock()
     mock_handlers.handle_call_tool = AsyncMock()
 
@@ -233,7 +231,7 @@ async def test_main_sse_mode_with_logger():
     with (
         patch("hubspot_mcp.__main__.Server", return_value=mock_server),
         patch("hubspot_mcp.__main__.HubSpotClient", return_value=mock_hubspot_client),
-        patch("hubspot_mcp.__main__.MCPHandlers", return_value=mock_handlers),
+        patch("hubspot_mcp.__main__.HubSpotHandlers", return_value=mock_handlers),
         patch("hubspot_mcp.__main__.SseServerTransport", return_value=mock_sse),
         patch("hubspot_mcp.__main__.parse_arguments") as mock_parse_args,
         patch(
@@ -319,7 +317,7 @@ async def test_handle_list_tools():
     # Mock dependencies
     mock_server = AsyncMock(spec=Server)
     mock_hubspot_client = MagicMock(spec=HubSpotClient)
-    mock_handlers = AsyncMock(spec=MCPHandlers)
+    mock_handlers = AsyncMock(spec=HubSpotHandlers)
     mock_handlers.handle_list_tools = AsyncMock(return_value=["tool1", "tool2"])
 
     # Mock InitializationOptions
@@ -338,7 +336,7 @@ async def test_handle_list_tools():
     with (
         patch("hubspot_mcp.__main__.Server", return_value=mock_server),
         patch("hubspot_mcp.__main__.HubSpotClient", return_value=mock_hubspot_client),
-        patch("hubspot_mcp.__main__.MCPHandlers", return_value=mock_handlers),
+        patch("hubspot_mcp.__main__.HubSpotHandlers", return_value=mock_handlers),
         patch(
             "hubspot_mcp.__main__.InitializationOptions", return_value=mock_init_options
         ),
@@ -346,7 +344,7 @@ async def test_handle_list_tools():
         # Create the server (this would happen in main())
         server = main.Server("hubspot-mcp-server")
         hubspot_client = main.HubSpotClient(api_key="test")
-        handlers = main.MCPHandlers(hubspot_client)
+        handlers = main.HubSpotHandlers(hubspot_client)
 
         # Simulate handler registration
         @server.list_tools()
@@ -364,7 +362,7 @@ async def test_handle_call_tool():
     # Mock dependencies
     mock_server = AsyncMock(spec=Server)
     mock_hubspot_client = MagicMock(spec=HubSpotClient)
-    mock_handlers = AsyncMock(spec=MCPHandlers)
+    mock_handlers = AsyncMock(spec=HubSpotHandlers)
     mock_handlers.handle_call_tool = AsyncMock(return_value={"result": "test"})
 
     # Mock InitializationOptions
@@ -383,7 +381,7 @@ async def test_handle_call_tool():
     with (
         patch("hubspot_mcp.__main__.Server", return_value=mock_server),
         patch("hubspot_mcp.__main__.HubSpotClient", return_value=mock_hubspot_client),
-        patch("hubspot_mcp.__main__.MCPHandlers", return_value=mock_handlers),
+        patch("hubspot_mcp.__main__.HubSpotHandlers", return_value=mock_handlers),
         patch(
             "hubspot_mcp.__main__.InitializationOptions", return_value=mock_init_options
         ),
@@ -391,7 +389,7 @@ async def test_handle_call_tool():
         # Create the server (this would happen in main())
         server = main.Server("hubspot-mcp-server")
         hubspot_client = main.HubSpotClient(api_key="test")
-        handlers = main.MCPHandlers(hubspot_client)
+        handlers = main.HubSpotHandlers(hubspot_client)
 
         # Simulate handler registration
         @server.call_tool()

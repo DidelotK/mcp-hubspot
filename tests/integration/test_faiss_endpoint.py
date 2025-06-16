@@ -92,8 +92,36 @@ class TestFaissDataEndpoint:
 
             return decorator
 
+        def capture_list_prompts():
+            def decorator(func):
+                return func
+
+            return decorator
+
+        def capture_get_prompt():
+            def decorator(func):
+                return func
+
+            return decorator
+
+        def capture_list_resources():
+            def decorator(func):
+                return func
+
+            return decorator
+
+        def capture_read_resource():
+            def decorator(func):
+                return func
+
+            return decorator
+
         mock_server.list_tools = capture_list_tools
         mock_server.call_tool = capture_call_tool
+        mock_server.list_prompts = capture_list_prompts
+        mock_server.get_prompt = capture_get_prompt
+        mock_server.list_resources = capture_list_resources
+        mock_server.read_resource = capture_read_resource
 
         # Set up environment
         test_env = {
@@ -106,7 +134,7 @@ class TestFaissDataEndpoint:
             patch(
                 "hubspot_mcp.__main__.HubSpotClient", return_value=mock_hubspot_client
             ),
-            patch("hubspot_mcp.__main__.MCPHandlers", return_value=mock_handlers),
+            patch("hubspot_mcp.__main__.HubSpotHandlers", return_value=mock_handlers),
             patch("hubspot_mcp.__main__.SseServerTransport", return_value=mock_sse),
             patch("hubspot_mcp.__main__.parse_arguments") as mock_parse_args,
             patch(
@@ -240,15 +268,43 @@ class TestFaissDataEndpoint:
 
             return decorator
 
+        def capture_list_prompts():
+            def decorator(func):
+                return func
+
+            return decorator
+
+        def capture_get_prompt():
+            def decorator(func):
+                return func
+
+            return decorator
+
+        def capture_list_resources():
+            def decorator(func):
+                return func
+
+            return decorator
+
+        def capture_read_resource():
+            def decorator(func):
+                return func
+
+            return decorator
+
         mock_server.list_tools = capture_list_tools
         mock_server.call_tool = capture_call_tool
+        mock_server.list_prompts = capture_list_prompts
+        mock_server.get_prompt = capture_get_prompt
+        mock_server.list_resources = capture_list_resources
+        mock_server.read_resource = capture_read_resource
 
         with (
             patch("hubspot_mcp.__main__.Server", return_value=mock_server),
             patch(
                 "hubspot_mcp.__main__.HubSpotClient", return_value=mock_hubspot_client
             ),
-            patch("hubspot_mcp.__main__.MCPHandlers", return_value=mock_handlers),
+            patch("hubspot_mcp.__main__.HubSpotHandlers", return_value=mock_handlers),
             patch("hubspot_mcp.__main__.SseServerTransport", return_value=mock_sse),
             patch("hubspot_mcp.__main__.parse_arguments") as mock_parse_args,
             patch(
@@ -349,15 +405,43 @@ class TestFaissDataEndpoint:
 
             return decorator
 
+        def capture_list_prompts():
+            def decorator(func):
+                return func
+
+            return decorator
+
+        def capture_get_prompt():
+            def decorator(func):
+                return func
+
+            return decorator
+
+        def capture_list_resources():
+            def decorator(func):
+                return func
+
+            return decorator
+
+        def capture_read_resource():
+            def decorator(func):
+                return func
+
+            return decorator
+
         mock_server.list_tools = capture_list_tools
         mock_server.call_tool = capture_call_tool
+        mock_server.list_prompts = capture_list_prompts
+        mock_server.get_prompt = capture_get_prompt
+        mock_server.list_resources = capture_list_resources
+        mock_server.read_resource = capture_read_resource
 
         with (
             patch("hubspot_mcp.__main__.Server", return_value=mock_server),
             patch(
                 "hubspot_mcp.__main__.HubSpotClient", return_value=mock_hubspot_client
             ),
-            patch("hubspot_mcp.__main__.MCPHandlers", return_value=mock_handlers),
+            patch("hubspot_mcp.__main__.HubSpotHandlers", return_value=mock_handlers),
             patch("hubspot_mcp.__main__.SseServerTransport", return_value=mock_sse),
             patch("hubspot_mcp.__main__.parse_arguments") as mock_parse_args,
             patch(
@@ -454,15 +538,43 @@ class TestFaissDataEndpoint:
 
             return decorator
 
+        def capture_list_prompts():
+            def decorator(func):
+                return func
+
+            return decorator
+
+        def capture_get_prompt():
+            def decorator(func):
+                return func
+
+            return decorator
+
+        def capture_list_resources():
+            def decorator(func):
+                return func
+
+            return decorator
+
+        def capture_read_resource():
+            def decorator(func):
+                return func
+
+            return decorator
+
         mock_server.list_tools = capture_list_tools
         mock_server.call_tool = capture_call_tool
+        mock_server.list_prompts = capture_list_prompts
+        mock_server.get_prompt = capture_get_prompt
+        mock_server.list_resources = capture_list_resources
+        mock_server.read_resource = capture_read_resource
 
         with (
             patch("hubspot_mcp.__main__.Server", return_value=mock_server),
             patch(
                 "hubspot_mcp.__main__.HubSpotClient", return_value=mock_hubspot_client
             ),
-            patch("hubspot_mcp.__main__.MCPHandlers", return_value=mock_handlers),
+            patch("hubspot_mcp.__main__.HubSpotHandlers", return_value=mock_handlers),
             patch("hubspot_mcp.__main__.SseServerTransport", return_value=mock_sse),
             patch("hubspot_mcp.__main__.parse_arguments") as mock_parse_args,
             patch(
@@ -570,15 +682,43 @@ class TestFaissDataEndpoint:
 
             return decorator
 
+        def capture_list_prompts():
+            def decorator(func):
+                return func
+
+            return decorator
+
+        def capture_get_prompt():
+            def decorator(func):
+                return func
+
+            return decorator
+
+        def capture_list_resources():
+            def decorator(func):
+                return func
+
+            return decorator
+
+        def capture_read_resource():
+            def decorator(func):
+                return func
+
+            return decorator
+
         mock_server.list_tools = capture_list_tools
         mock_server.call_tool = capture_call_tool
+        mock_server.list_prompts = capture_list_prompts
+        mock_server.get_prompt = capture_get_prompt
+        mock_server.list_resources = capture_list_resources
+        mock_server.read_resource = capture_read_resource
 
         with (
             patch("hubspot_mcp.__main__.Server", return_value=mock_server),
             patch(
                 "hubspot_mcp.__main__.HubSpotClient", return_value=mock_hubspot_client
             ),
-            patch("hubspot_mcp.__main__.MCPHandlers", return_value=mock_handlers),
+            patch("hubspot_mcp.__main__.HubSpotHandlers", return_value=mock_handlers),
             patch("hubspot_mcp.__main__.SseServerTransport", return_value=mock_sse),
             patch("hubspot_mcp.__main__.parse_arguments") as mock_parse_args,
             patch(
@@ -701,15 +841,43 @@ class TestFaissDataEndpoint:
 
             return decorator
 
+        def capture_list_prompts():
+            def decorator(func):
+                return func
+
+            return decorator
+
+        def capture_get_prompt():
+            def decorator(func):
+                return func
+
+            return decorator
+
+        def capture_list_resources():
+            def decorator(func):
+                return func
+
+            return decorator
+
+        def capture_read_resource():
+            def decorator(func):
+                return func
+
+            return decorator
+
         mock_server.list_tools = capture_list_tools
         mock_server.call_tool = capture_call_tool
+        mock_server.list_prompts = capture_list_prompts
+        mock_server.get_prompt = capture_get_prompt
+        mock_server.list_resources = capture_list_resources
+        mock_server.read_resource = capture_read_resource
 
         with (
             patch("hubspot_mcp.__main__.Server", return_value=mock_server),
             patch(
                 "hubspot_mcp.__main__.HubSpotClient", return_value=mock_hubspot_client
             ),
-            patch("hubspot_mcp.__main__.MCPHandlers", return_value=mock_handlers),
+            patch("hubspot_mcp.__main__.HubSpotHandlers", return_value=mock_handlers),
             patch("hubspot_mcp.__main__.SseServerTransport", return_value=mock_sse),
             patch("hubspot_mcp.__main__.parse_arguments") as mock_parse_args,
             patch(

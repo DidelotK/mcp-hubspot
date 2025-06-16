@@ -1,5 +1,5 @@
-"""Module serveur MCP."""
+"""MCP server module."""
 
-from .handlers import MCPHandlers
+from .handlers import HubSpotHandlers
 
-__all__ = ["MCPHandlers"]
+__all__ = ["HubSpotHandlers"]

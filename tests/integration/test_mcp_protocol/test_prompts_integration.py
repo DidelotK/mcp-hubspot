@@ -5,8 +5,8 @@ from unittest.mock import Mock, patch
 import mcp.types as types
 import pytest
 
-from src.hubspot_mcp.client import HubSpotClient
-from src.hubspot_mcp.server.handlers import MCPHandlers
+from hubspot_mcp.client import HubSpotClient
+from hubspot_mcp.server.handlers import HubSpotHandlers
 
 
 class TestMCPPromptsIntegration:
@@ -20,7 +20,7 @@ class TestMCPPromptsIntegration:
     @pytest.fixture
     def handlers(self, mock_client):
         """Create MCP handlers instance."""
-        return MCPHandlers(mock_client)
+        return HubSpotHandlers(mock_client)
 
     @pytest.mark.asyncio
     async def test_full_prompt_workflow(self, handlers):
@@ -286,7 +286,7 @@ class TestMCPPromptsIntegration:
     def test_prompts_module_import(self):
         """Test that prompts module imports correctly."""
         # Should be able to import prompts module
-        from src.hubspot_mcp.prompts import HubSpotPrompts
+        from hubspot_mcp.prompts import HubSpotPrompts
 
         # Should be able to instantiate
         prompts = HubSpotPrompts()
