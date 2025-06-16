@@ -140,6 +140,87 @@ class TestAuthenticationMiddleware:
         assert body_call["type"] == "http.response.body"
         assert body_call["body"] == b"Unauthorized"
 
+    @pytest.mark.asyncio
+    async def test_data_protection_disabled_exempts_force_reindex(self):
+        """Test that /force-reindex is exempt when DATA_PROTECTION_DISABLED=true."""
+        app_mock = AsyncMock()
+        auth_key = "test-key"
+
+        # Mock settings with DATA_PROTECTION_DISABLED=true
+        with patch("hubspot_mcp.sse.middleware.settings") as mock_settings:
+            mock_settings.faiss_data_secure = True  # Keep FAISS secure
+            mock_settings.data_protection_disabled = True  # Disable data protection
+
+            middleware = AuthenticationMiddleware(app_mock, auth_key)
+
+            # /force-reindex should be in exempt paths
+            assert "/force-reindex" in middleware.exempt_paths
+
+            # Test request to /force-reindex without auth header
+            scope = {
+                "type": "http",
+                "path": "/force-reindex",
+                "method": "POST",
+                "headers": [],
+            }
+
+            receive_mock = AsyncMock()
+            send_mock = AsyncMock()
+
+            await middleware(scope, receive_mock, send_mock)
+
+            # Should call the app (not send 401)
+            app_mock.assert_called_once_with(scope, receive_mock, send_mock)
+            send_mock.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_data_protection_enabled_requires_auth_for_force_reindex(self):
+        """Test that /force-reindex requires auth when DATA_PROTECTION_DISABLED=false."""
+        app_mock = AsyncMock()
+        auth_key = "test-key"
+
+        # Mock settings with DATA_PROTECTION_DISABLED=false (default)
+        with patch("hubspot_mcp.sse.middleware.settings") as mock_settings:
+            mock_settings.faiss_data_secure = True
+            mock_settings.data_protection_disabled = (
+                False  # Keep data protection enabled
+            )
+
+            middleware = AuthenticationMiddleware(app_mock, auth_key)
+
+            # /force-reindex should NOT be in exempt paths
+            assert "/force-reindex" not in middleware.exempt_paths
+
+            # Test request to /force-reindex without auth header
+            scope = {
+                "type": "http",
+                "path": "/force-reindex",
+                "method": "POST",
+                "headers": [],
+            }
+
+            receive_mock = AsyncMock()
+            send_mock = AsyncMock()
+
+            await middleware(scope, receive_mock, send_mock)
+
+            # Should send 401 (not call the app)
+            app_mock.assert_not_called()
+
+            # Verify 401 response
+            send_calls = send_mock.call_args_list
+            assert len(send_calls) == 2
+
+            # Check response start
+            start_call = send_calls[0][0][0]
+            assert start_call["type"] == "http.response.start"
+            assert start_call["status"] == 401
+
+            # Check response body
+            body_call = send_calls[1][0][0]
+            assert body_call["type"] == "http.response.body"
+            assert body_call["body"] == b"Unauthorized"
+
 
 class TestFaissDataSecurity:
     """Test FAISS data security configuration using centralized settings."""
@@ -148,6 +229,7 @@ class TestFaissDataSecurity:
     def test_faiss_data_secured_by_default(self, mock_settings):
         """Test that /faiss-data is secured by default (FAISS_DATA_SECURE=true)."""
         mock_settings.faiss_data_secure = True
+        mock_settings.data_protection_disabled = False  # Default value
 
         app_mock = AsyncMock()
         auth_key = "test-key-123"
@@ -156,12 +238,16 @@ class TestFaissDataSecurity:
 
         # /faiss-data should not be in exempt_paths (secured)
         assert "/faiss-data" not in middleware.exempt_paths
+        # /force-reindex should not be in exempt_paths (data protection enabled)
+        assert "/force-reindex" not in middleware.exempt_paths
+        # Only base exempt paths should be present
         assert middleware.exempt_paths == {"/health", "/ready"}
 
     @patch("hubspot_mcp.sse.middleware.settings")
     def test_faiss_data_unsecured_when_disabled(self, mock_settings):
         """Test that /faiss-data is unsecured when FAISS_DATA_SECURE=false."""
         mock_settings.faiss_data_secure = False
+        mock_settings.data_protection_disabled = False  # Default value
 
         app_mock = AsyncMock()
         auth_key = "test-key-123"
@@ -170,6 +256,9 @@ class TestFaissDataSecurity:
 
         # /faiss-data should be in exempt_paths (unsecured)
         assert "/faiss-data" in middleware.exempt_paths
+        # /force-reindex should not be in exempt_paths (data protection enabled)
+        assert "/force-reindex" not in middleware.exempt_paths
+        # Should have base paths plus faiss-data
         assert middleware.exempt_paths == {"/health", "/ready", "/faiss-data"}
 
     def test_faiss_data_secure_true_with_settings(self):

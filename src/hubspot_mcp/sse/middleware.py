@@ -32,6 +32,11 @@ class AuthenticationMiddleware:
         if not settings.faiss_data_secure:
             self.exempt_paths.add("/faiss-data")
 
+        # Add /force-reindex to exempt paths if DATA_PROTECTION_DISABLED is set to true
+        # By default, /force-reindex is secured (DATA_PROTECTION_DISABLED=false)
+        if settings.data_protection_disabled:
+            self.exempt_paths.add("/force-reindex")
+
     async def __call__(self, scope, receive, send):
         """
         ASGI middleware call method.

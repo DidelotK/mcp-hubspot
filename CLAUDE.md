@@ -8,4 +8,19 @@ This is a HubSpot MCP (Model Context Protocol) Server - a Python 3.12+ applicati
 
 ## AI Assistant Behavior Rules
 
+**MANDATORY**: Before starting any work, Claude MUST read ALL files in `.cursor/rules/` to understand project conventions:
+
+- Read `.cursor/rules/python-standards.mdc` for Python-specific rules
+- Read `.cursor/rules/coding-conventions.mdc` for general coding standards
+- Read `.cursor/rules/coding-conventions.mdc` for general coding standards
+- Read ALL other `.cursor/rules/*.mdc` files for complete project conventions
+- Apply these rules strictly to all code modifications
+
 Follow all the rules defined in the folder : `.cursor/rules/`
+
+# important-instruction-reminders
+
+Do what has been asked; nothing more, nothing less.
+NEVER create files unless they're absolutely necessary for achieving your goal.
+ALWAYS prefer editing an existing file to creating a new one.
+NEVER proactively create documentation files (*.md) or README files. Only create documentation files if explicitly requested by the User.

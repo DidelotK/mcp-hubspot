@@ -32,6 +32,9 @@ class Settings:
 
         # Security Configuration
         self.faiss_data_secure: bool = self._get_bool_env("FAISS_DATA_SECURE", True)
+        self.data_protection_disabled: bool = self._get_bool_env(
+            "DATA_PROTECTION_DISABLED", False
+        )
 
         # Logging Configuration
         self.log_level: str = os.getenv("LOG_LEVEL", "INFO")
