@@ -142,6 +142,107 @@ export DATA_PROTECTION_DISABLED=true
 
 This allows the `/force-reindex` endpoint to be accessed without authentication headers.
 
+### test_force_reindex.py
+
+A test script specifically designed to test the force reindex endpoint functionality. This script provides a simpler, focused approach to testing just the reindexing capability without the full workflow.
+
+#### Features
+
+- 🧪 Focused testing of the force reindex endpoint
+- ✅ Health and readiness checks
+- ⏱️ Performance timing measurement
+- 📊 Detailed results summary
+- 🔍 Comprehensive error reporting
+- 📋 Process log display
+
+#### Usage
+
+```bash
+# Basic usage with environment variables
+export MCP_SERVER_URL="http://localhost:8080"
+export MCP_AUTH_KEY="your-auth-key"  # Optional
+python test_force_reindex.py
+
+# The script will automatically use environment variables:
+# - MCP_SERVER_URL (default: http://localhost:8080)
+# - MCP_AUTH_KEY (optional, for authentication)
+```
+
+#### Environment Variables
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `MCP_SERVER_URL` | Base URL of the MCP server | `http://localhost:8080` |
+| `MCP_AUTH_KEY` | Bearer token for authentication | None |
+| `HUBSPOT_API_KEY` | HubSpot API key (checked for warnings) | None |
+
+#### Example Output
+
+```text
+🚀 HubSpot MCP Force Reindex Test
+==================================================
+⚠️  Warning: HUBSPOT_API_KEY not set - reindexing may fail
+
+🧪 Testing Force Reindex Endpoint
+📡 Server URL: http://localhost:8080
+🔐 Auth: Enabled
+--------------------------------------------------
+
+1️⃣ Testing health check...
+✅ Health check passed: healthy
+
+2️⃣ Testing readiness check...
+✅ Readiness check passed: ready
+
+3️⃣ Testing force reindex endpoint...
+⏳ This may take several minutes...
+⏱️ Request completed in 45.2 seconds
+
+✅ Force reindex completed successfully!
+--------------------------------------------------
+
+📊 Results Summary:
+  • Total entity types: 3
+  • Successful types: 3
+  • Failed types: 0
+  • Total entities loaded: 1500
+  • Embeddings ready: True
+  • Semantic search available: True
+
+📝 Process Log:
+  🧹 Clearing all existing data and embeddings...
+  ✅ Successfully cleared all data
+  📥 Loading contacts with all properties...
+  ✅ contacts: Loaded 500 entities with embeddings
+  📥 Loading companies with all properties...
+  ✅ companies: Loaded 300 entities with embeddings
+  📥 Loading deals with all properties...
+  ✅ deals: Loaded 700 entities with embeddings
+
+🏷️ Entity Results:
+  • contacts: ✅ 500 entities 🧠 with embeddings
+  • companies: ✅ 300 entities 🧠 with embeddings
+  • deals: ✅ 700 entities 🧠 with embeddings
+
+📈 Final FAISS Stats:
+  • Status: ready
+  • Total entities: 1500
+  • Vector dimension: 384
+  • Index type: Flat
+  • Model: all-MiniLM-L6-v2
+
+🎉 All tests passed!
+💡 Your HubSpot data is now indexed and ready for semantic search!
+```
+
+#### Differences from clear_and_reindex.py
+
+- **Purpose**: Focused testing vs. complete workflow management
+- **Configuration**: Environment variables only vs. command-line arguments
+- **Output**: Test-oriented results vs. workflow progress
+- **Timeout**: 10-minute timeout for long operations
+- **Error handling**: Test-specific error messages and exit codes
+
 ## Other Examples
 
 - `basic/`: Basic MCP client examples
