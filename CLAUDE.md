@@ -10,17 +10,18 @@ This is a HubSpot MCP (Model Context Protocol) Server - a Python 3.12+ applicati
 
 **MANDATORY**: Before starting any work, Claude MUST read ALL files in `.cursor/rules/` to understand project conventions:
 
+- Read `.cursor/rules/README.mdc` for overview of all rules and conventions
+- Read `.cursor/rules/commit-conventions.mdc` for Git commit conventions rules
 - Read `.cursor/rules/python-standards.mdc` for Python-specific rules
 - Read `.cursor/rules/coding-conventions.mdc` for general coding standards
-- Read `.cursor/rules/coding-conventions.mdc` for general coding standards
+- Read `.cursor/rules/development-workflow.mdc` for general development workflow standards
+- Read `.cursor/rules/documentation-conventions.mdc` for documentation conventions
+- Read `.cursor/rules/cursor-behavior.mdc` for Cursor assistant behavior rules
+- Read `.cursor/rules/mcp-tools-conventions.mdc` for HubSpot MCP tools development rules
+- Read `.cursor/rules/project-structure.mdc` for project organization and structure rules
+- Read `.cursor/rules/security-conventions.mdc` for security and authentication rules
+- Read `.cursor/rules/terraform-conventions.mdc` for infrastructure and deployment rules
 - Read ALL other `.cursor/rules/*.mdc` files for complete project conventions
 - Apply these rules strictly to all code modifications
 
 Follow all the rules defined in the folder : `.cursor/rules/`
-
-# important-instruction-reminders
-
-Do what has been asked; nothing more, nothing less.
-NEVER create files unless they're absolutely necessary for achieving your goal.
-ALWAYS prefer editing an existing file to creating a new one.
-NEVER proactively create documentation files (*.md) or README files. Only create documentation files if explicitly requested by the User.
