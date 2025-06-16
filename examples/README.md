@@ -8,6 +8,8 @@ This directory contains example scripts and configurations for working with the 
 
 A utility script to clear and reindex all HubSpot data through the SSE server HTTP endpoints. This script demonstrates how to interact with the server's RESTful API to manage data indexing.
 
+For complete API documentation, see: **[SSE Endpoints Documentation](../docs/sse-endpoints.md)**
+
 #### Features
 
 - ✅ Health and readiness checks
