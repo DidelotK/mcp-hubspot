@@ -88,3 +88,100 @@ Check the [contributing guide](docs/contributing.md) for:
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Force Reindexing Endpoint
+
+A new SSE endpoint is available for forcing complete reindexing of all HubSpot entities:
+
+### `POST /force-reindex`
+
+This endpoint performs a complete cache reset and rebuilds all FAISS indexes with the latest HubSpot data.
+
+**What it does:**
+
+1. Clears all existing cache and embeddings
+2. Loads all contacts, companies, and deals with their complete property data
+3. Builds FAISS indexes for semantic search
+4. Returns detailed progress and results
+
+**Usage:**
+
+```bash
+# Start the MCP server in SSE mode
+python -m hubspot_mcp --mode sse --port 8080
+
+# Call the force reindex endpoint
+curl -X POST http://localhost:8080/force-reindex \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_AUTH_KEY"  # If auth is enabled
+```
+
+**Response format:**
+
+```json
+{
+  "status": "success",
+  "timestamp": "2024-01-15T10:30:00.000Z",
+  "server_info": {
+    "server": "hubspot-mcp-server",
+    "version": "0.1.0",
+    "mode": "sse"
+  },
+  "process_log": [
+    "🗑️ Clearing existing cache and embeddings...",
+    "✅ Cache and embeddings cleared successfully",
+    "📥 Loading contacts with all properties...",
+    "✅ contacts: Loaded 1500 entities with embeddings",
+    "📥 Loading companies with all properties...",
+    "✅ companies: Loaded 800 entities with embeddings",
+    "📥 Loading deals with all properties...",
+    "✅ deals: Loaded 2200 entities with embeddings",
+    "📊 Gathering final statistics...",
+    "✅ Final index stats: 4500 entities indexed",
+    "🎉 Force reindex process completed!",
+    "📈 Summary: 3/3 entity types successful, 4500 total entities loaded",
+    "✅ Semantic search is now fully available!"
+  ],
+  "entity_results": {
+    "contacts": {
+      "status": "success",
+      "entities_loaded": 1500,
+      "embeddings_built": true
+    },
+    "companies": {
+      "status": "success",
+      "entities_loaded": 800,
+      "embeddings_built": true
+    },
+    "deals": {
+      "status": "success",
+      "entities_loaded": 2200,
+      "embeddings_built": true
+    }
+  },
+  "final_stats": {
+    "status": "ready",
+    "total_entities": 4500,
+    "dimension": 384,
+    "index_type": "Flat",
+    "model_name": "all-MiniLM-L6-v2"
+  },
+  "summary": {
+    "total_entity_types_processed": 3,
+    "successful_entity_types": 3,
+    "failed_entity_types": 0,
+    "total_entities_loaded": 4500,
+    "embeddings_ready": true,
+    "semantic_search_available": true
+  }
+}
+```
+
+**When to use:**
+
+- After major HubSpot data changes
+- When semantic search returns outdated results
+- To ensure FAISS indexes have the latest property data
+- During initial setup for optimal performance
+
+**Note:** This process may take several minutes depending on the amount of HubSpot data. The endpoint processes up to 10,000 entities per type (contacts, companies, deals) with all their properties.

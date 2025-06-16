@@ -23,6 +23,7 @@ from .server import HubSpotHandlers
 from .sse import (
     AuthenticationMiddleware,
     faiss_data_endpoint,
+    force_reindex_endpoint,
     handle_sse,
     health_check,
     readiness_check,
@@ -161,6 +162,9 @@ async def main():
                 Route("/health", endpoint=health_check, methods=["GET"]),
                 Route("/ready", endpoint=readiness_check, methods=["GET"]),
                 Route("/faiss-data", endpoint=faiss_data_endpoint, methods=["GET"]),
+                Route(
+                    "/force-reindex", endpoint=force_reindex_endpoint, methods=["POST"]
+                ),
                 Mount("/messages/", app=sse.handle_post_message),
             ]
         )  # pragma: no cover

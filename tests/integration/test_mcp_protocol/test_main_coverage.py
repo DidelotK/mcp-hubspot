@@ -476,8 +476,8 @@ async def test_main_complete_sse_flow():
         assert "routes" in call_args.kwargs
         routes = call_args.kwargs["routes"]
         assert (
-            len(routes) == 5
-        )  # /sse, /health, /ready, /faiss-data routes and /messages/ mount
+            len(routes) == 6
+        )  # /sse, /health, /ready, /faiss-data, /force-reindex routes and /messages/ mount
 
         # Verify logger was called (authentication may log first)
         mock_logger.info.assert_any_call(

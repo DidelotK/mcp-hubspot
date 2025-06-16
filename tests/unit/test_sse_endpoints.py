@@ -1,5 +1,6 @@
 """Tests for SSE endpoints."""
 
+import json
 import os
 from unittest.mock import AsyncMock, MagicMock, patch
 
@@ -8,6 +9,7 @@ from starlette.requests import Request
 
 from hubspot_mcp.sse.endpoints import (
     faiss_data_endpoint,
+    force_reindex_endpoint,
     handle_sse,
     health_check,
     readiness_check,
@@ -431,3 +433,221 @@ class TestEndpointErrorPaths:
                 mock_logger.error.assert_called_once_with(
                     "FAISS data endpoint failed: Test exception"
                 )
+
+
+class TestForceReindexEndpoint:
+    """Test cases for the force reindex endpoint."""
+
+    @pytest.mark.asyncio
+    async def test_force_reindex_success_basic(self):
+        """Test successful force reindex operation."""
+        # Mock settings
+        with (
+            patch("hubspot_mcp.sse.endpoints.settings") as mock_settings,
+            patch("hubspot_mcp.sse.endpoints.HubSpotClient") as mock_client_class,
+            patch(
+                "hubspot_mcp.tools.bulk_cache_loader.BulkCacheLoaderTool"
+            ) as mock_bulk_loader_class,
+            patch(
+                "hubspot_mcp.tools.embedding_management_tool.EmbeddingManagementTool"
+            ) as mock_embedding_tool_class,
+            patch(
+                "hubspot_mcp.tools.enhanced_base.EnhancedBaseTool"
+            ) as mock_enhanced_base,
+        ):
+            # Setup mocks
+            mock_settings.hubspot_api_key = "test-api-key"
+            mock_settings.server_name = "test-server"
+            mock_settings.server_version = "0.1.0"
+
+            # Mock client
+            mock_client = MagicMock()
+            mock_client_class.return_value = mock_client
+
+            # Mock bulk loader
+            mock_bulk_loader = MagicMock()
+            mock_bulk_loader_class.return_value = mock_bulk_loader
+            mock_bulk_loader.clear_cache = MagicMock()
+
+            # Mock successful bulk loader execution
+            mock_result = MagicMock()
+            mock_result.text = (
+                "✅ Built embeddings for 100 contacts\nTotal Loaded: 100 entities"
+            )
+            mock_bulk_loader.execute = AsyncMock(return_value=[mock_result])
+
+            # Mock embedding tool
+            mock_embedding_tool = MagicMock()
+            mock_embedding_tool_class.return_value = mock_embedding_tool
+            mock_embedding_tool.clear_embedding_cache = MagicMock()
+
+            # Mock embedding manager
+            mock_embedding_manager = MagicMock()
+            mock_enhanced_base.get_embedding_manager.return_value = (
+                mock_embedding_manager
+            )
+            mock_embedding_manager.get_index_stats.return_value = {
+                "status": "ready",
+                "total_entities": 300,
+                "dimension": 384,
+                "index_type": "Flat",
+                "model_name": "all-MiniLM-L6-v2",
+            }
+
+            # Import and test the endpoint
+            from hubspot_mcp.sse.endpoints import force_reindex_endpoint
+
+            # Create mock request
+            mock_request = MagicMock()
+
+            # Call the endpoint
+            response = await force_reindex_endpoint(mock_request)
+
+            # Verify response
+            assert response.status_code == 200
+            response_data = json.loads(response.body)
+
+            assert response_data["status"] == "success"
+            assert "server_info" in response_data
+            assert "process_log" in response_data
+            assert "entity_results" in response_data
+            assert "summary" in response_data
+
+            # Verify all entity types were processed
+            assert len(response_data["entity_results"]) == 3
+            assert "contacts" in response_data["entity_results"]
+            assert "companies" in response_data["entity_results"]
+            assert "deals" in response_data["entity_results"]
+
+            # Verify methods were called
+            mock_bulk_loader.clear_cache.assert_called_once()
+            mock_embedding_tool.clear_embedding_cache.assert_called_once()
+            assert mock_bulk_loader.execute.call_count == 3  # Once for each entity type
+
+    @pytest.mark.asyncio
+    async def test_force_reindex_no_api_key(self):
+        """Test force reindex when HubSpot API key is not configured."""
+        from unittest.mock import patch
+
+        with patch("hubspot_mcp.sse.endpoints.settings") as mock_settings:
+            mock_settings.hubspot_api_key = None
+
+            from hubspot_mcp.sse.endpoints import force_reindex_endpoint
+
+            mock_request = MagicMock()
+            response = await force_reindex_endpoint(mock_request)
+
+            assert response.status_code == 503
+            response_data = json.loads(response.body)
+            assert response_data["status"] == "error"
+            assert "HUBSPOT_API_KEY not configured" in response_data["error"]
+
+    @pytest.mark.asyncio
+    async def test_force_reindex_partial_failure(self):
+        """Test force reindex with some entity types failing."""
+        from unittest.mock import AsyncMock, MagicMock, patch
+
+        with (
+            patch("hubspot_mcp.sse.endpoints.settings") as mock_settings,
+            patch("hubspot_mcp.sse.endpoints.HubSpotClient") as mock_client_class,
+            patch(
+                "hubspot_mcp.tools.bulk_cache_loader.BulkCacheLoaderTool"
+            ) as mock_bulk_loader_class,
+            patch(
+                "hubspot_mcp.tools.embedding_management_tool.EmbeddingManagementTool"
+            ) as mock_embedding_tool_class,
+            patch(
+                "hubspot_mcp.tools.enhanced_base.EnhancedBaseTool"
+            ) as mock_enhanced_base,
+        ):
+            # Setup mocks
+            mock_settings.hubspot_api_key = "test-api-key"
+            mock_settings.server_name = "test-server"
+            mock_settings.server_version = "0.1.0"
+
+            mock_client = MagicMock()
+            mock_client_class.return_value = mock_client
+
+            mock_bulk_loader = MagicMock()
+            mock_bulk_loader_class.return_value = mock_bulk_loader
+            mock_bulk_loader.clear_cache = MagicMock()
+
+            # Mock mixed success/failure results
+            call_count = 0
+
+            async def mock_execute(args):
+                nonlocal call_count
+                call_count += 1
+                if call_count == 1:  # contacts succeed
+                    mock_result = MagicMock()
+                    mock_result.text = "✅ Built embeddings for 100 contacts\nTotal Loaded: 100 entities"
+                    return [mock_result]
+                elif call_count == 2:  # companies fail
+                    raise Exception("API rate limit exceeded")
+                else:  # deals succeed
+                    mock_result = MagicMock()
+                    mock_result.text = (
+                        "✅ Built embeddings for 200 deals\nTotal Loaded: 200 entities"
+                    )
+                    return [mock_result]
+
+            mock_bulk_loader.execute = mock_execute
+
+            mock_embedding_tool = MagicMock()
+            mock_embedding_tool_class.return_value = mock_embedding_tool
+            mock_embedding_tool.clear_embedding_cache = MagicMock()
+
+            # Mock embedding manager
+            mock_embedding_manager = MagicMock()
+            mock_enhanced_base.get_embedding_manager.return_value = (
+                mock_embedding_manager
+            )
+            mock_embedding_manager.get_index_stats.return_value = {
+                "status": "ready",
+                "total_entities": 300,
+            }
+
+            from hubspot_mcp.sse.endpoints import force_reindex_endpoint
+
+            mock_request = MagicMock()
+            response = await force_reindex_endpoint(mock_request)
+
+            # Should still return 200 with partial success
+            assert response.status_code == 200
+            response_data = json.loads(response.body)
+
+            assert response_data["status"] == "success"
+
+            # Check entity results
+            entity_results = response_data["entity_results"]
+            assert entity_results["contacts"]["status"] == "success"
+            assert entity_results["companies"]["status"] == "error"
+            assert entity_results["deals"]["status"] == "success"
+
+            # Check summary
+            summary = response_data["summary"]
+            assert summary["successful_entity_types"] == 2
+            assert summary["failed_entity_types"] == 1
+            assert summary["total_entities_loaded"] == 300
+
+    @pytest.mark.asyncio
+    async def test_force_reindex_complete_failure(self):
+        """Test force reindex with complete failure."""
+        from unittest.mock import MagicMock, patch
+
+        with (
+            patch("hubspot_mcp.sse.endpoints.settings") as mock_settings,
+            patch("hubspot_mcp.sse.endpoints.HubSpotClient") as mock_client_class,
+        ):
+            mock_settings.hubspot_api_key = "test-api-key"
+            mock_client_class.side_effect = Exception("Cannot connect to HubSpot")
+
+            from hubspot_mcp.sse.endpoints import force_reindex_endpoint
+
+            mock_request = MagicMock()
+            response = await force_reindex_endpoint(mock_request)
+
+            assert response.status_code == 500
+            response_data = json.loads(response.body)
+            assert response_data["status"] == "error"
+            assert "Cannot connect to HubSpot" in response_data["error"]
