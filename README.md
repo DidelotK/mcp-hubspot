@@ -1,5 +1,8 @@
 # HubSpot MCP Server
 
+[![Semantic Release](https://img.shields.io/badge/semantic--release-conventionalcommits-e10079?logo=semantic-release&style=flat-square)](https://github.com/semantic-release/semantic-release)
+[![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg?style=flat-square)](https://conventionalcommits.org)
+
 MCP (Model Context Protocol) server for integrating HubSpot with MCP clients (like Claude Desktop). Provides access to HubSpot contacts, companies, and deals through conversational tools.
 
 ## 🛠️ Available Tools

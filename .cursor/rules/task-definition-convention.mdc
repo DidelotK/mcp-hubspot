@@ -40,7 +40,7 @@ description: Guidelines for AI agents when creating task specifications to ensur
    - Specific, measurable outcomes
    - Quality requirements
    - Testing requirements
-   - Documentation requirements
+   - Documentation requirements (MANDATORY for all tasks)
 
 5. **🔧 Technical Requirements**
    - Language/framework constraints
@@ -78,6 +78,20 @@ description: Guidelines for AI agents when creating task specifications to ensur
 - **FAISS**: Vector database for semantic search
 - **SSE Endpoints**: Server-Sent Events for real-time updates
 - **Authentication**: Bearer token and API key management
+
+### 📁 Task File Organization
+- **Task location**: All task specifications MUST be created in the `todos/todo/` folder
+- **One task per file**: Each task specification must be in its own separate file for easy testing and management
+- **File naming**: Use descriptive names following the pattern `task-[type]-[brief-description].md`
+- **File format**: Task files must use Markdown format (`.md` extension)
+- **Testability**: Single-file approach ensures each task can be independently tested and validated
+- **Traceability**: One file per task enables better tracking of task completion and history
+
+#### File Naming Examples
+- `task-feat-add-hubspot-contacts-sync.md`
+- `task-fix-authentication-error-handling.md`
+- `task-docs-update-api-documentation.md`
+- `task-test-add-integration-tests.md`
 
 ## Task Scoping Guidelines
 
@@ -135,7 +149,8 @@ description: Guidelines for AI agents when creating task specifications to ensur
 ## ✅ Acceptance Criteria
 1. [Specific, testable requirement 1]
 2. [Specific, testable requirement 2]
-3. [Quality requirement - tests, documentation, etc.]
+3. [Quality requirement - tests, code coverage, etc.]
+4. **Documentation Updated** - All relevant documentation must be updated (README, API docs, code comments, examples)
 
 ## 🔧 Technical Requirements
 
@@ -175,7 +190,11 @@ description: Guidelines for AI agents when creating task specifications to ensur
 - [ ] Code implemented according to specification
 - [ ] All tests pass (unit and integration)
 - [ ] Code coverage meets requirements
-- [ ] Documentation updated
+- [ ] **Documentation updated (MANDATORY)**:
+  - [ ] Code comments and docstrings added
+  - [ ] README updated if needed
+  - [ ] API documentation updated if applicable
+  - [ ] Usage examples provided
 - [ ] Code review completed
 - [ ] Quality checks pass (`just check`)
 ```
@@ -234,6 +253,7 @@ description: Guidelines for AI agents when creating task specifications to ensur
 - Repository context MUST be considered
 - Scope boundaries MUST be clearly defined
 - Quality standards MUST be included
+- **Documentation requirements MUST be included in every task specification**
 
 ### 🚫 Strict Prohibitions
 - ❌ NEVER expand scope beyond user request

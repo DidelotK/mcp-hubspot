@@ -297,20 +297,121 @@ Quality checks run automatically:
 
 ## Deployment
 
-### Semantic Versioning
+### Semantic Versioning and Automated Releases
 
-- `feat:` - New feature
-- `fix:` - Bug fix
-- `docs:` - Documentation
-- `test:` - Tests
-- `refactor:` - Refactoring
-- `chore:` - Maintenance
+This project uses [Conventional Commits](https://www.conventionalcommits.org/) and automated semantic versioning to manage releases.
 
-### Release
+#### Commit Message Format
 
-1. All tests pass
-2. Documentation updated
-3. Test coverage maintained
-4. **Code quality validated**
-5. Semantic versioning commits
-6. PR reviewed and approved
+All commit messages must follow the conventional commits specification:
+
+```text
+<type>[optional scope]: <description>
+
+[optional body]
+
+[optional footer(s)]
+```
+
+#### Commit Types
+
+| Type | Release | Description | Example |
+|------|---------|-------------|---------|
+| `feat` | **minor** | New feature | `feat: add contact search tool` |
+| `fix` | **patch** | Bug fix | `fix: handle empty API responses` |
+| `BREAKING CHANGE` | **major** | Breaking change | `feat!: change API interface` |
+| `docs` | none | Documentation | `docs: update API reference` |
+| `test` | none | Tests | `test: add unit tests for client` |
+| `refactor` | patch | Code refactoring | `refactor: optimize cache implementation` |
+| `perf` | patch | Performance improvement | `perf: improve query response time` |
+| `style` | none | Code style | `style: fix formatting` |
+| `chore` | none | Maintenance | `chore: update dependencies` |
+| `ci` | none | CI/CD changes | `ci: add release workflow` |
+| `build` | none | Build system | `build: update Docker config` |
+
+#### Breaking Changes
+
+For breaking changes, use either:
+
+- `feat!: description` (with exclamation mark)
+- Or include `BREAKING CHANGE:` in the footer
+
+#### Examples
+
+```bash
+# New feature (minor version bump)
+git commit -m "feat: add company search by domain tool"
+
+# Bug fix (patch version bump)
+git commit -m "fix: handle null values in contact properties"
+
+# Breaking change (major version bump)
+git commit -m "feat!: change tool response format to JSON"
+
+# Documentation (no version bump)
+git commit -m "docs: add examples for deal management tools"
+
+# Multiple changes
+git commit -m "feat: add bulk contact export
+
+Support exporting up to 10,000 contacts with filtering options.
+Includes pagination and rate limiting.
+
+Closes #123"
+```
+
+#### Automated Release Process
+
+When commits are pushed to the main branch:
+
+1. **Analysis**: Semantic-release analyzes commit messages since the last release
+2. **Version Calculation**: Determines the next version number based on commit types
+3. **Changelog Generation**: Creates release notes from commit messages
+4. **Version Update**: Updates `pyproject.toml` with the new version
+5. **GitHub Release**: Creates a GitHub release with the changelog
+6. **Tagging**: Tags the repository with the new version
+
+#### Version Bumping Rules
+
+- **Major** (1.0.0 → 2.0.0): Breaking changes (`BREAKING CHANGE` or `!`)
+- **Minor** (1.0.0 → 1.1.0): New features (`feat`)
+- **Patch** (1.0.0 → 1.0.1): Bug fixes (`fix`), performance improvements (`perf`), refactoring (`refactor`)
+- **No release**: Documentation, tests, chores, styles, CI changes
+
+#### Pre-commit Validation
+
+Install commitizen for commit message validation:
+
+```bash
+# Install commitizen (optional but recommended)
+pip install commitizen
+
+# Use interactive commit helper
+cz commit
+
+# Or validate existing commit messages
+cz check --commit-msg-file .git/COMMIT_EDITMSG
+```
+
+### Release Management
+
+1. **Automated**: All releases are created automatically when changes are merged to main
+2. **Quality Gates**: All CI checks must pass before release
+3. **Manual Override**: Emergency releases can be triggered manually
+4. **Rollback**: Use GitHub's release management for rollbacks
+
+#### Manual Release (Emergency Only)
+
+```bash
+# Only for emergency situations
+gh workflow run release.yml
+```
+
+#### Pre-release Testing
+
+Test semantic release without publishing:
+
+```bash
+# Dry run to see what would be released
+npx semantic-release --dry-run
+```

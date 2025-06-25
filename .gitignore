@@ -191,6 +191,13 @@ Desktop.ini
 # uv
 # Note: uv.lock should be committed for reproducibility
 
+# Node.js dependencies (for semantic-release)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+
 # FastAgent secrets and logs
 fastagent.secrets.yaml
 fastagent.jsonl
